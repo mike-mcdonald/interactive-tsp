@@ -11,11 +11,11 @@ import {
 import { Street } from './street';
 import { Feature, Geometry } from '@turf/helpers';
 
-const URLS: Set<string> = new Set([
+const URLS = [
   'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/22',
   'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/23',
   'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/24'
-]);
+];
 
 export type Project = {
   id: string;
