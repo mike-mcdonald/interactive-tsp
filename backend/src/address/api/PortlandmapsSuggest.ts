@@ -11,7 +11,8 @@ export class PortlandmapsSuggest implements IAddressSearchAPI {
       'https://www.portlandmaps.com/api/suggest/',
       qs.stringify({
         query,
-        api_key: '71AF0BE96D3E715CD6139FF5BC6A5305' //process.env.PORTLANDMAPS_API_KEY
+        api_key: '71AF0BE96D3E715CD6139FF5BC6A5305', //process.env.PORTLANDMAPS_API_KEY
+        city: 'portland'
       }),
       {
         headers: {

@@ -27,7 +27,7 @@ export const addressType: GraphQLObjectType = new GraphQLObjectType({
   name: 'Address',
   description: 'An address in the City of Portland',
   fields: () => ({
-    fullName: {
+    name: {
       type: GraphQLNonNull(GraphQLString),
       description: 'The full string street address.'
     },
