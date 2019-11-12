@@ -1,14 +1,15 @@
 import * as turf from '@turf/helpers';
 
 export interface Classification {
-  traffic?: string;
-  transit?: string;
-  bicycle?: string;
-  pedestrian?: string;
-  freight?: string;
-  emergency?: string;
-  design?: string;
-  greenscape?: string;
+  [key: string]: string;
+  traffic: string;
+  transit: string;
+  bicycle: string;
+  pedestrian: string;
+  freight: string;
+  emergency: string;
+  design: string;
+  greenscape: string;
 }
 
 export interface Project {

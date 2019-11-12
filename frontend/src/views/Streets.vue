@@ -4,7 +4,7 @@
       <transition name="fade">
         <div
           v-if="message"
-          class="mb-3 px-2 py-3 w-full border-t border-b border-tangerine-800 bg-tangerine-300 text-tangerine-900"
+          class="mb-3 px-2 py-3 w-full border-b border-tangerine-800 bg-tangerine-300 text-tangerine-900"
         >
           {{ message }}
         </div>

@@ -1,8 +1,46 @@
 import { ActionTree } from 'vuex';
-import { StreetState, Street } from './types';
+import { StreetState, Street, Classification } from './types';
 import { RootState } from '../types';
 
 import axios from 'axios';
+
+const classificationMaps = new Map<string, Map<string, string>>();
+
+new Map([
+  ['transit', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/3'],
+  ['traffic', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/4'],
+  ['emergency', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/7'],
+  ['design', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/10'],
+  ['bicycle', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/12'],
+  ['pedestrian', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/15'],
+  ['freight', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/19']
+]).forEach(async (url: string, key: string) => {
+  const res = await axios.get(url, {
+    params: {
+      f: 'json'
+    }
+  });
+
+  if (res.data) {
+    const map = new Map<string, string>();
+    res.data.drawingInfo.renderer.uniqueValueInfos.map((info: any) => {
+      map.set(info.value, info.label);
+    });
+    classificationMaps.set(key, map);
+  }
+});
+
+classificationMaps.set('greenscape', new Map<string, string>([['Y', 'Yes'], ['N', 'No']]))
+
+function mapClassification(type: string, value?: string): string {
+  if (value && classificationMaps.has(type)) {
+    const map = classificationMaps.get(type);
+    if (map) {
+      return map.get(value) || 'N/A';
+    }
+  }
+  return 'NULL';
+}
 
 export const actions: ActionTree<StreetState, RootState> = {
   findStreets({ commit }, extent) {
@@ -98,6 +136,11 @@ export const actions: ActionTree<StreetState, RootState> = {
           commit('setMessage', 'Zoom in or search for an address to see available streets...', { root: true });
         }
         if (res.data.data.street) {
+          Object.keys(res.data.data.street.classifications).forEach((c) => {
+            if (res.data.data.street) {
+              res.data.data.street.classifications[c] = mapClassification(c, res.data.data.street.classifications[c])
+            }
+          })
           // sort by name then block number
           commit('setSelectedStreet', res.data.data.street);
         }
