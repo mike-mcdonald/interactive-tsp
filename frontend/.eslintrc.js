@@ -1,23 +1,23 @@
 module.exports = {
+  root: true,
   env: {
-    browser: true,
-    es6: true
-  },
-  extends: ['plugin:vue/essential', 'plugin:vue/recommended', 'prettier'],
-  globals: {
-    Atomics: 'readonly',
-    SharedArrayBuffer: 'readonly'
-  },
-  parserOptions: {
-    ecmaVersion: 2018,
-    parser: '@typescript-eslint/parser',
-    sourceType: 'module'
+    node: true
   },
   plugins: ['vue', '@typescript-eslint', 'prettier'],
+  extends: ['plugin:vue/essential', '@vue/prettier', '@vue/typescript'],
   rules: {
-    'prettier/prettier': ['error', { singleQuote: true }],
-    'import/no-unresolved': 0,
-    'import/no-unassigned-import': 0,
-    'no-console': 'off'
-  }
+    "no-console": process.env.NODE_ENV === "production" ? "error" : "off",
+    "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off"
+  },
+  parserOptions: {
+    parser: "@typescript-eslint/parser"
+  },
+  overrides: [
+    {
+      files: ["**/__tests__/*.{j,t}s?(x)"],
+      env: {
+        mocha: true
+      }
+    }
+  ]
 };

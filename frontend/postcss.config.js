@@ -1,11 +1,9 @@
-const autoprefixer = require('autoprefixer');
-const tailwind = require('tailwindcss');
-
-module.exports = ({ file, options, env }) => {
-  return {
-    plugins: [
-      tailwind,
-      autoprefixer
-    ]
-  };
+module.exports = {
+  plugins: [
+    require('tailwindcss'),
+    require('autoprefixer'),
+    require('cssnano')({
+      preset: 'default'
+    })
+  ]
 };

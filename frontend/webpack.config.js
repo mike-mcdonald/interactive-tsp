@@ -1,152 +1,175 @@
-const path = require('path');
-const globby = require('globby');
-const VueLoaderPlugin = require('vue-loader/lib/plugin');
-const ArcGISPlugin = require('@arcgis/webpack-plugin');
-const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
-const DefinePlugin = require('webpack').DefinePlugin;
-const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
-const HotModuleReplacementPlugin = require('webpack')
-  .HotModuleReplacementPlugin;
-const ProgressPlugin = require('webpack').ProgressPlugin;
-const PreloadPlugin = require('preload-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+var path = require('path');
+var MiniCssExtractPlugin = require('mini-css-extract-plugin');
+var VueLoaderPlugin = require('vue-loader/lib/plugin');
+var ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+var DefinePlugin = require('webpack').DefinePlugin;
+var ProgressPlugin = require('webpack').ProgressPlugin;
+var ArcGISPlugin = require('@arcgis/webpack-plugin');
+var FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
+var { CleanWebpackPlugin } = require('clean-webpack-plugin');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
+var CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = (env, argv) => ({
-  mode: process.env.NODE_ENV,
   entry: {
-    main: ['@dojo/framework/shim/Promise', './src/main.ts']
+    main: ['./src/main.ts']
   },
-  output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: '[name].js',
-    publicPath: '/',
-    globalObject: "(typeof self !== 'undefined' ? self : this)"
-  },
-  devtool: 'cheap-module-eval-source-map',
-  devServer: {
-    contentBase: path.join(__dirname, 'dist'),
-    compress: true,
-    port: 8888
-  },
-  node: {
-    setImmediate: false,
-    global: false,
-    dgram: 'empty',
-    fs: 'empty',
-    net: 'empty',
-    tls: 'empty',
-    child_process: 'empty'
-  },
+  devtool: 'source-map',
+  mode: process.env.NODE_ENV,
+  stats: 'none',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
       vue$: 'vue/dist/vue.runtime.esm.js'
     },
-    extensions: [
-      '.mjs',
-      '.js',
-      '.jsx',
-      '.vue',
-      '.json',
-      '.wasm',
-      '.ts',
-      '.tsx'
-    ],
-    modules: [
-      'node_modules',
-      path.resolve(__dirname, 'node_modules'),
-      path.resolve(__dirname, 'node_modules/@vue/cli-service/node_modules')
-    ]
+    extensions: ['.vue', '.json', '.wasm', '.ts', '.js'],
+    modules: ['node_modules', path.resolve(__dirname, 'node_modules')]
   },
-  resolveLoader: {
-    modules: [
-      path.resolve(
-        __dirname,
-        'node_modules/@vue/cli-plugin-typescript/node_modules'
-      ),
-      path.resolve(
-        __dirname,
-        'node_modules/@vue/cli-plugin-babel/node_modules'
-      ),
-      'node_modules',
-      path.resolve(__dirname, 'node_modules'),
-      path.resolve(__dirname, 'node_modules/@vue/cli-service/node_modules')
-    ]
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'js/[name].[contenthash:8].js',
+    publicPath: '/',
+    chunkFilename: 'js/[name].[contenthash:8].js'
   },
   watchOptions: {
     ignored: [path.resolve(__dirname, 'node_modules')]
   },
   plugins: [
+    new CleanWebpackPlugin(),
     new ArcGISPlugin({
-      useDefaultAssetLoaders: false,
-      features: {
-        '3d': false,
-        has: {
-          'esri-native-promise': true
-        }
-      }
+      useDefaultAssetLoaders: false
     }),
     new VueLoaderPlugin(),
+    new ForkTsCheckerWebpackPlugin({
+      vue: true,
+      tslint: true,
+      formatter: 'codeframe',
+      checkSyntacticErrors: false
+    }),
+    new MiniCssExtractPlugin({
+      filename: 'css/[name].[contenthash:8].css',
+      chunkFilename: 'css/[name].[contenthash:8].css'
+    }),
     new DefinePlugin({
       'process.env': {
-        NODE_ENV: '"development"',
         BASE_URL: '"/"'
       }
     }),
-    new CaseSensitivePathsPlugin(),
-    new FriendlyErrorsWebpackPlugin(),
-    new HotModuleReplacementPlugin(),
-    new ProgressPlugin(),
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, 'public/index.html')
+      title: 'Transportation System Plan',
+      template: 'public/index.html',
+      hash: false,
+      inject: true,
+      compile: true,
+      favicon: false,
+      minify: false,
+      cache: true,
+      showErrors: true,
+      chunks: 'all',
+      excludeChunks: [],
+      xhtml: true,
+      chunksSortMode: 'none'
     }),
-    new PreloadPlugin({
-      rel: 'preload',
-      include: 'initial',
-      fileBlacklist: [/\.map$/, /hot-update\.js$/]
-    }),
-    new PreloadPlugin({
-      rel: 'prefetch',
-      include: 'asyncChunks'
-    }),
-    new CopyWebpackPlugin([
+    new CopyPlugin([
       {
         from: path.resolve(__dirname, 'public'),
         to: path.resolve(__dirname, 'dist'),
         toType: 'dir',
         ignore: ['.DS_Store']
       }
-    ])
+    ]),
+    new FriendlyErrorsWebpackPlugin()
   ],
   module: {
+    noParse: /^(vue|vue-router|vuex|vuex-router-sync)$/,
     rules: [
       {
         test: /\.vue$/,
-        use: {
-          loader: 'vue-loader'
-        }
-      },
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader'
-        }
+        use: [
+          'cache-loader',
+          {
+            loader: 'vue-loader'
+          }
+        ]
       },
       {
         test: /\.tsx?$/,
-        exclude: /node_modules/,
         use: [
-          {
-            loader: 'babel-loader'
-          },
+          'cache-loader',
           {
             loader: 'ts-loader',
             options: {
               transpileOnly: true,
-              happyPackMode: false,
-              appendTsxSuffixTo: ['\\.vue$']
+              appendTsSuffixTo: [/\.vue$/]
+            }
+          },
+          'eslint-loader'
+        ],
+        exclude: file => /node_modules/.test(file) && !/\.vue\.ts/.test(file)
+      },
+      {
+        test: /\.js$/,
+        use: ['cache-loader', 'babel-loader', 'eslint-loader'],
+        exclude: file => /node_modules/.test(file) && !/\.vue\.js/.test(file)
+      },
+      {
+        test: /\.(png|jpe?g|gif|webp)(\?.*)?$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 4096,
+              fallback: {
+                loader: 'file-loader',
+                options: {
+                  name: 'img/[name].[hash:8].[ext]'
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        test: /\.(svg)(\?.*)?$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: 'img/[name].[hash:8].[ext]'
+            }
+          }
+        ]
+      },
+      {
+        test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 4096,
+              fallback: {
+                loader: 'file-loader',
+                options: {
+                  name: 'media/[name].[hash:8].[ext]'
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/i,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 4096,
+              fallback: {
+                loader: 'file-loader',
+                options: {
+                  name: 'fonts/[name].[hash:8].[ext]'
+                }
+              }
             }
           }
         ]
@@ -154,13 +177,7 @@ module.exports = (env, argv) => ({
       {
         test: /\.(sa|sc)ss$/,
         use: [
-          {
-            loader: 'vue-style-loader',
-            options: {
-              sourceMap: false,
-              shadowMode: false
-            }
-          },
+          MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
             options: {
@@ -205,5 +222,10 @@ module.exports = (env, argv) => ({
       }
       callback();
     }
-  ]
+  ],
+  node: {
+    process: false,
+    global: false,
+    fs: 'empty'
+  }
 });

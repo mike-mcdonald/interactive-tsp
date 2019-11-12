@@ -1,8 +1,11 @@
+import Basemap from 'esri/Basemap';
 import Extent from 'esri/geometry/Extent';
 import Layer from 'esri/layers/Layer';
+import MapView from 'esri/views/MapView';
 
 export interface MapState {
+  view?: MapView;
   extent: Extent;
-  layers: Map<string, Layer>;
-  basemaps: Map<string, any>;
+  basemaps: Basemap[];
+  layers: Layer[];
 }
