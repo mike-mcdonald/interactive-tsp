@@ -11,12 +11,27 @@ export interface Classification {
   greenscape?: string;
 }
 
+export interface Project {
+  id: string;
+  name: string;
+  number?: number;
+  location?: string;
+  description?: string;
+  agency?: string;
+  estimatedCost?: number;
+  estimatedTimeframe?: string;
+  district?: string;
+  facilityOwner?: string;
+  patternArea?: string;
+  fundingCategory?: string;
+}
+
 export interface Street {
   id: string;
   name: string;
   block?: number;
   classifications: Classification;
-  projects?: Array<string>;
+  projects?: Array<Project>;
   geometry: turf.LineString;
 }
 
