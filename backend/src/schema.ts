@@ -1,6 +1,6 @@
 // @flow strict
 
-import { GraphQLSchema } from 'graphql';
+import { GraphQLSchema, GraphQLInt } from 'graphql';
 import { GraphQLFloat, GraphQLString } from 'graphql';
 import {
   GraphQLList,
@@ -64,11 +64,16 @@ const queryType = new GraphQLObjectType({
           description:
             'Array of numbers representing a bounding box to return streets for',
           type: GraphQLList(GraphQLFloat)
+        },
+        spatialReference: {
+          description:
+            'The spatial reference well-known ID ("wkid").',
+          type: GraphQLNonNull(GraphQLInt)
         }
       },
-      resolve: (root, { bbox }) => {
+      resolve: (root, { bbox, spatialReference }) => {
         if (bbox) {
-          return getStreets(bbox);
+          return getStreets(bbox, spatialReference);
         }
       }
     }

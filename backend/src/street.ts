@@ -18,6 +18,7 @@ import {
   GraphQLString,
   GraphQLList
 } from 'graphql';
+import proj4 from 'proj4';
 
 import { projectType, getProjects } from './project';
 
@@ -31,22 +32,13 @@ const URLS: Set<string> = new Set([
   'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/19'
 ]);
 
-/**
- * This defines a basic set of data for our Star Wars Schema.
- *
- * This data is hard coded for the sake of the demo, but you could imagine
- * fetching this data from a backend service rather than from hardcoded
- * JSON objects in a more complex demo.
- */
+// ESRI maps use this wkid
+proj4.defs('102100', proj4.defs('EPSG:3857'));
 
-/**
- * These are Flow types which correspond to the schema.
- * They represent the shape of the data visited during field resolution.
- */
 export type Street = {
   id: string;
   name: string;
-  classification: Classification;
+  classifications: Classification;
   projects?: Array<string>;
   geometry: LineString;
 };
@@ -118,7 +110,7 @@ export const streetType: GraphQLObjectType = new GraphQLObjectType({
       type: GraphQLString,
       description: 'The full name of the street.'
     },
-    classification: {
+    classifications: {
       type: classificationType,
       description: 'The list of classifications associated with this street'
     },
@@ -158,7 +150,7 @@ export async function getStreet(id: string): Promise<Street | null> {
           id: data.properties.TranPlanID,
           name: data.properties.StreetName,
           geometry: data.geometry,
-          classification: {
+          classifications: {
             traffic: data.properties.Traffic,
             transit: data.properties.Transit,
             bicycle: data.properties.Bicycle,
@@ -176,9 +168,12 @@ export async function getStreet(id: string): Promise<Street | null> {
   return null;
 }
 
-export async function getStreets(bbox: BBox): Promise<Street[] | null> {
-  if (area(bboxPolygon(bbox)) > 200000) {
-    throw new Error('bounding box is too big');
+export async function getStreets(bbox: BBox, spatialReference: number): Promise<Street[] | null> {
+  [bbox[0], bbox[1]] = proj4(`${spatialReference}`, 'EPSG:4326', [bbox[0], bbox[1]]);
+  [bbox[2], bbox[3]] = proj4(`${spatialReference}`, 'EPSG:4326', [bbox[2], bbox[3]]);
+
+  if (area(bboxPolygon(bbox)) > 250000) {
+    throw new Error(`bounding box is too big: ${area(bboxPolygon(bbox))}`);
   }
 
   for (const url of URLS) {
@@ -206,7 +201,7 @@ export async function getStreets(bbox: BBox): Promise<Street[] | null> {
           id: value.properties ? value.properties.TranPlanID : 'null',
           name: value.properties ? value.properties.StreetName : 'null',
           geometry: value.geometry,
-          classification: {
+          classifications: {
             traffic: value.properties.Traffic,
             transit: value.properties.Transit,
             bicycle: value.properties.Bicycle,

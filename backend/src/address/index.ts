@@ -73,7 +73,7 @@ export const addressType: GraphQLObjectType = new GraphQLObjectType({
           address.location.y
         ]);
         const box = bbox(buffer(point([x, y]), 100, { units: 'meters' }));
-        return getStreets(box);
+        return getStreets(box, 4326);
       }
     }
   })
