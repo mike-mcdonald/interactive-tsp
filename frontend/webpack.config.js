@@ -46,12 +46,10 @@ module.exports = (env, argv) => ({
       formatter: 'codeframe',
       checkSyntacticErrors: false
     }),
-    new MiniCssExtractPlugin(
-      {
-        filename: 'css/[name].[contenthash:8].css',
-        chunkFilename: 'css/[name].[contenthash:8].css'
-      }
-    ),
+    new MiniCssExtractPlugin({
+      filename: 'css/[name].[contenthash:8].css',
+      chunkFilename: 'css/[name].[contenthash:8].css'
+    }),
     new DefinePlugin({
       'process.env': {
         BASE_URL: '"/"'
