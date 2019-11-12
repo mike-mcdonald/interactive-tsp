@@ -4,17 +4,17 @@
       <transition name="fade">
         <div
           v-if="message"
-          class="my-3 px-2 py-3 w-full border-t border-b border-tangerine-800 bg-tangerine-300 text-tangerine-900"
+          class="mb-3 px-2 py-3 w-full border-t border-b border-tangerine-800 bg-tangerine-300 text-tangerine-900"
         >
           {{ message }}
         </div>
       </transition>
       <address-search class="px-2" />
-      <transition name="fade">
-        <div v-if="streets" class="px-2">{{ streets.length }} streets found in view</div>
-      </transition>
-
-      <ul class="list-none">
+      <div class="my-3">
+        <div v-if="!$route.params.id && streets" class="mx-2">{{ streets.length }} streets found in view</div>
+        <router-link v-if="$route.params.id" to="/streets" class="mx-2 border-b-2 border-black">Back to results</router-link>
+      </div>
+      <ul v-if="!$route.params.id" class="list-none">
         <li v-for="(street, index) in streets" :key="index" @mouseover="highlightStreet(street)">
           <router-link
             :to="street.id"
@@ -27,6 +27,7 @@
           >
         </li>
       </ul>
+      <street-component v-if="$route.params.id" />
     </section>
     <section class="w-full md:w-2/3 h-screen-50 lg:h-screen">
       <app-map></app-map>
@@ -43,6 +44,7 @@ import { SimpleLineSymbol } from 'esri/symbols';
 
 import AddressSearch from '@/components/AddressSearch.vue';
 import AppMap from '@/components/Map.vue';
+import StreetComponent from '@/components/Street.vue';
 
 import { Street } from '../store/streets/types';
 
@@ -50,7 +52,8 @@ export default Vue.extend({
   name: 'Streets',
   components: {
     AddressSearch,
-    AppMap
+    AppMap,
+    StreetComponent
   },
   computed: {
     ...mapState(['message']),
