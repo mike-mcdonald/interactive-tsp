@@ -6,8 +6,6 @@ import streets from './streets/index';
 
 import { mutations } from './mutations';
 
-import { RootState } from './types';
-
 Vue.use(Vuex);
 
 const store: StoreOptions<RootState> = {

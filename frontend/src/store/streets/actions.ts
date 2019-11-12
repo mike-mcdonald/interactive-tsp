@@ -31,7 +31,7 @@ export const actions: ActionTree<StreetState, RootState> = {
         if (res.data.data.streets) {
           commit('clearStreets');
           // sort by name then block number
-          const streets = res.data.data.streets.sort(function(a, b) {
+          const streets = res.data.data.streets.sort(function (a, b) {
             var nameA = a.name.toUpperCase(); // ignore upper and lowercase
             var nameB = b.name.toUpperCase(); // ignore upper and lowercase
             if (nameA < nameB) {
@@ -42,7 +42,7 @@ export const actions: ActionTree<StreetState, RootState> = {
             }
 
             // names must be equal
-            return a.block - b.block;
+            return (a.block || Number.MAX_SAFE_INTEGER) - (b.block || Number.MIN_SAFE_INTEGER);
           });
           streets.forEach((street: Street) => {
             commit('addStreet', street);

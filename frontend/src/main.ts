@@ -5,8 +5,6 @@ import store from './store/index';
 import './registerServiceWorker';
 import './worker-config';
 
-import './esriconfig';
-
 Vue.config.productionTip = false;
 
 new Vue({
