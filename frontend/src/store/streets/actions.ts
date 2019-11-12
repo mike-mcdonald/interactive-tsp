@@ -30,7 +30,13 @@ new Map([
   }
 });
 
-classificationMaps.set('greenscape', new Map<string, string>([['Y', 'Yes'], ['N', 'No']]))
+classificationMaps.set(
+  'greenscape',
+  new Map<string, string>([
+    ['Y', 'Yes'],
+    ['N', 'No']
+  ])
+);
 
 function mapClassification(type: string, value?: string): string {
   if (value && classificationMaps.has(type)) {
@@ -69,7 +75,7 @@ export const actions: ActionTree<StreetState, RootState> = {
         if (res.data.data.streets) {
           commit('clearStreets');
           // sort by name then block number
-          const streets = res.data.data.streets.sort(function (a, b) {
+          const streets = res.data.data.streets.sort(function(a, b) {
             var nameA = a.name.toUpperCase(); // ignore upper and lowercase
             var nameB = b.name.toUpperCase(); // ignore upper and lowercase
             if (nameA < nameB) {
@@ -136,11 +142,11 @@ export const actions: ActionTree<StreetState, RootState> = {
           commit('setMessage', 'Zoom in or search for an address to see available streets...', { root: true });
         }
         if (res.data.data.street) {
-          Object.keys(res.data.data.street.classifications).forEach((c) => {
+          Object.keys(res.data.data.street.classifications).forEach(c => {
             if (res.data.data.street) {
-              res.data.data.street.classifications[c] = mapClassification(c, res.data.data.street.classifications[c])
+              res.data.data.street.classifications[c] = mapClassification(c, res.data.data.street.classifications[c]);
             }
-          })
+          });
           // sort by name then block number
           commit('setSelectedStreet', res.data.data.street);
         }
