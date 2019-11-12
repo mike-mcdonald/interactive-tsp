@@ -11,9 +11,11 @@
     "sourceMap": true,
     "baseUrl": ".",
     "types": [
+      "arcgis-js-api",
       "webpack-env",
       "mocha",
-      "chai"
+      "chai",
+      "lodash"
     ],
     "paths": {
       "@/*": [
