@@ -4,9 +4,11 @@ import Graphic from 'esri/Graphic';
 
 import { MapState } from './types';
 import { RootState } from '../types';
+import { Location } from '../portlandmaps/types';
+import { Point } from 'esri/geometry';
 
 export const actions: ActionTree<MapState, RootState> = {
-  setExtent({ commit, dispatch }, extent): any {
+  setExtent({ commit, dispatch }, extent: __esri.Extent): any {
     commit('setMessage', undefined, { root: true });
     commit('extentChanged', extent);
     dispatch('streets/findStreets', extent, { root: true });
@@ -23,6 +25,16 @@ export const actions: ActionTree<MapState, RootState> = {
         });
       }
     }
+  },
+  setLocation({ commit, state }, location: Location | __esri.Point) {
+    commit('goTo', {
+      center: new Point({
+        x: location.x,
+        y: location.y,
+        spatialReference: location.spatialReference.wkid
+      }),
+      zoom: state.zoom.focus
+    });
   },
   clearGraphics({ commit }) {
     commit('setGraphics', []);

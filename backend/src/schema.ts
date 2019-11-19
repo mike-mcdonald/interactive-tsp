@@ -2,13 +2,7 @@
 
 import { GraphQLSchema, GraphQLInt } from 'graphql';
 import { GraphQLFloat, GraphQLString } from 'graphql';
-import {
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLEnumType,
-  GraphQLInterfaceType,
-  GraphQLObjectType
-} from 'graphql';
+import { GraphQLList, GraphQLNonNull, GraphQLObjectType } from 'graphql';
 
 import { streetType, getStreet, getStreets } from './street';
 import { addressType, getCandidates } from './address';
@@ -35,10 +29,14 @@ const queryType = new GraphQLObjectType({
         search: {
           description: 'search string to pass to the geocoding APIs',
           type: GraphQLString
+        },
+        city: {
+          description: 'Limit the results to a specific city.',
+          type: GraphQLString
         }
       },
-      resolve: async (root, { search }) => {
-        return await getCandidates(search);
+      resolve: async (root, { search, city }) => {
+        return await getCandidates(search, city);
       }
     },
     street: {

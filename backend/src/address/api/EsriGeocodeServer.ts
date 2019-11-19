@@ -6,13 +6,17 @@ import { IAddressSearchAPI } from './IAddressSearchAPI';
 import { AddressCandidate } from '@/address/types';
 
 export class ESRIGeocodeServer implements IAddressSearchAPI {
-  async search(query: string): Promise<AddressCandidate[]> {
+  async search(query: string, options?: any): Promise<AddressCandidate[]> {
+    let body = {
+      'Single Line Input': query,
+      f: 'pjson'
+    };
+    if (options) {
+      body = Object.assign(body, options);
+    }
     const res = await axios.post(
       'https://www.portlandmaps.com/arcgis/rest/services/Public/Address_Geocoding_PDX/GeocodeServer/findAddressCandidates',
-      qs.stringify({
-        'Single Line Input': query,
-        f: 'pjson'
-      }),
+      qs.stringify(body),
       {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
