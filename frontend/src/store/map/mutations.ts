@@ -10,6 +10,10 @@ export const mutations: MutationTree<MapState> = {
   extentChanged(state, extent) {
     state.extent = extent;
   },
+  goTo(state, target) {
+    state.view?.goTo(target);
+    state.zoom.current = target.zoom || state.zoom.current;
+  },
   layerVisibilityChanged(state, { layerId, visible }) {
     const layer = state.layers.find(l => {
       return l.id === layerId;
