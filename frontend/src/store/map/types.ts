@@ -8,4 +8,10 @@ export interface MapState {
   extent: Extent;
   basemaps: Basemap[];
   layers: Layer[];
+  zoom: {
+    current?: number;
+    focus: number;
+    max: number;
+    min: number;
+  };
 }

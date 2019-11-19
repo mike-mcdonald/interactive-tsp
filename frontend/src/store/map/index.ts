@@ -11,19 +11,31 @@ import { actions } from './actions';
 import { mutations } from './mutations';
 import { MapState } from './types';
 
-const basemaps = [
+const basemaps: Basemap[] = [
   'https://www.portlandmaps.com/arcgis/rest/services/Public/Basemap_Color_Complete/MapServer',
   'https://www.portlandmaps.com/arcgis/rest/services/Public/Basemap_Gray_Complete/MapServer',
   'https://www.portlandmaps.com/arcgis/rest/services/Public/Basemap_Color_Complete_Aerial/MapServer'
 ].map(url => {
   const regexMatch = /Basemap_([a-zA-Z_]+)\//i.exec(url);
+  let title = 'Unknown title';
+  let id = 'uknown-id';
+
+  if (regexMatch) {
+    title = regexMatch[1].replace('_', ' ').replace('_', ' ');
+    id = regexMatch[1]
+      .replace('_', '-')
+      .replace('_', '-')
+      .toLowerCase();
+  }
+
   return new Basemap({
+    id,
     baseLayers: [
       new TileLayer({
         url
       })
     ],
-    title: regexMatch ? regexMatch[1].replace('_', ' ').replace('_', ' ') : 'Unknown basemap'
+    title
   });
 });
 
@@ -45,6 +57,7 @@ const layers = [
     )
   }),
   new FeatureLayer({
+    id: 'traffic-classifications',
     url: 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/4',
     visible: false
   }),
@@ -123,6 +136,22 @@ const layers = [
           url
         })
     )
+  }),
+  new GroupLayer({
+    id: 'projects',
+    title: 'Projects',
+    visibilityMode: 'inherited',
+    visible: false,
+    layers: [
+      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/22',
+      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/23',
+      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/24'
+    ].map(
+      url =>
+        new FeatureLayer({
+          url
+        })
+    )
   })
 ];
 
@@ -135,7 +164,13 @@ const state: MapState = {
     ymax: 5723122.011596833
   }),
   basemaps: basemaps,
-  layers
+  layers,
+  zoom: {
+    current: 6,
+    focus: 12,
+    max: 14,
+    min: 4
+  }
 };
 
 const namespaced: boolean = true;
