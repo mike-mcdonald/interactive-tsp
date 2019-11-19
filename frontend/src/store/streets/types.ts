@@ -1,16 +1,5 @@
 import * as turf from '@turf/helpers';
-
-export interface Classification {
-  [key: string]: string;
-  traffic: string;
-  transit: string;
-  bicycle: string;
-  pedestrian: string;
-  freight: string;
-  emergency: string;
-  design: string;
-  greenscape: string;
-}
+import RBush from 'rbush';
 
 export interface Project {
   id: string;
@@ -29,15 +18,19 @@ export interface Project {
 
 export interface Street {
   id: string;
-  name: string;
+  name?: string;
   block?: number;
-  classifications: Classification;
+  classifications?: { [key: string]: string };
   projects?: Array<Project>;
-  geometry: turf.LineString;
+  geometry?: turf.LineString;
+  minX?: number;
+  minY?: number;
+  maxX?: number;
+  maxY?: number;
 }
 
 export interface StreetState {
-  version: string;
   list?: Street[];
+  rtree: RBush<Street>;
   selected?: Street;
 }

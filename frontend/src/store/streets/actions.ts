@@ -1,7 +1,13 @@
 import { ActionTree } from 'vuex';
-import { StreetState, Street, Classification } from './types';
+import { StreetState, Street } from './types';
 import { RootState } from '../types';
+import router from '../../router/index';
 
+import bbox from '@turf/bbox';
+import bboxPolygon from '@turf/bbox-polygon';
+import centroid from '@turf/centroid';
+import nearestPointOnLine from '@turf/nearest-point-on-line';
+import * as turf from '@turf/helpers';
 import axios from 'axios';
 
 const classificationMaps = new Map<string, Map<string, string>>();
@@ -49,11 +55,11 @@ function mapClassification(type: string, value?: string): string {
 }
 
 export const actions: ActionTree<StreetState, RootState> = {
-  findStreets({ commit }, extent) {
+  findStreets({ commit, rootState }, extent) {
     const { xmin, ymin, xmax, ymax } = extent;
     commit('setMessage', undefined, { root: true });
     axios
-      .get<{ errors?: any[]; data: { streets?: Street[] } }>('http://localhost:4000/graphql', {
+      .get<{ errors?: any[]; data: { streets?: Street[] } }>(rootState.graphql_url, {
         params: {
           query: `{
           streets(bbox:[${xmin},${ymin},${xmax},${ymax}], spatialReference:${extent.spatialReference.wkid}){
@@ -75,9 +81,13 @@ export const actions: ActionTree<StreetState, RootState> = {
         if (res.data.data.streets) {
           commit('clearStreets');
           // sort by name then block number
-          const streets = res.data.data.streets.sort(function(a, b) {
-            var nameA = a.name.toUpperCase(); // ignore upper and lowercase
-            var nameB = b.name.toUpperCase(); // ignore upper and lowercase
+          let streets = res.data.data.streets.sort(function(a, b) {
+            var nameA = a.name?.toUpperCase(); // ignore upper and lowercase
+            var nameB = b.name?.toUpperCase(); // ignore upper and lowercase
+
+            if (!nameA || !nameB) {
+              return Number.MAX_SAFE_INTEGER;
+            }
             if (nameA < nameB) {
               return -1;
             }
@@ -88,29 +98,84 @@ export const actions: ActionTree<StreetState, RootState> = {
             // names must be equal
             return (a.block || Number.MAX_SAFE_INTEGER) - (b.block || Number.MIN_SAFE_INTEGER);
           });
-          streets.forEach((street: Street) => {
-            commit('addStreet', street);
+          streets = streets.map(street => {
+            const [minx, miny, maxx, maxy] = bbox(street.geometry);
+            street.minX = minx;
+            street.minY = miny;
+            street.maxX = maxx;
+            street.maxY = maxy;
+            return street;
           });
+          commit('addStreets', streets);
         }
       })
       .catch(() => {
         commit('setMessage', 'Error retrieving streets!', { root: true });
       });
   },
-  selectStreet({ commit }, id) {
+  routeStreetByRTree({ dispatch, state }, bbox: turf.BBox) {
+    if (!state.rtree) {
+      return undefined;
+    }
+    // find nearest street
+    // buffer point by X meters
+    let streets = state.rtree.search({
+      minX: bbox[0],
+      minY: bbox[1],
+      maxX: bbox[2],
+      maxY: bbox[3]
+    });
+    if (streets.length > 0) {
+      const center = centroid(bboxPolygon(bbox));
+      streets = streets.sort((a, b) => {
+        if (!a.geometry || !b.geometry) {
+          return Number.MAX_SAFE_INTEGER;
+        }
+
+        const nearestA = nearestPointOnLine(a.geometry, center, { units: 'meters' });
+        const nearestB = nearestPointOnLine(b.geometry, center, { units: 'meters' });
+
+        if (!nearestA.properties || !nearestB.properties) {
+          return Number.MAX_SAFE_INTEGER;
+        }
+
+        return nearestA.properties.dist - nearestB.properties.dist;
+      });
+      router.push({ name: 'streets', params: { id: streets[0].id } });
+      dispatch('selectStreetById', streets[0].id);
+    }
+  },
+  selectStreetById({ commit, dispatch, state }, id: string) {
+    commit('setMessage', undefined, { root: true });
+    let street: Street = { id };
+
+    if (state.list) {
+      street = Object.assign(
+        street,
+        state.list.find(street => {
+          return street.id === id;
+        })
+      );
+    }
+    commit('setSelectedStreet', street);
+
+    dispatch('selectStreet', street);
+  },
+  selectStreet({ commit, rootState }, street: Street) {
     commit('setMessage', undefined, { root: true });
     axios
-      .get<{ errors?: any[]; data: { street?: Street } }>('http://localhost:4000/graphql', {
+      .get<{ errors?: any[]; data: { street?: Street } }>(rootState.graphql_url, {
         params: {
           query: `{
-          street(id:"${id}"){
+          street(id:"${street ? street.id : ''}"){
             id
-            name
-            block
-            centroid {
-              coordinates
-            }
-            classifications {
+            ${street.name ? '' : 'name'}
+            ${street.block ? '' : 'block'}
+            ${street.geometry ? '' : `geometry{ coordinates }`}
+            ${
+              street.classifications
+                ? ''
+                : `classifications {
               traffic
               transit
               bicycle
@@ -119,19 +184,19 @@ export const actions: ActionTree<StreetState, RootState> = {
               emergency
               design
               greenscape
+            }`
             }
-            projects {
+            ${
+              street.projects
+                ? ''
+                : `projects {
               id
               name
               number
-              location
               description
-              agency
               estimatedCost
               estimatedTimeframe
-              district
-              patternArea
-              fundingCategory
+            }`
             }
           }
         }`
@@ -139,20 +204,21 @@ export const actions: ActionTree<StreetState, RootState> = {
       })
       .then(res => {
         if (res.data.errors) {
-          commit('setMessage', 'Zoom in or search for an address to see available streets...', { root: true });
+          commit('setMessage', 'Some data may contain errors...', { root: true });
         }
-        if (res.data.data.street) {
-          Object.keys(res.data.data.street.classifications).forEach(c => {
-            if (res.data.data.street) {
-              res.data.data.street.classifications[c] = mapClassification(c, res.data.data.street.classifications[c]);
+        let data = res.data.data;
+        if (data.street) {
+          data.street = Object.assign(data.street, street);
+          if (data.street.classifications) {
+            for (const key of Object.keys(data.street.classifications)) {
+              data.street.classifications[key] = mapClassification(key, data.street.classifications[key]);
             }
-          });
-          // sort by name then block number
-          commit('setSelectedStreet', res.data.data.street);
+          }
+          commit('setSelectedStreet', data.street);
         }
       })
       .catch(() => {
-        commit('setMessage', 'Error retrieving street!', { root: true });
+        commit('setMessage', 'Error retrieving the selected street!', { root: true });
       });
   }
 };

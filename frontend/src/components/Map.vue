@@ -147,10 +147,12 @@ import Vue from 'vue';
 import { mapState, mapActions, mapMutations } from 'vuex';
 
 import * as _ from 'lodash';
+import proj4 from 'proj4';
+import * as turf from '@turf/helpers';
 
 import Map from 'esri/Map';
 import Extent from 'esri/geometry/Extent';
-import Polyline from 'esri/geometry/Polyline';
+import { Point, Polyline } from 'esri/geometry';
 import Graphic from 'esri/Graphic';
 import GraphicsLayer from 'esri/layers/GraphicsLayer';
 import SimpleLineSymbol from 'esri/symbols/SimpleLineSymbol';
@@ -159,6 +161,10 @@ import Legend from 'esri/widgets/Legend';
 
 import Checkbox from 'portland-pattern-lab/source/_patterns/02-molecules/form/Checkbox.vue';
 import X from 'portland-pattern-lab/source/_patterns/01-atoms/04-images/X.vue';
+import { MapState } from '../store/map/types';
+
+// ESRI maps use this wkid
+proj4.defs('102100', proj4.defs('EPSG:3857'));
 
 export default Vue.extend({
   name: 'Map',
@@ -237,33 +243,57 @@ export default Vue.extend({
 
     if (this.legend) {
       new Legend({
-      view,
-      container: this.$refs['legend'] as HTMLDivElement
-    });
-        }
+        view,
+        container: this.$refs['legend'] as HTMLDivElement
+      });
+    }
 
     view.watch(
       'extent',
       _.debounce((newValue: __esri.Extent) => {
-        this.displayExtent = newValue;
         this.setExtent(newValue);
       }, 500)
     );
 
-    view.on('click', (event: any) => {
-      // the hitTest() checks to see if any graphics in the view
-      // intersect the given screen x, y coordinates
-      this.clickPoint = event;
-      // Set the center and zoom level on the view
-      view.center = event.mapPoint; // Sets the center point of the view at a specified lon/lat
-      view.zoom = 12; // Sets the zoom LOD to 13
-      view.hitTest(event).then((response: any) => {
-        if (response.results.length) {
-          var graphic = response.results[0].graphic;
-          // do something with the result graphic
-          this.selectedGraphic = graphic.toJSON();
-        }
-      });
+    view.on('click', (event: __esri.MapViewClickEvent) => {
+      if (view.zoom >= 12) {
+        // width of map in map units
+        var mapWidth = view.extent.width;
+
+        //Divide width in map units by width in pixels
+        var pixelWidth = mapWidth / view.width;
+
+        //Calculate a 20 pixel envelope width (10 pixel tolerance on each side)
+        var tolerance = 20 * pixelWidth;
+
+        //Build tolerance envelope and set it as the query geometry
+        var queryExtent = new Extent({
+          spatialReference: event.mapPoint.spatialReference,
+          xmin: 1,
+          xmax: tolerance,
+          ymin: 1,
+          ymax: tolerance
+        });
+
+        // this changes the extent to one that has the same dimensions, but around the target, where the user clicked
+        queryExtent.centerAt(event.mapPoint);
+
+        // all our geometries are retrieved, and thus stored, in 4326
+        let bbox: turf.BBox = [0, 0, 0, 0];
+        [bbox[0], bbox[1]] = proj4(event.mapPoint.spatialReference.wkid.toString(), 'EPSG:4326', [
+          queryExtent.xmin,
+          queryExtent.ymin
+        ]);
+        [bbox[2], bbox[3]] = proj4(event.mapPoint.spatialReference.wkid.toString(), 'EPSG:4326', [
+          queryExtent.xmax,
+          queryExtent.ymax
+        ]);
+
+        // find the nearest street to select it
+        this.routeStreetByRTree(bbox);
+      } else {
+        this.setLocation(event.mapPoint);
+      }
     });
 
     this.setView(view);

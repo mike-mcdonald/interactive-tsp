@@ -4,20 +4,19 @@ import { StreetState, Street } from './types';
 
 import { actions } from './actions';
 import { mutations } from './mutations';
-import { getters } from './getters';
+import RBush from 'rbush';
 
 const namespaced: boolean = true;
 
 const state: StreetState = {
-  version: '1.0.0',
   list: new Array<Street>(),
+  rtree: new RBush<Street>(),
   selected: undefined
 };
 
 export default {
   namespaced,
   state,
-  getters,
   actions,
   mutations
 } as Module<StreetState, RootState>;

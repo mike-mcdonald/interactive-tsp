@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Home from '@/views/Home.vue';
-import Streets from '@/views/Streets.vue';
+const Streets = () => import('@/views/Streets.vue');
 
 Vue.use(Router);
 
