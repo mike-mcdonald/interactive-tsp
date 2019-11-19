@@ -8,7 +8,7 @@
     "serve": "webpack-dev-server --config webpack.prod.config.js --history-api-fallback --mode production --open --https --compress",
     "prettier": "prettier --write \"src/**/*.{ts,vue}\"",
     "lint": "eslint --fix src/**/*.{ts,vue}",
-    "postinstall": "rimraf ./node_modules/.cache/**"
+    "postinstall": "rimraf ./node_modules/.cache/"
   },
   "dependencies": {
     "@turf/bbox": "^6.0.1",
