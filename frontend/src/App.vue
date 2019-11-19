@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <header class="p-2 lg:py-0 mx-auto flex flex-wrap items-center text-black border-b border-black" role="banner">
+    <header class="p-2 md:py-0 mx-auto flex flex-wrap items-center text-black border-b border-black" role="banner">
       <router-link to="/" class="mr-3">
         <Logo class="w-24"></Logo>
       </router-link>

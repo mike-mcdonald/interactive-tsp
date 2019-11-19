@@ -1,25 +1,24 @@
 <template>
-  <main class="flex flex-col md:flex-row">
-    <section class="w-full md:w-1/3 h-screen-50 lg:h-screen overflow-y-auto">
+  <main class="flex flex-col-reverse md:flex-row">
+    <section
+      class="w-full md:w-1/3 h-screen-50 md:h-screen overflow-y-auto border-t md:border-r md:border-t-0 border-black"
+    >
       <transition name="fade">
         <div
           v-if="message"
-          class="mb-3 px-2 py-3 w-full border-b border-tangerine-800 bg-tangerine-300 text-tangerine-900"
+          class="mb-2 px-2 py-3 w-full border-b border-tangerine-800 bg-tangerine-300 text-tangerine-900"
         >
           {{ message }}
         </div>
       </transition>
-      <address-search class="px-2" />
-      <div class="my-3">
-        <div v-if="!$route.params.id && streets" class="mx-2">{{ streets.length }} streets found in view</div>
-        <router-link v-if="$route.params.id" to="/streets" class="mx-2 border-b-2 border-black">Back to results</router-link>
+      <address-suggest class="m-2" v-on:candidate-select="goToAddress" />
       </div>
       <ul v-if="!$route.params.id" class="list-none">
         <li v-for="(street, index) in streets" :key="index" @mouseover="highlightStreet(street)">
           <router-link
             :to="street.id"
             append
-            class="flex flex-col px-2 py-3 border-b hover:bg-blue-100"
+              class="flex flex-col m-2 px-2 py-3 shadow rounded bg-white hover:bg-blue-100"
             :class="{ 'border-t': index == 0 }"
           >
             <div>{{ street.name }}</div>
@@ -29,7 +28,7 @@
       </ul>
       <street-component v-if="$route.params.id" />
     </section>
-    <section class="w-full md:w-2/3 h-screen-50 lg:h-screen">
+    <section class="w-full md:w-2/3 h-screen-50 md:h-screen">
       <app-map></app-map>
     </section>
   </main>
@@ -42,16 +41,17 @@ import { Polyline } from 'esri/geometry';
 import Graphic from 'esri/Graphic';
 import { SimpleLineSymbol } from 'esri/symbols';
 
-import AddressSearch from '@/components/AddressSearch.vue';
+import AddressSuggest from 'portland-pattern-lab/source/_patterns/04-organisms/address-search/AddressSuggest.vue';
+
 import AppMap from '@/components/Map.vue';
 import StreetComponent from '@/components/Street.vue';
 
-import { Street } from '../store/streets/types';
+import { AddressCandidate } from '../store/portlandmaps/types';
 
 export default Vue.extend({
   name: 'Streets',
   components: {
-    AddressSearch,
+    AddressSuggest,
     AppMap,
     StreetComponent
   },
@@ -93,8 +93,12 @@ export default Vue.extend({
 
       this.addGraphic(outlineGraphic);
       this.addGraphic(streetGraphic);
+      }
     },
-    ...mapActions('map', ['clearGraphics', 'addGraphic'])
+    goToAddress(address: AddressCandidate) {
+      this.setLocation(address.location);
+    },
+    ...mapActions('map', ['clearGraphics', 'addGraphic', 'setLocation']),
   }
 });
 </script>
