@@ -1,0 +1,75 @@
+const merge = require('webpack-merge');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { HotModuleReplacementPlugin, ProgressPlugin } = require('webpack');
+
+const base = require('./webpack.common.config');
+
+module.exports = merge(base, {
+  mode: 'development',
+  devtool: 'cheap-module-eval-source-map',
+  output: {
+    filename: '[name].js'
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      title: 'Transportation System Plan',
+      template: 'public/index.html',
+      hash: false,
+      inject: true,
+      compile: true,
+      favicon: false,
+      minify: false,
+      cache: true,
+      showErrors: true,
+      chunks: 'all',
+      excludeChunks: [],
+      xhtml: true,
+      chunksSortMode: 'none'
+    }),
+    /* config.plugin('hmr') */
+    new HotModuleReplacementPlugin(),
+    /* config.plugin('progress') */
+    new ProgressPlugin()
+  ],
+  module: {
+    rules: [
+      {
+        test: /\.(sa|sc)ss$/,
+        use: [
+          {
+            loader: 'vue-style-loader',
+            options: {
+              sourceMap: false,
+              shadowMode: false
+            }
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: false,
+              importLoaders: 2
+            }
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              sourceMap: true,
+              config: {
+                path: './postcss.config.js'
+              }
+            }
+          },
+          {
+            loader: 'resolve-url-loader'
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              sourceMap: true
+            }
+          }
+        ]
+      }
+    ]
+  }
+});
