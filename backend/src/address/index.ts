@@ -3,13 +3,7 @@ import bbox from '@turf/bbox';
 import buffer from '@turf/buffer';
 import proj4 from 'proj4';
 
-import {
-  GraphQLObjectType,
-  GraphQLNonNull,
-  GraphQLString,
-  GraphQLList,
-  GraphQLInt
-} from 'graphql';
+import { GraphQLObjectType, GraphQLNonNull, GraphQLString, GraphQLList, GraphQLInt } from 'graphql';
 
 import { locationType, Location } from '../location';
 import { streetType, getStreets } from '../street';
@@ -68,10 +62,7 @@ export const addressType: GraphQLObjectType = new GraphQLObjectType({
       description: 'The streets within 100 meters of this address.',
       resolve: (address: Address) => {
         // take location, and generate bbox
-        let [x, y] = proj4('EPSG:3857', 'EPSG:4326', [
-          address.location.x,
-          address.location.y
-        ]);
+        const [x, y] = proj4('EPSG:3857', 'EPSG:4326', [address.location.x, address.location.y]);
         const box = bbox(buffer(point([x, y]), 100, { units: 'meters' }));
         return getStreets(box, 4326);
       }
@@ -79,15 +70,21 @@ export const addressType: GraphQLObjectType = new GraphQLObjectType({
   })
 });
 
-export async function getCandidates(search: string): Promise<Address[]> {
+export async function getCandidates(search: string, city?: string): Promise<Address[]> {
   let api: IAddressSearchAPI = new PortlandmapsSuggest();
   let candidates: AddressCandidate[] = [];
 
+  const options: {
+    city?: string;
+  } = {};
+
+  city ? (options.city = city) : undefined;
+
   try {
-    candidates = await api.search(search);
+    candidates = await api.search(search, options);
     if (candidates)
       return candidates.map(c => {
-        let a: Address = {
+        const a: Address = {
           location: c.location,
           name: c.address,
           city: c.attributes.city,
@@ -101,12 +98,12 @@ export async function getCandidates(search: string): Promise<Address[]> {
   } catch {
     api = new ESRIGeocodeServer();
     candidates = await api.search(search).catch(err => {
-      return [];
+      throw new Error('Error retrieving the address');
     });
     if (candidates)
       return candidates.map(c => {
-        let [name, city, state, zipCode] = c.address.split(',');
-        let a: Address = {
+        const [name, city, state, zipCode] = c.address.split(',');
+        const a: Address = {
           location: c.location,
           name,
           city,
