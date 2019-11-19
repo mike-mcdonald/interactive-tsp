@@ -1,20 +1,17 @@
 var path = require('path');
-var MiniCssExtractPlugin = require('mini-css-extract-plugin');
 var VueLoaderPlugin = require('vue-loader/lib/plugin');
 var ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-var DefinePlugin = require('webpack').DefinePlugin;
-var ProgressPlugin = require('webpack').ProgressPlugin;
+const { DefinePlugin } = require('webpack');
 var ArcGISPlugin = require('@arcgis/webpack-plugin');
 var FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 var { CleanWebpackPlugin } = require('clean-webpack-plugin');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CopyPlugin = require('copy-webpack-plugin');
 
-module.exports = (env, argv) => ({
+module.exports = {
   entry: {
-    main: ['./src/main.ts']
+    main: [path.resolve(__dirname, 'src', 'main.ts')]
   },
-  devtool: 'source-map',
+  devtool: 'cheap-eval-modules-source-map',
   mode: process.env.NODE_ENV,
   stats: 'none',
   resolve: {
@@ -27,12 +24,7 @@ module.exports = (env, argv) => ({
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'js/[name].[contenthash:8].js',
-    publicPath: '/',
-    chunkFilename: 'js/[name].[contenthash:8].js'
-  },
-  watchOptions: {
-    ignored: [path.resolve(__dirname, 'node_modules')]
+    publicPath: '/'
   },
   plugins: [
     new CleanWebpackPlugin(),
@@ -46,29 +38,10 @@ module.exports = (env, argv) => ({
       formatter: 'codeframe',
       checkSyntacticErrors: false
     }),
-    new MiniCssExtractPlugin({
-      filename: 'css/[name].[contenthash:8].css',
-      chunkFilename: 'css/[name].[contenthash:8].css'
-    }),
     new DefinePlugin({
       'process.env': {
         BASE_URL: '"/"'
       }
-    }),
-    new HtmlWebpackPlugin({
-      title: 'Transportation System Plan',
-      template: 'public/index.html',
-      hash: false,
-      inject: true,
-      compile: true,
-      favicon: false,
-      minify: false,
-      cache: true,
-      showErrors: true,
-      chunks: 'all',
-      excludeChunks: [],
-      xhtml: true,
-      chunksSortMode: 'none'
     }),
     new CopyPlugin([
       {
@@ -105,12 +78,12 @@ module.exports = (env, argv) => ({
           },
           'eslint-loader'
         ],
-        exclude: file => /node_modules/.test(file) && !/\.vue\.ts/.test(file)
+        exclude: file => /node_modules/.test(file) && !/portland-pattern-lab/.test(file) && !/\.vue\.ts/.test(file)
       },
       {
         test: /\.js$/,
         use: ['cache-loader', 'babel-loader', 'eslint-loader'],
-        exclude: file => /node_modules/.test(file) && !/\.vue\.js/.test(file)
+        exclude: file => /node_modules/.test(file) && !/portland-pattern-lab/.test(file) && !/\.vue\.js/.test(file)
       },
       {
         test: /\.(png|jpe?g|gif|webp)(\?.*)?$/,
@@ -175,40 +148,6 @@ module.exports = (env, argv) => ({
         ]
       },
       {
-        test: /\.(sa|sc)ss$/,
-        use: [
-          MiniCssExtractPlugin.loader,
-          {
-            loader: 'css-loader',
-            options: {
-              sourceMap: true,
-              url: false
-            }
-          },
-          {
-            loader: 'postcss-loader',
-            options: {
-              sourceMap: true,
-              config: {
-                path: './postcss.config.js',
-                ctx: {
-                  mode: argv.mode
-                }
-              }
-            }
-          },
-          {
-            loader: 'resolve-url-loader'
-          },
-          {
-            loader: 'sass-loader',
-            options: {
-              sourceMap: true
-            }
-          }
-        ]
-      },
-      {
         test: /\.wasm$/,
         type: 'javascript/auto',
         loader: 'file-loader'
@@ -228,4 +167,4 @@ module.exports = (env, argv) => ({
     global: false,
     fs: 'empty'
   }
-});
+};
