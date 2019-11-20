@@ -6,6 +6,7 @@ import { GraphQLList, GraphQLNonNull, GraphQLObjectType } from 'graphql';
 
 import { streetType, getStreet, getStreets } from './street';
 import { addressType, getCandidates } from './address';
+import { chapterType, getChapters, Chapter } from './text';
 
 /**
  * This is the type that will be the root of our query, and the
@@ -22,6 +23,11 @@ import { addressType, getCandidates } from './address';
 const queryType = new GraphQLObjectType({
   name: 'Query',
   fields: () => ({
+    chapters: {
+      type: GraphQLList(chapterType),
+      description: 'Chapters that make up the Transportation system plan',
+      resolve: async (): Promise<Chapter[]> => await getChapters()
+    },
     address: {
       type: GraphQLList(addressType),
       description: 'Use portlandmaps.com geocoding to search Portland',
@@ -84,5 +90,5 @@ const queryType = new GraphQLObjectType({
  */
 export default new GraphQLSchema({
   query: queryType,
-  types: [streetType, addressType]
+  types: [streetType, addressType, chapterType]
 });
