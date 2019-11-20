@@ -3,7 +3,11 @@
     <Header name="Transportation System Plan">
       <template v-slot:brand>
         <router-link to="/" class="flex items-center">
-          <Logo class="w-24 mr-3"></Logo>
+          <logo
+            class="w-24 mr-3"
+            title="Portland Bureaur of Transportation logo"
+            alt="Portland Bureaur of Transportation logo"
+          />
           <span class="text-lg md:text-xl mr-3">Transportation System Plan</span>
         </router-link>
       </template>
@@ -20,7 +24,7 @@
           title="PBOT Technology services logo"
           alt="PBOT Technology services logo"
           src="/img/PBOT-VerticalApps-Logo-Dark.png"
-          class="w-48 md:w-64"
+          class="w-48"
         />
       </template>
     </Footer>
@@ -51,6 +55,10 @@ export default Vue.extend({
 
 #app {
   @apply font-sans text-sm text-black;
+  scroll-snap-type: y mandatory;
+  > * {
+    scroll-snap-align: start;
+  }
 }
 
 @screen md {
