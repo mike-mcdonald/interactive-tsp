@@ -41,49 +41,13 @@ const basemaps: Basemap[] = [
 
 const layers = [
   new GroupLayer({
-    id: 'transit-classifications',
-    title: 'Transit classes',
+    id: 'pedestrian-classifications',
+    title: 'Pedestrian classes',
     visibilityMode: 'inherited',
     visible: true,
     layers: [
-      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/1',
-      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/2',
-      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/3'
-    ].map(
-      url =>
-        new FeatureLayer({
-          url
-        })
-    )
-  }),
-  new FeatureLayer({
-    id: 'traffic-classifications',
-    url: 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/4',
-    visible: false
-  }),
-  new GroupLayer({
-    id: 'emergency-classifications',
-    title: 'Emergency response classes',
-    visibilityMode: 'inherited',
-    visible: false,
-    layers: [
-      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/6',
-      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/7'
-    ].map(
-      url =>
-        new FeatureLayer({
-          url
-        })
-    )
-  }),
-  new GroupLayer({
-    id: 'street-design-classifications',
-    title: 'Street design classes',
-    visibilityMode: 'inherited',
-    visible: false,
-    layers: [
-      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/9',
-      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/10'
+      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/15',
+      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/16'
     ].map(
       url =>
         new FeatureLayer({
@@ -107,13 +71,14 @@ const layers = [
     )
   }),
   new GroupLayer({
-    id: 'pedestrian-classifications',
-    title: 'Pedestrian classes',
+    id: 'transit-classifications',
+    title: 'Transit classes',
     visibilityMode: 'inherited',
     visible: false,
     layers: [
-      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/15',
-      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/16'
+      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/1',
+      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/2',
+      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/3'
     ].map(
       url =>
         new FeatureLayer({
@@ -136,6 +101,42 @@ const layers = [
           url
         })
     )
+  }),
+  new GroupLayer({
+    id: 'street-design-classifications',
+    title: 'Street design classes',
+    visibilityMode: 'inherited',
+    visible: false,
+    layers: [
+      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/9',
+      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/10'
+    ].map(
+      url =>
+        new FeatureLayer({
+          url
+        })
+    )
+  }),
+  new GroupLayer({
+    id: 'emergency-classifications',
+    title: 'Emergency response classes',
+    visibilityMode: 'inherited',
+    visible: false,
+    layers: [
+      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/6',
+      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/7'
+    ].map(
+      url =>
+        new FeatureLayer({
+          url
+        })
+    )
+  }),
+  new FeatureLayer({
+    id: 'traffic-classifications',
+    title: 'Traffic classes',
+    url: 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/4',
+    visible: false
   }),
   new GroupLayer({
     id: 'projects',

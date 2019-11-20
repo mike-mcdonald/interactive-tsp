@@ -176,13 +176,13 @@ export const actions: ActionTree<StreetState, RootState> = {
               street.classifications
                 ? ''
                 : `classifications {
-              traffic
-              transit
-              bicycle
               pedestrian
+              bicycle
+              transit
               freight
-              emergency
               design
+              emergency
+              traffic
               greenscape
             }`
             }
