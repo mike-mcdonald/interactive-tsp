@@ -1,6 +1,12 @@
 <template>
   <div id="app">
     <Header name="Transportation System Plan">
+      <template v-slot:brand>
+        <router-link to="/" class="flex items-center">
+          <Logo class="w-24 mr-3"></Logo>
+          <span class="text-lg md:text-xl mr-3">Transportation System Plan</span>
+        </router-link>
+      </template>
       <nav class="-mx-2 flex flex-row flex-wrap">
         <router-link to="/streets" class="py-2 px-2 md:py-4 hover:bg-fog-500" active-class="bg-fog-500">
           <span class="border-b-2 border-black">Streets</span>
@@ -25,12 +31,14 @@ import Vue from 'vue';
 
 import Footer from 'portland-pattern-lab/source/_patterns/03-cells/footer/Footer.vue';
 import Header from 'portland-pattern-lab/source/_patterns/03-cells/header/Header.vue';
+import Logo from 'portland-pattern-lab/source/_patterns/01-atoms/04-images/Logo.vue';
 
 export default Vue.extend({
   name: 'App',
   components: {
     Footer,
-    Header
+    Header,
+    Logo
   }
 });
 </script>
