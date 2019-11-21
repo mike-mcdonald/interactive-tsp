@@ -11,6 +11,9 @@
         <router-link to="/streets" class="py-2 px-2 md:py-4 hover:bg-fog-500" active-class="bg-fog-500">
           <span class="border-b-2 border-black">Streets</span>
         </router-link>
+        <router-link to="/projects" class="py-2 px-2 md:py-4 hover:bg-fog-500" active-class="bg-fog-500">
+          <span class="border-b-2 border-black">Projects</span>
+        </router-link>
       </nav>
     </Header>
     <router-view />
