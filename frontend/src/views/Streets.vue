@@ -30,8 +30,8 @@
               :class="{ 'border-t': index == 0 }"
             >
               <div>{{ street.name }}</div>
-              <div v-if="street.block" class="text-xs">{{ street.block }} block</div></router-link
-            >
+              <div v-if="street.block" class="text-xs">{{ street.block }} block</div>
+            </router-link>
           </li>
         </ul>
       </transition>
@@ -86,47 +86,7 @@ export default Vue.extend({
     }
     next();
   },
-  watch: {
-    selectedStreet(val) {
-      if (val.geometry) {
-        this.highlightStreet(val);
-      }
-    }
-  },
   methods: {
-    highlightStreet(street: Street) {
-      if (street.geometry) {
-        this.clearGraphics();
-        const streetGraphic = new Graphic({
-          geometry: new Polyline({
-            paths: [street.geometry.coordinates],
-            spatialReference: {
-              wkid: 4326
-            }
-          }),
-          symbol: new SimpleLineSymbol({
-            color: '#bfe7eb',
-            width: 8
-          })
-        });
-
-        const outlineGraphic = new Graphic({
-          geometry: new Polyline({
-            paths: [street.geometry.coordinates],
-            spatialReference: {
-              wkid: 4326
-            }
-          }),
-          symbol: new SimpleLineSymbol({
-            color: '#00484e',
-            width: 10
-          })
-        });
-
-        this.addGraphic(outlineGraphic);
-        this.addGraphic(streetGraphic);
-      }
-    },
     goToAddress(address: AddressCandidate) {
       this.setLocation(address.location);
     },
