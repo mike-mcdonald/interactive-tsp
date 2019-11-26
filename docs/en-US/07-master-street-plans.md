@@ -1,5 +1,10 @@
-Master Street Plans
-====================
+---
+tree:
+  - 7
+id: master-street-plans
+name: Master Street Plans
+---
+# Master Street Plans
 
 The purpose of the Master Street Plans is to increase the efficiency of the transportation system through increased street connectivity and a finer mesh of pedestrian and bikeways. A dense grid of streets helps spread local vehicle trips more evenly over the local street network and reduces congestion on the arterial system. Studies show that improved local street connectivity improves arterial system capacity by as much as 25 percent.
 
@@ -52,13 +57,11 @@ The Regional Transportation Functional Plan (RTFP), adopted in 2010 (Ordinance 1
 
 -   Includes street cross-sections
 
-**Areas meeting connectivity requirements**
--------------------------------------------
+## Areas meeting connectivity requirements
 
 Many areas of Portland meet the RTP connectivity standards or are not required to have master street plans. Areas not required to meet connectivity standards include industrial sanctuaries, open space, and protected environmental areas.
 
-**Existing Master Street Plans**
---------------------------------
+## Existing Master Street Plans
 
 ### Master Street Plans retained by the TSP
 
@@ -346,7 +349,6 @@ The plan recommends modifying the City of Portland's Southwest Master Street Pla
 
 ![](/img/media/image5.png)
 
-**Areas not covered by Master Street Plans**
---------------------------------------------
+## Areas not covered by Master Street Plans
 
 Master Street plans have not been completed for all or parts of the North, Northeast, Far Northeast, Southeast, Northwest, and Central City districts. Other areas were excluded from the Southwest and Far Southeast Master Street Plans: the east light rail corridor (102nd to the city limits, NE Glisan to SE Stark), the Hillsdale town center, and the West Portland town center. Master Street plans for these areas will be completed as refinement plans of the TSP. Until such plans are completed, the location and implementation of new street and pedestrian/bicycle connections will be governed by Title 17: Public Improvements, and Title 33: Planning and Zoning, requirements in City Code. Title 17 regulations govern developing or redeveloping sites that do not include a land division, and Title 33 regulations govern developing or redeveloping sites that do include a land division. The spacing standards in each title are 530 feet for full street connections and 330 feet for pedestrian/bicycle connections where full street connections are not feasible.

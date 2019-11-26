@@ -1,5 +1,6 @@
 ---
-chapter: 1
+tree:
+  - 1
 id: introduction
 name: Introduction
 ---

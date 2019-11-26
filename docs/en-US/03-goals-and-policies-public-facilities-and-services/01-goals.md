@@ -1,6 +1,7 @@
 ---
-chapter: 3
-section: 1
+tree:
+  - 3
+  - 1
 id: public-facilities-services-goals
 name: Public Facilities and Services Goals
 ---
