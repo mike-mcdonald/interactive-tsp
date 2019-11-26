@@ -6,6 +6,7 @@ import { MapState } from './types';
 export const mutations: MutationTree<MapState> = {
   setView(state, view: MapView) {
     state.view = view;
+    view.map = state.map;
   },
   extentChanged(state, extent) {
     state.extent = extent;
@@ -25,6 +26,7 @@ export const mutations: MutationTree<MapState> = {
     if (state.view) {
       state.view.graphics.removeAll();
       state.view.graphics.addMany(graphics);
+      state.view.goTo(graphics);
     }
   },
   addGraphic(state, graphic) {

@@ -20,8 +20,8 @@
               stroke-linejoin="round"
               class="h-5 w-5"
             >
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
           </button>
           <button class="p-2 bg-white border border-fog-900" v-on:click="decrementZoom">
@@ -38,7 +38,7 @@
               stroke-linejoin="round"
               class="h-5 w-5"
             >
-              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
           </button>
         </div>
@@ -86,20 +86,7 @@
       </slot>
     </div>
     <div ref="bottom-left">
-      <slot name="bottom-left">
-        <!-- <div class="h-32 lg:h-full w-64 p-2 my-1 bg-white border border-fog-900 overflow-y-auto">
-          <h4>Extent</h4>
-          <span>{{ JSON.stringify(displayExtent, null, 2) }}</span>
-        </div>
-        <div class="h-32 lg:h-full w-64 p-2 my-1 bg-white border border-fog-900 overflow-y-auto">
-          <h4>Clicked map point</h4>
-          <span>{{ JSON.stringify(clickPoint, null, 2) }}</span>
-        </div>
-        <div class="h-32 lg:h-full w-64 p-2 my-1 bg-white border border-fog-900 overflow-y-auto">
-          <h4>Selected graphic</h4>
-          <span>{{ JSON.stringify(selectedGraphic, null, 2) }}</span>
-        </div> -->
-      </slot>
+      <slot name="bottom-left"></slot>
     </div>
     <div ref="bottom-right">
       <slot name="bottom-right">
@@ -189,6 +176,7 @@ export default Vue.extend({
   },
   computed: {
     ...mapState('map', {
+      map: (state: MapState) => state.map,
       extent: (state: MapState) => state.extent,
       layers: (state: MapState) => state.layers,
       basemaps: (state: MapState) => state.basemaps,
@@ -211,14 +199,9 @@ export default Vue.extend({
     }
   },
   mounted: function() {
-    const map = new Map({
-      basemap: this.basemaps[1],
-      layers: this.layers
-    });
-
     const view = new MapView({
       container: this.$refs.map as HTMLDivElement,
-      map,
+      map: this.map,
       extent: this.extent
     });
 

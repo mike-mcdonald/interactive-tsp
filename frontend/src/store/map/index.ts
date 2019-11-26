@@ -5,6 +5,7 @@ import { Extent } from 'esri/geometry';
 import FeatureLayer from 'esri/layers/FeatureLayer';
 import GroupLayer from 'esri/layers/GroupLayer';
 import TileLayer from 'esri/layers/TileLayer';
+import Map from 'esri/Map';
 
 import { RootState } from '../types';
 import { actions } from './actions';
@@ -157,6 +158,10 @@ const layers = [
 ];
 
 const state: MapState = {
+  map: new Map({
+    basemap: basemaps[1],
+    layers
+  }),
   extent: new Extent({
     spatialReference: { wkid: 102100 },
     xmin: -13678470.214582363,

@@ -4,6 +4,7 @@ import { RootState } from './types';
 import { map } from './map/index';
 import streets from './streets/index';
 import portlandmaps from './portlandmaps/index';
+import projects from './projects/index';
 
 import { mutations } from './mutations';
 
@@ -18,7 +19,8 @@ const store: StoreOptions<RootState> = {
   modules: {
     map,
     streets,
-    portlandmaps
+    portlandmaps,
+    projects
   }
 };
 
