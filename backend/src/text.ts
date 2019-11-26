@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLNonNull, GraphQLString, GraphQLList, GraphQLInt } from 'graphql';
+import { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLList } from 'graphql';
 
 import Metalsmith, { Files } from 'metalsmith';
 import markdown from 'metalsmith-markdown';
@@ -8,23 +8,12 @@ export type Language = {
 };
 
 export type Section = {
-  id: string;
-  number: number;
+  id?: string;
+  number?: number;
+  tree: number[];
+  depth: number;
   name?: string;
   content?: string;
-};
-
-export type Chapter = {
-  id?: string;
-  number: number;
-  name?: string;
-  content?: string;
-  sections?: Section[];
-};
-
-export type Plan = {
-  id?: string;
-  chapters: Chapter[];
 };
 
 export const sectionType: GraphQLObjectType = new GraphQLObjectType({
@@ -32,57 +21,36 @@ export const sectionType: GraphQLObjectType = new GraphQLObjectType({
   description: 'A transportation project in the City of Portland',
   fields: () => ({
     id: {
-      type: GraphQLNonNull(GraphQLString),
-      description: 'The planning id of the project.'
+      type: GraphQLString,
+      description: 'The id of the section, for routing.'
     },
     number: {
       type: GraphQLInt,
-      description: 'The section number for sorting purposes'
+      description: 'The section number within the parent section, for sorting purposes.'
+    },
+    depth: {
+      type: GraphQLInt,
+      description: 'The section number within the parent section, for sorting purposes.'
+    },
+    tree: {
+      type: GraphQLList(GraphQLInt),
+      description: 'The tree of parent section numbers.'
     },
     name: {
       type: GraphQLString,
-      description: 'The name given to of the project.'
+      description: 'The display name of the section.'
     },
     content: {
       type: GraphQLString,
-      description: 'The GeoJSON object of the project.'
+      description: 'The stringified HTML content of the section.'
     }
   })
 });
 
-export const chapterType: GraphQLObjectType = new GraphQLObjectType({
-  name: 'Chapter',
-  description: 'A transportation project in the City of Portland',
-  fields: () => ({
-    id: {
-      type: GraphQLString,
-      description: 'The planning id of the project.'
-    },
-    number: {
-      type: GraphQLInt,
-      description: 'The chapter number for sorting purposes'
-    },
-    name: {
-      type: GraphQLString,
-      description: 'The name given to of the project.'
-    },
-    content: {
-      type: GraphQLString,
-      description: 'The GeoJSON object of the project.'
-    },
-    sections: {
-      type: GraphQLList(sectionType),
-      description: 'The sections that belong to this chapter.'
-    }
-  })
-});
-
-const parseChapter = (chapter: any): Chapter => chapter;
-
-export const getChapters = (): Promise<Chapter[]> =>
-  new Promise<Chapter[]>((resolve, reject) => {
+export const getText = (): Promise<Section[]> =>
+  new Promise<Section[]>((resolve, reject) => {
     Metalsmith(__dirname)
-      .source('../../docs')
+      .source('docs')
       .destination('docs')
       .clean(false) // do not clean destination
       // directory before new build
@@ -90,45 +58,29 @@ export const getChapters = (): Promise<Chapter[]> =>
       .build(function(err: Error | null, files: Files) {
         if (err) throw reject(err);
 
-        const chapters = new Array<Chapter>();
+        const sections: Section[] = new Array<Section>();
 
         Object.keys(files).forEach(key => {
           const text = files[key];
 
-          let chapter: Chapter | undefined = { number: text.chapter };
+          const tree: number[] = text.tree;
 
-          if (text.chapter) {
-            chapter = chapters.find(c => {
-              return c.number == text.chapter;
-            });
-
-            if (!chapter) {
-              chapter = { number: text.chapter, sections: new Array<Section>() };
-              chapters.push(chapter);
-            }
-
-            // if it's a section, add it to the chapter and exit
-            if (text.section) {
-              const section: Section = {
-                id: text.id,
-                number: text.section,
-                name: text.name,
-                content: text.contents.toString()
-              };
-              chapter.sections?.push(section);
-              return;
-            }
-
-            // is a chapter, parse it
-            Object.assign(chapter, {
+          try {
+            const section: Section = {
               id: text.id,
-              number: text.chapter,
               name: text.name,
+              number: tree.pop(),
+              tree: [...tree],
+              depth: tree.length,
               content: text.contents.toString()
-            });
+            };
+
+            sections.push(section);
+          } catch (error) {
+            console.error(`Error parsing ${JSON.stringify(text)}`);
           }
         });
 
-        resolve(chapters);
+        resolve(sections);
       });
   });
