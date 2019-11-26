@@ -1,6 +1,6 @@
 <template>
   <main>
-    <div class="hero-image h-screen-68">
+    <div class="hero-image h-screen-66">
       <div class="w-5/6 md:w-3/4 lg:w-1/2 px-2 pt-6 mx-auto text-white">
         <h1 class="block text-center">Welcome to Portland in the year 2035</h1>
         <section class="flex flex-col md:flex-row">
@@ -46,7 +46,7 @@
     </section>
     <section class="bg-cyan-500">
       <iframe
-        class="w-full h-screen-68"
+        class="w-full h-screen-66"
         src="https://www.youtube.com/embed/qYlcbgRlYVE"
         frameborder="0"
         allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
