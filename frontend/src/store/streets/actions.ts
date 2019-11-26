@@ -9,6 +9,7 @@ import centroid from '@turf/centroid';
 import nearestPointOnLine from '@turf/nearest-point-on-line';
 import * as turf from '@turf/helpers';
 import axios from 'axios';
+import { esriGraphics } from '../utils';
 
 const classificationMaps = new Map<string, Map<string, string>>();
 
@@ -161,7 +162,7 @@ export const actions: ActionTree<StreetState, RootState> = {
 
     dispatch('selectStreet', street);
   },
-  selectStreet({ commit, rootState }, street: Street) {
+  selectStreet({ commit, dispatch, rootState }, street: Street) {
     commit('setMessage', undefined, { root: true });
     axios
       .get<{ errors?: any[]; data: { street?: Street } }>(rootState.graphql_url, {
@@ -171,7 +172,7 @@ export const actions: ActionTree<StreetState, RootState> = {
             id
             ${street.name ? '' : 'name'}
             ${street.block ? '' : 'block'}
-            ${street.geometry ? '' : `geometry{ coordinates }`}
+            ${street.geometry ? '' : `geometry{ type coordinates }`}
             ${
               street.classifications
                 ? ''
@@ -215,10 +216,16 @@ export const actions: ActionTree<StreetState, RootState> = {
             }
           }
           commit('setSelectedStreet', data.street);
+          dispatch('highlightStreet', data.street);
         }
       })
       .catch(() => {
         commit('setMessage', 'Error retrieving the selected street!', { root: true });
       });
+  },
+  highlightStreet({ commit }, street: Street) {
+    if (street.geometry) {
+      commit('map/setGraphics', esriGraphics(street.geometry), { root: true });
+    }
   }
 };
