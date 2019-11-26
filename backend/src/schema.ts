@@ -7,6 +7,7 @@ import { GraphQLList, GraphQLNonNull, GraphQLObjectType } from 'graphql';
 import { streetType, getStreet, getStreets } from './street';
 import { addressType, getCandidates } from './address';
 import { sectionType, getText, Section } from './text';
+import { projectType, getProjectsById } from './project';
 
 /**
  * This is the type that will be the root of our query, and the
@@ -45,6 +46,21 @@ const queryType = new GraphQLObjectType({
         return await getCandidates(search, city);
       }
     },
+    project: {
+      type: GraphQLList(projectType),
+      description: 'Find a project in Portland by a PBOT planning ID',
+      args: {
+        id: {
+          description: 'Transportation planning id of the project',
+          type: GraphQLString
+        }
+      },
+      resolve: (root, { id }) => {
+        if (id) {
+          return getProjectsById(id);
+        }
+      }
+    },
     street: {
       type: streetType,
       description: 'Find a street in Portland by a PBOT planning ID',
@@ -65,13 +81,11 @@ const queryType = new GraphQLObjectType({
       description: 'Find streets in Portland by using a bounding box',
       args: {
         bbox: {
-          description:
-            'Array of numbers representing a bounding box to return streets for',
+          description: 'Array of numbers representing a bounding box to return streets for',
           type: GraphQLList(GraphQLFloat)
         },
         spatialReference: {
-          description:
-            'The spatial reference well-known ID ("wkid").',
+          description: 'The spatial reference well-known ID ("wkid").',
           type: GraphQLNonNull(GraphQLInt)
         }
       },
@@ -90,5 +104,5 @@ const queryType = new GraphQLObjectType({
  */
 export default new GraphQLSchema({
   query: queryType,
-  types: [streetType, addressType, sectionType]
+  types: [streetType, addressType, projectType, sectionType]
 });
