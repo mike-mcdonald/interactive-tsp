@@ -1,6 +1,7 @@
 ---
-chapter: 3
-section: 2
+tree:
+  - 3
+  - 2
 id: public-facilities-services-policies
 name: Public Facilities and Services Policies
 ---
@@ -8,7 +9,7 @@ name: Public Facilities and Services Policies
 
 (Comprehensive Plan Chapter 8)
 
-Funding Policies
+### Funding Policies
 ----------------
 
 **Cost-effectiveness:** Establish, improve, and maintain the public facilities necessary to serve designated land uses in ways that cost-effectively provide desired levels of service, consider facilities' lifecycle costs, and maintain the City's long-term financial sustainability. (Comprehensive Plan Policy 8.27)
@@ -19,9 +20,7 @@ Funding Policies
 
 **Partnerships:** Maintain or establish public and private partnerships for the development, management, or stewardship of public facilities necessary to serve designated land uses, as appropriate. (Comprehensive Plan Policy 8.30)
 
-Public Benefit Policies
------------------------
-
+### Public Benefit Policies
 **Application of Guiding Principles:** Plan and invest in public facilities in ways that promote and balance the Guiding Principles established in The Vision and Guiding Principles of this Comprehensive Plan. (Comprehensive Plan Policy 8.31)
 
 **Community benefits:** Encourage providing additional community benefits with large public facility projects as appropriate to address environmental justice policies in Comprehensive Plan Chapter 2: Community Involvement. (Comprehensive Plan Policy 8.32)
@@ -38,9 +37,7 @@ Public Benefit Policies
 
 **Age-friendly public facilities:** Promote public facility designs that make Portland more age-friendly. (Comprehensive Plan Policy 8.38)
 
-Public Rights-of-Way Policies
------------------------------
-
+### Public Rights-of-Way Policies
 **Interconnected network:** Establish a safe and connected rights-of-way system that equitably provides infrastructure services throughout the city. (Comprehensive Plan Policy 8.39)
 
 **Transportation function:** Improve and maintain the right-of-way to support multimodal transportation mobility and access to goods and services as is consistent with the designated street classification. (Comprehensive Plan Policy 8.40)
@@ -75,9 +72,7 @@ Public Rights-of-Way Policies
 
 **Rail rights-of-way:** Preserve existing and abandoned rail rights-of-way for future rail or public trail uses. (Comprehensive Plan Policy 8.52)
 
-Trails Policies
----------------
-
+### Trails Policies
 **Public trails:** Establish, improve, and maintain a citywide system of local and regional public trails that provide transportation and/or recreation options and are a component of larger network of facilities for bicyclists, pedestrians, and recreational users. (Comprehensive Plan Policy 8.53)
 
 **Trail system connectivity:** Plan, improve, and maintain the citywide trail system so that it connects and improves access to Portland's neighborhoods, commercial areas, employment centers, schools, parks, natural areas, recreational facilities, regional destinations, the regional trail system, and other key places that Portlanders access in their daily lives. (Comprehensive Plan Policy 8.54)
@@ -94,9 +89,7 @@ Trails Policies
 
 **Intertwine coordination:** Coordinate with the Intertwine Alliance and its partners, including local and regional parks providers, to integrate Portland's trail and active transportation network with the bi-state regional trail system. (Comprehensive Plan Policy 8.60)
 
-Stormwater System Policies
---------------------------
-
+### Stormwater System Policies
 **Stormwater facilities:** Provide adequate stormwater facilities for conveyance, flow control, and pollution reduction. (Comprehensive Plan Policy 8.68)
 
 **Green infrastructure:** Promote the use of green infrastructure, such as natural areas, the urban forest, and landscaped stormwater facilities, to manage stormwater. (Comprehensive Plan Policy 8.71)

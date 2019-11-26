@@ -1,3 +1,9 @@
+---
+tree:
+  - 8
+id: modal-plans
+name: Modal Plans
+---
 # Modal Plans
 
 ## Motor Vehicle
@@ -106,8 +112,7 @@ For more information please visit <https://www.portlandoregon.gov/transportation
 
 Transit Classification Descriptions and Maps were updated as part of TSP3, Section 4.
 
-**Pedestrian**
----------------
+## Pedestrian
 
 **Comp Plan Policies**
 
@@ -171,8 +176,7 @@ Other pedestrian programs, planning efforts and improvements include:
 
 -   Tilikum Crossing (bridge)
 
-**Bicycle**
-------------
+## Bicycle
 
 **Comp Plan Policies**
 
@@ -228,8 +232,7 @@ Other bicycle programs, planning efforts and improvements include:
 
 -   Educational Programs
 
-**Freight**
------------
+## Freight
 
 **Comp Plan Policies**
 
@@ -296,8 +299,7 @@ The study includes the following elements:
 
 <https://www.portlandoregon.gov/transportation/73902>
 
-Air, Rail, Water, Pipeline
---------------------------
+## Air, Rail, Water, Pipeline
 
 The Airport Futures Plan was adopted in 2010. Policies from the Airport Futures are incorporated into Comp Plan Policies 9.41 - 9.44.
 
@@ -305,8 +307,7 @@ The River Plan and the Central City Plan have policies and recommendations relat
 
 Comp Plan Policy 9.28 addresses inter city passenger rail service.
 
-TDM/Parking
----------------
+## TDM/Parking
 
 **Transportation Demand Management**
 

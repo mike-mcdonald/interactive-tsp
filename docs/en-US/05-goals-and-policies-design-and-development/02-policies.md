@@ -1,24 +1,14 @@
-Design and Development Goals
-============================
-
+---
+tree:
+  - 5
+  - 2
+id: design-development-policies
+name: Design and Development Policies
+---
+## Design and Development Policies
 (Comprehensive Plan Chapter 4)
 
-### Context-sensitive Design and Development
-
-New development is designed to respond to and enhance the distinctive physical, historic, and cultural qualities of its location, while accommodating growth and change. (Comprehensive Plan Goal 4.A)
-
-### Human and Environmental Health
-
-Neighborhoods and development are efficiently designed and built to enhance human and environmental health: they protect safety and livability; support local access to healthy food; limit negative impacts on water, hydrology, and air quality; reduce carbon emissions; encourage active and sustainable design; protect wildlife; address urban heat islands; and integrate nature and the built environment. (Comprehensive Plan Goal 4.C)
-
-Design and Development Policies
-===============================
-
-(Comprehensive Plan Chapter 4)
-
-Context Policies
-----------------
-
+### Context Policies
 **Pattern areas:** Encourage building and site designs that respect the unique built natural, historic, and cultural characteristics of Portland's five pattern areas described in Chapter 3: Urban Form. (Comprehensive Plan Policy 4.1)
 
 **Community identity:** Encourage the development of character-giving design features that are responsive to place and the cultures of communities. (Comprehensive Plan Policy 4.2)
@@ -37,9 +27,7 @@ Context Policies
 
 **Transitional urbanism:** Encourage temporary activities and structures in places that are transitioning to urban areas to promote job creation, entrepreneurship, active streets, and human interaction. (Comprehensive Plan Policy 4.9)
 
-Design and Development of Centers and Corridors Policies
---------------------------------------------------------
-
+### Design and Development of Centers and Corridors Policies
 **Walkable scale:** Focus services and higher-density housing in the core of centers to support a critical mass of demand for commercial services and more walkable access for customers. (Comprehensive Plan Policy 4.20)
 
 **Street environment:** Encourage development in centers and corridors to include amenities that create a pedestrian-oriented environment and provide places for people to sit, spend time, and gather. (Comprehensive Plan Policy 4.21)
@@ -48,9 +36,7 @@ Design and Development of Centers and Corridors Policies
 
 **Design for pedestrian and bicycle access:** Provide accessible sidewalks, high-quality bicycle access, and frequent street connections and crossings in centers and corridors. (Comprehensive Plan Policy 4.23)
 
-Designing with Nature Policies
-------------------------------
-
+### Designing with Nature Policies
 **Design with nature:** Encourage design and site development practices that enhance, and avoid the degradation of, watershed health and ecosystem services and that incorporate trees and vegetation. (Comprehensive Plan Policy 4.73)
 
 **Flexible development options:** Encourage flexibility in the division of land, the siting and design of buildings, and other improvements to reduce the impact of development on environmentally-sensitive areas and to retain healthy native and beneficial vegetation and trees. (Comprehensive Plan Policy 4.74)

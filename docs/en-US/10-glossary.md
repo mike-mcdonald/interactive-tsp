@@ -1,5 +1,10 @@
-Glossary
-========
+---
+tree:
+  - 10
+id: glossary
+name: Glossary
+---
+# Glossary
 
 The Transportation System Plan uses clear, everyday language as much as possible. Words and terms in the Glossary have the specific meaning stated below when used in the Comprehensive Plan and TSP, unless the context clearly indicates another meaning. Words not included in this Glossary are defined by their dictionary meaning, or in some cases, by their meaning in state or federal law.
 
