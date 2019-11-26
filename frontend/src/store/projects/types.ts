@@ -18,5 +18,5 @@ export interface Project {
 
 export interface ProjectState {
   list: Array<Project>;
-  selected?: Project;
+  selected?: Array<Project>;
 }

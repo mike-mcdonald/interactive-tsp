@@ -4,105 +4,8 @@ import { RootState } from '../types';
 
 import axios from 'axios';
 
-import { Geometry } from '@turf/helpers';
-
 import Graphic from 'esri/Graphic';
-import { Point, Polygon, Polyline, Multipoint } from 'esri/geometry';
-import SimpleFillSymbol from 'esri/symbols/SimpleFillSymbol';
-import SimpleLineSymbol from 'esri/symbols/SimpleLineSymbol';
-import SimpleMarkerSymbol from 'esri/symbols/SimpleMarkerSymbol';
-
-function esriGeometry(geometry: Geometry): __esri.Geometry | undefined {
-  let esriProperties = { spatialReference: { wkid: 4326 } };
-
-  switch (geometry.type) {
-    case 'Point':
-      esriProperties = Object.assign(esriProperties, { x: geometry.coordinates[0], y: geometry.coordinates[1] });
-      break;
-    case 'LineString':
-      esriProperties = Object.assign(esriProperties, { paths: [geometry.coordinates] });
-      break;
-    case 'Polygon':
-      esriProperties = Object.assign(esriProperties, { rings: geometry.coordinates });
-      break;
-    case 'MultiPoint':
-      esriProperties = Object.assign(esriProperties, { points: geometry.coordinates });
-      break;
-    case 'MultiLineString':
-      esriProperties = Object.assign(esriProperties, { paths: geometry.coordinates });
-      break;
-    case 'MultiPolygon':
-      esriProperties = Object.assign(esriProperties, { rings: [geometry.coordinates] });
-      break;
-  }
-
-  return esriProperties as __esri.Geometry;
-}
-
-function esriGraphics(geometry: Geometry) {
-  switch (geometry.type) {
-    case 'Point':
-      return [
-        new Graphic({
-          geometry: new Point(esriGeometry(geometry)),
-          symbol: new SimpleMarkerSymbol({
-            color: '#bfe7eb',
-            outline: {
-              color: '#00484e',
-              width: 2
-            }
-          })
-        })
-      ];
-    case 'MultiPoint':
-      return [
-        new Graphic({
-          geometry: new Multipoint(esriGeometry(geometry)),
-          symbol: new SimpleMarkerSymbol({
-            color: '#bfe7eb',
-            outline: {
-              color: '#00484e',
-              width: 2
-            }
-          })
-        })
-      ];
-    case 'LineString':
-    case 'MultiLineString':
-      return [
-        new Graphic({
-          geometry: new Polyline(esriGeometry(geometry)),
-          symbol: new SimpleLineSymbol({
-            color: '#00484e',
-            width: 10
-          })
-        }),
-        new Graphic({
-          geometry: new Polyline(esriGeometry(geometry)),
-          symbol: new SimpleLineSymbol({
-            color: '#bfe7eb',
-            width: 8
-          })
-        })
-      ];
-    case 'Polygon':
-    case 'MultiPolygon':
-      return [
-        new Graphic({
-          geometry: new Polygon(esriGeometry(geometry)),
-          symbol: new SimpleFillSymbol({
-            color: '#bfe7eb',
-            outline: {
-              color: '#00484e',
-              width: 2
-            }
-          })
-        })
-      ];
-    default:
-      return undefined;
-  }
-}
+import { esriGraphics } from '../utils';
 
 export const actions: ActionTree<ProjectState, RootState> = {
   selectProjectById({ commit, dispatch, state }, id: string) {
@@ -118,10 +21,10 @@ export const actions: ActionTree<ProjectState, RootState> = {
         project
       );
     }
-    commit('setSelectedProject', project);
-    dispatch('selectProject', project);
+    commit('setSelectedProjects', [project]);
+    dispatch('selectProjects', project);
   },
-  selectProject({ commit, dispatch, rootState }, project: Project) {
+  selectProjects({ commit, dispatch, rootState }, project: Project) {
     commit('setMessage', undefined, { root: true });
     axios
       .get<{ errors?: any[]; data: { project?: Project[] } }>(rootState.graphql_url, {
@@ -130,7 +33,7 @@ export const actions: ActionTree<ProjectState, RootState> = {
           project(id:"${project ? project.id : ''}"){
             id
             ${project.name ? '' : 'name'}
-            ${project.geometry ? '' : 'geometry{ type coordinates }'}
+            ${project.geometry ? '' : 'geometry { type coordinates }'}
             number
             location
             description
@@ -151,20 +54,22 @@ export const actions: ActionTree<ProjectState, RootState> = {
         }
         let data = res.data.data;
         if (data.project) {
-          commit('setSelectedProject', data.project[0]);
-          if (data.project[0].geometry) {
-            dispatch('map/clearGraphics', undefined, { root: true });
-            dispatch('highlightProject', data.project[0]);
-          }
+          commit('setSelectedProjects', data.project);
+          dispatch('map/clearGraphics', undefined, { root: true });
+          dispatch('highlightProjects', data.project);
         }
       })
       .catch(() => {
         commit('setMessage', 'Error retrieving the selected street!', { root: true });
       });
   },
-  highlightProject({ commit }, project: Project) {
-    if (project.geometry) {
-      commit('map/setGraphics', esriGraphics(project.geometry), { root: true });
-    }
+  highlightProjects({ commit }, projects: Project[]) {
+    const graphics = new Array<Graphic>();
+    projects.forEach(project => {
+      if (project.geometry) {
+        graphics.push(...esriGraphics(project.geometry));
+      }
+    });
+    commit('map/setGraphics', graphics, { root: true });
   }
 };

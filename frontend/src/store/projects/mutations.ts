@@ -5,13 +5,13 @@ export const mutations: MutationTree<ProjectState> = {
   clearProjects(state) {
     state.list = new Array<Project>();
   },
-  addProject(state, projects: Project[]) {
+  addProjects(state, projects: Project[]) {
     if (!state.list) {
       state.list = new Array<Project>();
     }
     state.list.push(...projects);
   },
-  setSelectedProject(state, project: Project) {
-    state.selected = project;
+  setSelectedProjects(state, projects: Project[]) {
+    state.selected = projects;
   }
 };
