@@ -15,7 +15,7 @@
       <project-component v-if="selectedProject" :project="selectedProject"></project-component>
     </section>
     <section class="w-full md:w-2/3 h-screen-50 md:h-screen">
-      <app-map v-on:click="handleClick"></app-map>
+      <app-map v-on:click="handleClick" :layers="layers"></app-map>
     </section>
   </main>
 </template>
@@ -46,6 +46,7 @@ export default Vue.extend({
   computed: {
     ...mapState(['message']),
     ...mapState('projects', {
+      layers: (state: ProjectState) => state.layers,
       selectedProject: (state: ProjectState) => (state.selected ? state.selected[0] : undefined)
     })
   },

@@ -1,4 +1,5 @@
 import { Geometry } from '@turf/helpers';
+import Layer from 'esri/layers/Layer';
 
 export interface Project {
   id: string;
@@ -17,6 +18,7 @@ export interface Project {
 }
 
 export interface ProjectState {
+  layers: Array<Layer>;
   list: Array<Project>;
   selected?: Array<Project>;
 }

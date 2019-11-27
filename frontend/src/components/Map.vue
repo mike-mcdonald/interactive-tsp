@@ -141,6 +141,7 @@ import Extent from 'esri/geometry/Extent';
 import { Point, Polyline } from 'esri/geometry';
 import Graphic from 'esri/Graphic';
 import GraphicsLayer from 'esri/layers/GraphicsLayer';
+import Layer from 'esri/layers/Layer';
 import SimpleLineSymbol from 'esri/symbols/SimpleLineSymbol';
 import MapView from 'esri/views/MapView';
 import Legend from 'esri/widgets/Legend';
@@ -159,6 +160,9 @@ export default Vue.extend({
     legend: {
       type: Boolean,
       default: true
+    },
+    layers: {
+      type: Array
     }
   },
   data: function() {
@@ -174,17 +178,15 @@ export default Vue.extend({
     ...mapState('map', {
       map: (state: MapState) => state.map,
       extent: (state: MapState) => state.extent,
-      layers: (state: MapState) => state.layers,
       basemaps: (state: MapState) => state.basemaps,
       zoom: (state: MapState) => state.zoom.current
     })
   },
   methods: {
     ...mapActions('map', ['setExtent', 'setZoom', 'setLayerVisibility']),
-    ...mapMutations('map', ['setView']),
+    ...mapMutations('map', ['setView', 'setLayers']),
     toggleLayerVisibility(id: string, value: Boolean) {
       this.setLayerVisibility({ layerId: id, visible: value });
-      console.log(`"${id}": ${value}`);
     },
     incrementZoom() {
       this.setZoom(this.zoom + 1);
@@ -199,6 +201,8 @@ export default Vue.extend({
       map: this.map,
       extent: this.extent
     });
+
+    this.setLayers(this.layers);
 
     view.ui.remove('zoom');
 

@@ -2,11 +2,15 @@ import MapView from 'esri/views/MapView';
 
 import { MutationTree } from 'vuex';
 import { MapState } from './types';
+import Layer from 'esri/layers/Layer';
 
 export const mutations: MutationTree<MapState> = {
   setView(state, view: MapView) {
     state.view = view;
     view.map = state.map;
+  },
+  setLayers(state, layers) {
+    state.map.layers = layers;
   },
   extentChanged(state, extent) {
     state.extent = extent;
