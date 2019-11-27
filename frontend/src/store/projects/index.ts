@@ -25,7 +25,7 @@ const layers = [
         new FeatureLayer({
           url,
           outFields: ['*'],
-          definitionExpression: `estimatedTimeFrame='1-10_YRS'`
+          definitionExpression: `estimatedTimeFrame = '1-10_YRS'`
         })
     )
   }),
@@ -43,7 +43,7 @@ const layers = [
         new FeatureLayer({
           url,
           outFields: ['*'],
-          definitionExpression: `estimatedTimeFrame='11-20_YRS'`
+          definitionExpression: `estimatedTimeFrame = '11-20_YRS'`
         })
     )
   }),
@@ -61,7 +61,7 @@ const layers = [
         new FeatureLayer({
           url,
           outFields: ['*'],
-          definitionExpression: `estimatedTimeFrame='NA'`
+          definitionExpression: `estimatedTimeFrame = 'NA'`
         })
     )
   })

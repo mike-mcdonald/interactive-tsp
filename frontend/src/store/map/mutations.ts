@@ -10,6 +10,7 @@ export const mutations: MutationTree<MapState> = {
     view.map = state.map;
   },
   setLayers(state, layers) {
+    state.layers = layers;
     state.map.layers = layers;
   },
   extentChanged(state, extent) {
