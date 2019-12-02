@@ -1,10 +1,11 @@
 import axios from 'axios';
 import bbox from '@turf/bbox';
 
-import { GraphQLObjectType, GraphQLNonNull, GraphQLString, GraphQLFloat, GraphQLInt } from 'graphql';
+import { GraphQLObjectType, GraphQLNonNull, GraphQLString, GraphQLFloat, GraphQLInt, parse } from 'graphql';
 import { Street } from './street';
-import { Feature, Geometry } from '@turf/helpers';
+import { Feature, Geometry, BBox, LineString, GeometryCollection } from '@turf/helpers';
 import { GeometryObject } from './geojson';
+import proj4 from 'proj4';
 
 const URLS = [
   'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/22',
@@ -25,7 +26,7 @@ export type Project = {
   facilityOwner?: string;
   patternArea?: string;
   fundingCategory?: string;
-  geometry: Geometry;
+  geometry: Geometry | GeometryCollection;
 };
 
 export const projectType: GraphQLObjectType = new GraphQLObjectType({
@@ -87,6 +88,32 @@ export const projectType: GraphQLObjectType = new GraphQLObjectType({
   })
 });
 
+function parseProject(feature: Feature): Project {
+  if (!feature.properties) {
+    return {
+      id: 'null',
+      name: 'null',
+      geometry: feature.geometry
+    };
+  }
+
+  return {
+    id: feature.properties.TranPlanID,
+    name: feature.properties.ProjectName,
+    geometry: feature.geometry,
+    number: feature.properties.ProjectNumber,
+    location: feature.properties.ProjectLocation,
+    description: feature.properties.ProjectDescription,
+    agency: feature.properties.LeadAgency,
+    estimatedCost: feature.properties.EstimatedCost,
+    estimatedTimeframe: feature.properties.EstimatedTimeframe,
+    district: feature.properties.TSPDistrict,
+    facilityOwner: feature.properties.FacilityOwner,
+    patternArea: feature.properties.PatternArea,
+    fundingCategory: feature.properties.TSPFundingCategory
+  };
+}
+
 export async function getProjects(street: Street): Promise<Project[]> {
   const box = bbox(street.geometry);
 
@@ -114,23 +141,7 @@ export async function getProjects(street: Street): Promise<Project[]> {
 
       projects.push(
         ...data.map((value: Feature<Geometry>) => {
-          const project: Project = {
-            id: value.properties ? value.properties.TranPlanID : 'null',
-            name: value.properties ? value.properties.ProjectName : 'null',
-            number: value.properties ? value.properties.ProjectNumber : 'null',
-            location: value.properties ? value.properties.ProjectLocation : 'null',
-            description: value.properties ? value.properties.ProjectDescription : 'null',
-            agency: value.properties ? value.properties.LeadAgency : 'null',
-            estimatedCost: value.properties ? value.properties.EstimatedCost : 'null',
-            estimatedTimeframe: value.properties ? value.properties.EstimatedTimeframe : 'null',
-            district: value.properties ? value.properties.TSPDistrict : 'null',
-            facilityOwner: value.properties ? value.properties.FacilityOwner : 'null',
-            patternArea: value.properties ? value.properties.PatternArea : 'null',
-            fundingCategory: value.properties ? value.properties.TSPFundingCategory : 'null',
-            geometry: value.geometry
-          };
-
-          return project;
+          return parseProject(value);
         })
       );
     }
@@ -161,23 +172,49 @@ export async function getProjectsById(id: string): Promise<Project[]> {
 
       projects.push(
         ...data.map((value: Feature<Geometry>) => {
-          const project: Project = {
-            id: value.properties ? value.properties.TranPlanID : 'null',
-            name: value.properties ? value.properties.ProjectName : 'null',
-            number: value.properties ? value.properties.ProjectNumber : 'null',
-            location: value.properties ? value.properties.ProjectLocation : 'null',
-            description: value.properties ? value.properties.ProjectDescription : 'null',
-            agency: value.properties ? value.properties.LeadAgency : 'null',
-            estimatedCost: value.properties ? value.properties.EstimatedCost : 'null',
-            estimatedTimeframe: value.properties ? value.properties.EstimatedTimeframe : 'null',
-            district: value.properties ? value.properties.TSPDistrict : 'null',
-            facilityOwner: value.properties ? value.properties.FacilityOwner : 'null',
-            patternArea: value.properties ? value.properties.PatternArea : 'null',
-            fundingCategory: value.properties ? value.properties.TSPFundingCategory : 'null',
-            geometry: value.geometry
-          };
+          return parseProject(value);
+        })
+      );
+    }
+  }
 
-          return project;
+  return projects;
+}
+
+/**
+ * Helper function to get a streets within a bounding box.
+ */
+export async function getProjectsByBBox(bbox: BBox, spatialReference: number): Promise<Project[] | null> {
+  if (spatialReference != 4326) {
+    [bbox[0], bbox[1]] = proj4(`${spatialReference}`, 'EPSG:4326', [bbox[0], bbox[1]]);
+    [bbox[2], bbox[3]] = proj4(`${spatialReference}`, 'EPSG:4326', [bbox[2], bbox[3]]);
+  }
+
+  const projects = new Array<Project>();
+
+  for (const url of URLS) {
+    const res = await axios
+      .get(`${url}/query`, {
+        params: {
+          f: 'geojson',
+          geometryType: 'esriGeometryEnvelope',
+          geometry: bbox.join(','),
+          spatialRel: 'esriSpatialRelIntersects',
+          inSR: '4326',
+          outSR: '4326',
+          outFields: '*'
+        }
+      })
+      .catch(err => {
+        throw new Error(err);
+      });
+
+    if (res.status == 200 && res.data && res.data.features) {
+      const data: Feature<LineString>[] = res.data.features;
+
+      projects.push(
+        ...data.map((value: Feature<LineString>) => {
+          return parseProject(value);
         })
       );
     }
