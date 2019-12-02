@@ -18,9 +18,9 @@ const store: StoreOptions<RootState> = {
   mutations,
   modules: {
     map,
-    streets,
     portlandmaps,
-    projects
+    projects,
+    streets
   }
 };
 

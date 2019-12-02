@@ -1,5 +1,7 @@
 import { Geometry } from '@turf/helpers';
 import Layer from 'esri/layers/Layer';
+import FeatureLayer from 'esri/layers/FeatureLayer';
+import GroupLayer from 'esri/layers/GroupLayer';
 
 export interface Project {
   id: string;
@@ -15,10 +17,14 @@ export interface Project {
   facilityOwner?: string;
   patternArea?: string;
   fundingCategory?: string;
+  minX?: number;
+  minY?: number;
+  maxX?: number;
+  maxY?: number;
 }
 
 export interface ProjectState {
-  layers: Array<Layer>;
+  layers: Array<GroupLayer>;
   list: Array<Project>;
   selected?: Array<Project>;
 }
