@@ -121,7 +121,6 @@ const layers = [
 const state: StreetState = {
   layers,
   list: new Array<Street>(),
-  rtree: new RBush<Street>(),
   selected: undefined
 };
 

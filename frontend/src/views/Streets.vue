@@ -22,7 +22,7 @@
       </div>
       <transition name="fade">
         <ul v-if="!$route.params.id" class="list-none">
-          <li v-for="street in streets" :key="street.id" @mouseover="highlightStreet(street)">
+          <li v-for="street in streets" :key="street.id" @mouseover="highlightStreet({ street, move: false })">
             <router-link
               :to="street.id"
               append
@@ -38,7 +38,7 @@
       <street-component v-if="$route.params.id && selectedStreet" :street="selectedStreet" />
     </section>
     <section class="w-full md:w-2/3 h-screen-50 md:h-screen">
-      <app-map v-on:click="handleClick" :layers="layers"></app-map>
+      <app-map :layers="layers" v-on:click="handleClick" v-on:extent-change="findStreets($event)"></app-map>
     </section>
   </main>
 </template>
@@ -108,7 +108,7 @@ export default Vue.extend({
       });
     },
     ...mapActions('map', ['clearGraphics', 'setLocation']),
-    ...mapActions('streets', ['selectStreet', 'selectStreetById', 'routeStreetByRTree'])
+    ...mapActions('streets', ['findStreets', 'selectStreet', 'selectStreetById', 'highlightStreet'])
   }
 });
 </script>

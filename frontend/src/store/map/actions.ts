@@ -11,7 +11,6 @@ export const actions: ActionTree<MapState, RootState> = {
   setExtent({ commit, dispatch }, extent: __esri.Extent): any {
     commit('setMessage', undefined, { root: true });
     commit('extentChanged', extent);
-    dispatch('streets/findStreets', extent, { root: true });
   },
   setLayerVisibility({ commit }, { layerId, visible }) {
     commit('layerVisibilityChanged', { layerId, visible });
@@ -37,7 +36,7 @@ export const actions: ActionTree<MapState, RootState> = {
     });
   },
   clearGraphics({ commit }) {
-    commit('setGraphics', []);
+    commit('setGraphics', { graphics: [] });
   },
   addGraphic({ commit }, graphic: Graphic) {
     commit('addGraphic', graphic);

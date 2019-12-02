@@ -33,6 +33,5 @@ export interface Street {
 export interface StreetState {
   layers: Layer[];
   list?: Street[];
-  rtree: RBush<Street>;
   selected?: Street;
 }

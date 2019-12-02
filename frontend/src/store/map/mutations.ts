@@ -27,11 +27,11 @@ export const mutations: MutationTree<MapState> = {
 
     if (layer) layer.visible = visible;
   },
-  setGraphics(state, graphics) {
+  setGraphics(state, { graphics, move }) {
     if (state.view) {
       state.view.graphics.removeAll();
       state.view.graphics.addMany(graphics);
-      state.view.goTo(graphics);
+      if (move) state.view.goTo(graphics);
     }
   },
   addGraphic(state, graphic) {
