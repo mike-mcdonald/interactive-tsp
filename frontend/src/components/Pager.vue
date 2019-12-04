@@ -4,8 +4,9 @@
       title="Go to previous page"
       rel="prev"
       class="py-2 px-3 rounded border shadow bg-fog-200 text-fog-800"
-      :disabled="selected == 0"
-      @click="$emit('change', list[--selected])"
+      :disabled="value == 0"
+      @click="$emit('prev')"
+      @keyup.enter="$emit('prev')"
     >
       <span class="sr-only">Previous page</span>
       <span class="flex items-center">
@@ -29,8 +30,9 @@
       title="Go to next page"
       rel="prev"
       class="py-2 px-3 rounded border shadow bg-fog-200 text-fog-800"
-      :disabled="list.length == selected + 1"
-      @click="$emit('change', list[++selected])"
+      :disabled="list.length == value + 1"
+      @click="$emit('next')"
+      @keyup-.enter="$emit('next')"
     >
       <span class="sr-only">Next page</span>
       <span class="flex items-center">
@@ -58,14 +60,27 @@ import Vue from 'vue';
 export default Vue.extend({
   name: 'Pager',
   props: {
+    value: {
+      type: Number
+    },
     list: {
       type: Array
     }
   },
   data() {
     return {
-      selected: 0
+      innerValue: 1
     };
+  },
+  computed: {
+    selected: {
+      get: () => {
+        return this.value || this.innerValue;
+      },
+      set: newValue => {
+        this.innerValue = newValue;
+      }
+    }
   }
 });
 </script>

@@ -23,8 +23,10 @@
       <pager
         class="m-2"
         v-if="$route.params.id && selectedProjects && selectedProjects.length > 1"
+        v-model="pageIndex"
         :list="selectedProjects"
-        @change="handleProjectChange"
+        @next="handleProjectChange(pageIndex + 1)"
+        @prev="handleProjectChange(pageIndex - 1)"
       />
       <transition name="fade">
         <ul v-if="!$route.params.id" class="list-none">
@@ -117,7 +119,8 @@ export default Vue.extend({
   },
   data() {
     return {
-      selectedProjects: new Array<string>()
+      selectedProjects: new Array<string>(),
+      pageIndex: 0
     };
   },
   computed: {
@@ -158,10 +161,12 @@ export default Vue.extend({
     handleExtentChange(extent: __esri.Extent) {
       this.findProjects(extent);
     },
-    handleProjectChange(id: string) {
-      this.$router.push({ name: 'projects', params: { id } });
+    handleProjectChange(index: number) {
+      this.pageIndex = index;
+      this.$router.push({ name: 'projects', params: { id: this.selectedProjects[index] } });
     },
     handleClick(event: __esri.MapViewClickEvent) {
+      this.pageIndex = 0;
       this.view.hitTest(event).then((response: __esri.HitTestResult) => {
         if (response.results.length) {
           this.selectedProjects = new Array<string>();
