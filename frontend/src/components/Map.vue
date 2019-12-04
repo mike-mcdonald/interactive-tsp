@@ -134,14 +134,15 @@ import Vue from 'vue';
 import { mapState, mapActions, mapMutations } from 'vuex';
 
 import * as _ from 'lodash';
-import proj4 from 'proj4';
 import * as turf from '@turf/helpers';
 
+import { whenTrue } from 'esri/core/watchUtils';
 import Map from 'esri/Map';
 import Extent from 'esri/geometry/Extent';
 import { Point, Polyline } from 'esri/geometry';
 import Graphic from 'esri/Graphic';
 import GraphicsLayer from 'esri/layers/GraphicsLayer';
+import Layer from 'esri/layers/Layer';
 import SimpleLineSymbol from 'esri/symbols/SimpleLineSymbol';
 import MapView from 'esri/views/MapView';
 import Legend from 'esri/widgets/Legend';
@@ -149,9 +150,6 @@ import Legend from 'esri/widgets/Legend';
 import Checkbox from 'portland-pattern-lab/source/_patterns/02-molecules/form/Checkbox.vue';
 import X from 'portland-pattern-lab/source/_patterns/01-atoms/04-images/X.vue';
 import { MapState } from '../store/map/types';
-
-// ESRI maps use this wkid
-proj4.defs('102100', proj4.defs('EPSG:3857'));
 
 export default Vue.extend({
   name: 'Map',
@@ -163,6 +161,9 @@ export default Vue.extend({
     legend: {
       type: Boolean,
       default: true
+    },
+    layers: {
+      type: Array
     }
   },
   data: function() {
@@ -178,18 +179,15 @@ export default Vue.extend({
     ...mapState('map', {
       map: (state: MapState) => state.map,
       extent: (state: MapState) => state.extent,
-      layers: (state: MapState) => state.layers,
       basemaps: (state: MapState) => state.basemaps,
       zoom: (state: MapState) => state.zoom.current
     })
   },
   methods: {
-    ...mapActions('map', ['setExtent', 'setLocation', 'setZoom', 'setLayerVisibility']),
-    ...mapMutations('map', ['setView']),
-    ...mapActions('streets', ['findStreets', 'findStreet', 'routeStreetByRTree']),
+    ...mapActions('map', ['setExtent', 'setZoom', 'setLayerVisibility']),
+    ...mapMutations('map', ['setView', 'setLayers']),
     toggleLayerVisibility(id: string, value: Boolean) {
       this.setLayerVisibility({ layerId: id, visible: value });
-      console.log(`"${id}": ${value}`);
     },
     incrementZoom() {
       this.setZoom(this.zoom + 1);
@@ -204,6 +202,8 @@ export default Vue.extend({
       map: this.map,
       extent: this.extent
     });
+
+    this.setLayers(this.layers);
 
     view.ui.remove('zoom');
 
@@ -235,47 +235,17 @@ export default Vue.extend({
       'extent',
       _.debounce((newValue: __esri.Extent) => {
         this.setExtent(newValue);
+        this.$emit('extent-change', newValue);
       }, 500)
     );
 
     view.on('click', (event: __esri.MapViewClickEvent) => {
-      if (view.zoom >= 12) {
-        // width of map in map units
-        var mapWidth = view.extent.width;
+      this.$emit('click', event);
+    });
 
-        //Divide width in map units by width in pixels
-        var pixelWidth = mapWidth / view.width;
-
-        //Calculate a 20 pixel envelope width (10 pixel tolerance on each side)
-        var tolerance = 20 * pixelWidth;
-
-        //Build tolerance envelope and set it as the query geometry
-        var queryExtent = new Extent({
-          spatialReference: event.mapPoint.spatialReference,
-          xmin: 1,
-          xmax: tolerance,
-          ymin: 1,
-          ymax: tolerance
-        });
-
-        // this changes the extent to one that has the same dimensions, but around the target, where the user clicked
-        queryExtent.centerAt(event.mapPoint);
-
-        // all our geometries are retrieved, and thus stored, in 4326
-        let bbox: turf.BBox = [0, 0, 0, 0];
-        [bbox[0], bbox[1]] = proj4(event.mapPoint.spatialReference.wkid.toString(), 'EPSG:4326', [
-          queryExtent.xmin,
-          queryExtent.ymin
-        ]);
-        [bbox[2], bbox[3]] = proj4(event.mapPoint.spatialReference.wkid.toString(), 'EPSG:4326', [
-          queryExtent.xmax,
-          queryExtent.ymax
-        ]);
-
-        // find the nearest street to select it
-        this.routeStreetByRTree(bbox);
-      } else {
-        this.setLocation(event.mapPoint);
+    whenTrue(view, 'stationary', () => {
+      if (view.zoom) {
+        this.setZoom(view.zoom);
       }
     });
 

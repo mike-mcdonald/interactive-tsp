@@ -114,38 +114,6 @@ export const actions: ActionTree<StreetState, RootState> = {
         commit('setMessage', 'Error retrieving streets!', { root: true });
       });
   },
-  routeStreetByRTree({ dispatch, state }, bbox: turf.BBox) {
-    if (!state.rtree) {
-      return undefined;
-    }
-    // find nearest street
-    // buffer point by X meters
-    let streets = state.rtree.search({
-      minX: bbox[0],
-      minY: bbox[1],
-      maxX: bbox[2],
-      maxY: bbox[3]
-    });
-    if (streets.length > 0) {
-      const center = centroid(bboxPolygon(bbox));
-      streets = streets.sort((a, b) => {
-        if (!a.geometry || !b.geometry) {
-          return Number.MAX_SAFE_INTEGER;
-        }
-
-        const nearestA = nearestPointOnLine(a.geometry, center, { units: 'meters' });
-        const nearestB = nearestPointOnLine(b.geometry, center, { units: 'meters' });
-
-        if (!nearestA.properties || !nearestB.properties) {
-          return Number.MAX_SAFE_INTEGER;
-        }
-
-        return nearestA.properties.dist - nearestB.properties.dist;
-      });
-      router.push({ name: 'streets', params: { id: streets[0].id } });
-      dispatch('selectStreetById', streets[0].id);
-    }
-  },
   selectStreetById({ commit, dispatch, state }, id: string) {
     commit('setMessage', undefined, { root: true });
     let street: Street = { id };
@@ -216,16 +184,16 @@ export const actions: ActionTree<StreetState, RootState> = {
             }
           }
           commit('setSelectedStreet', data.street);
-          dispatch('highlightStreet', data.street);
+          dispatch('highlightStreet', { street: data.street, move: true });
         }
       })
       .catch(() => {
         commit('setMessage', 'Error retrieving the selected street!', { root: true });
       });
   },
-  highlightStreet({ commit }, street: Street) {
+  highlightStreet({ commit }, { street, move }) {
     if (street.geometry) {
-      commit('map/setGraphics', esriGraphics(street.geometry), { root: true });
+      commit('map/setGraphics', { graphics: esriGraphics(street.geometry), move }, { root: true });
     }
   }
 };

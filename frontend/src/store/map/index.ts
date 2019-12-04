@@ -52,7 +52,8 @@ const layers = [
     ].map(
       url =>
         new FeatureLayer({
-          url
+          url,
+          outFields: ['*']
         })
     )
   }),
@@ -67,7 +68,8 @@ const layers = [
     ].map(
       url =>
         new FeatureLayer({
-          url
+          url,
+          outFields: ['*']
         })
     )
   }),
@@ -83,7 +85,8 @@ const layers = [
     ].map(
       url =>
         new FeatureLayer({
-          url
+          url,
+          outFields: ['*']
         })
     )
   }),
@@ -99,7 +102,8 @@ const layers = [
     ].map(
       url =>
         new FeatureLayer({
-          url
+          url,
+          outFields: ['*']
         })
     )
   }),
@@ -114,7 +118,8 @@ const layers = [
     ].map(
       url =>
         new FeatureLayer({
-          url
+          url,
+          outFields: ['*']
         })
     )
   }),
@@ -129,7 +134,8 @@ const layers = [
     ].map(
       url =>
         new FeatureLayer({
-          url
+          url,
+          outFields: ['*']
         })
     )
   }),
@@ -137,7 +143,8 @@ const layers = [
     id: 'traffic-classifications',
     title: 'Traffic classes',
     url: 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/4',
-    visible: false
+    visible: false,
+    outFields: ['*']
   }),
   new GroupLayer({
     id: 'projects',
@@ -151,7 +158,8 @@ const layers = [
     ].map(
       url =>
         new FeatureLayer({
-          url
+          url,
+          outFields: ['*']
         })
     )
   })

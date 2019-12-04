@@ -7,7 +7,7 @@ import { GraphQLList, GraphQLNonNull, GraphQLObjectType } from 'graphql';
 import { streetType, getStreet, getStreets } from './street';
 import { addressType, getCandidates } from './address';
 import { sectionType, getText, Section } from './text';
-import { projectType, getProjectsById } from './project';
+import { projectType, getProjectsById, getProjectsByBBox } from './project';
 
 /**
  * This is the type that will be the root of our query, and the
@@ -58,6 +58,25 @@ const queryType = new GraphQLObjectType({
       resolve: (root, { id }) => {
         if (id) {
           return getProjectsById(id);
+        }
+      }
+    },
+    projects: {
+      type: GraphQLList(projectType),
+      description: 'Find streets in Portland by using a bounding box',
+      args: {
+        bbox: {
+          description: 'Array of numbers representing a bounding box to return streets for',
+          type: GraphQLList(GraphQLFloat)
+        },
+        spatialReference: {
+          description: 'The spatial reference well-known ID ("wkid").',
+          type: GraphQLNonNull(GraphQLInt)
+        }
+      },
+      resolve: (root, { bbox, spatialReference }) => {
+        if (bbox) {
+          return getProjectsByBBox(bbox, spatialReference);
         }
       }
     },

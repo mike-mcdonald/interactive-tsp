@@ -2,11 +2,16 @@ import MapView from 'esri/views/MapView';
 
 import { MutationTree } from 'vuex';
 import { MapState } from './types';
+import Layer from 'esri/layers/Layer';
 
 export const mutations: MutationTree<MapState> = {
   setView(state, view: MapView) {
     state.view = view;
     view.map = state.map;
+  },
+  setLayers(state, layers) {
+    state.layers = layers;
+    state.map.layers = layers;
   },
   extentChanged(state, extent) {
     state.extent = extent;
@@ -22,11 +27,11 @@ export const mutations: MutationTree<MapState> = {
 
     if (layer) layer.visible = visible;
   },
-  setGraphics(state, graphics) {
+  setGraphics(state, { graphics, move }) {
     if (state.view) {
       state.view.graphics.removeAll();
       state.view.graphics.addMany(graphics);
-      state.view.goTo(graphics);
+      if (move) state.view.goTo(graphics);
     }
   },
   addGraphic(state, graphic) {

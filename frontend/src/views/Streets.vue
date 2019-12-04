@@ -22,7 +22,7 @@
       </div>
       <transition name="fade">
         <ul v-if="!$route.params.id" class="list-none">
-          <li v-for="street in streets" :key="street.id" @mouseover="highlightStreet(street)">
+          <li v-for="street in streets" :key="street.id" @mouseover="highlightStreet({ street, move: false })">
             <router-link
               :to="street.id"
               append
@@ -38,15 +38,18 @@
       <street-component v-if="$route.params.id && selectedStreet" :street="selectedStreet" />
     </section>
     <section class="w-full md:w-2/3 h-screen-50 md:h-screen">
-      <app-map></app-map>
+      <app-map :layers="layers" v-on:click="handleClick" v-on:extent-change="findStreets($event)"></app-map>
     </section>
   </main>
 </template>
 <script lang="ts">
 import Vue from 'vue';
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapMutations } from 'vuex';
 
-import { Polyline } from 'esri/geometry';
+import proj4 from 'proj4';
+import { BBox } from '@turf/helpers';
+
+import { Polyline, Extent } from 'esri/geometry';
 import Graphic from 'esri/Graphic';
 import { SimpleLineSymbol } from 'esri/symbols';
 
@@ -58,6 +61,9 @@ import StreetComponent from '@/components/Street.vue';
 import { Street, StreetState } from '../store/streets/types';
 import { AddressCandidate } from '../store/portlandmaps/types';
 
+// ESRI maps use this wkid
+proj4.defs('102100', proj4.defs('EPSG:3857'));
+
 export default Vue.extend({
   name: 'Streets',
   components: {
@@ -67,7 +73,9 @@ export default Vue.extend({
   },
   computed: {
     ...mapState(['message']),
+    ...mapState('map', ['view']),
     ...mapState('streets', {
+      layers: (state: StreetState) => state.layers,
       streets: (state: StreetState) => state.list,
       selectedStreet: (state: StreetState) => state.selected
     })
@@ -90,8 +98,17 @@ export default Vue.extend({
     goToAddress(address: AddressCandidate) {
       this.setLocation(address.location);
     },
-    ...mapActions('map', ['clearGraphics', 'addGraphic', 'setLocation']),
-    ...mapActions('streets', ['selectStreet', 'selectStreetById'])
+    handleClick(event: __esri.MapViewClickEvent) {
+      this.view.hitTest(event).then((response: __esri.HitTestResult) => {
+        if (response.results.length) {
+          var graphic = response.results[0].graphic;
+          // do something with the result graphic
+          this.$router.push({ name: 'streets', params: { id: graphic.attributes.TranPlanID } });
+        }
+      });
+    },
+    ...mapActions('map', ['clearGraphics', 'setLocation']),
+    ...mapActions('streets', ['findStreets', 'selectStreet', 'selectStreetById', 'highlightStreet'])
   }
 });
 </script>
