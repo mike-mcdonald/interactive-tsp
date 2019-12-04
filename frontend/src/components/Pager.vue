@@ -1,5 +1,5 @@
 <template>
-  <section class="flex justify-between">
+  <section class="flex items-center justify-between">
     <button
       title="Go to previous page"
       rel="prev"
@@ -26,6 +26,7 @@
         </svg>
       </span>
     </button>
+    <span class="mx-2">{{ value + 1 }} of {{ list.length }}</span>
     <button
       title="Go to next page"
       rel="prev"
