@@ -22,7 +22,7 @@
       </div>
       <pager
         class="m-2"
-        v-if="selectedProjects && selectedProjects.length > 1"
+        v-if="$route.params.id && selectedProjects && selectedProjects.length > 1"
         :list="selectedProjects"
         @change="handleProjectChange"
       />
@@ -82,7 +82,7 @@
           </li>
         </ul>
       </transition>
-      <project-component v-if="selectedProject" :project="selectedProject"></project-component>
+      <project-component v-if="$route.params.id && selectedProject" :project="selectedProject"></project-component>
     </section>
     <section class="w-full md:w-2/3 h-screen-50 md:h-screen">
       <app-map :layers="layers" v-on:click="handleClick" v-on:extent-change="handleExtentChange"></app-map>
