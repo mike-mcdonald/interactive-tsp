@@ -67,21 +67,6 @@ export default Vue.extend({
     list: {
       type: Array
     }
-  },
-  data() {
-    return {
-      innerValue: 1
-    };
-  },
-  computed: {
-    selected: {
-      get: () => {
-        return this.value || this.innerValue;
-      },
-      set: newValue => {
-        this.innerValue = newValue;
-      }
-    }
   }
 });
 </script>
