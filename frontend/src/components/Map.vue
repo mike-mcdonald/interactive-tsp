@@ -136,6 +136,7 @@ import { mapState, mapActions, mapMutations } from 'vuex';
 import * as _ from 'lodash';
 import * as turf from '@turf/helpers';
 
+import { whenTrue } from 'esri/core/watchUtils';
 import Map from 'esri/Map';
 import Extent from 'esri/geometry/Extent';
 import { Point, Polyline } from 'esri/geometry';
@@ -240,6 +241,12 @@ export default Vue.extend({
 
     view.on('click', (event: __esri.MapViewClickEvent) => {
       this.$emit('click', event);
+    });
+
+    whenTrue(view, 'stationary', () => {
+      if (view.zoom) {
+        this.setZoom(view.zoom);
+      }
     });
 
     this.setView(view);
