@@ -3,7 +3,7 @@
     <aside class="md:w-1/3 px-2">
       <nav class="md:sticky md:top-10 md:overflow-y-auto md:max-h-(screen-16)">
         <ol class="list-none">
-          <listing
+          <text-listing
             v-for="section in sections"
             :key="section.id"
             :id="section.id"
@@ -30,14 +30,14 @@
 import Vue from 'vue';
 
 import TextSection from '@/components/text/Section.vue';
-import Listing from '@/components/text/Listing.vue';
+import TextListing from '@/components/text/Listing.vue';
 import { mapState, mapActions } from 'vuex';
 
 export default Vue.extend({
   name: 'TextView',
   components: {
     TextSection,
-    Listing
+    TextListing
   },
   computed: {
     ...mapState('text', ['sections'])
