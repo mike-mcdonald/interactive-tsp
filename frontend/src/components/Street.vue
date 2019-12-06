@@ -22,6 +22,7 @@
             <dt>{{ classification.charAt(0).toUpperCase() + classification.slice(1) }} classification:</dt>
             <dd class="ml-2">
               <router-link
+                v-if="classification != 'greenscape' && street.classifications[classification] != 'N/A'"
                 :to="{
                   name: 'text',
                   hash: `#${street.classifications[classification]
@@ -29,8 +30,10 @@
                     .split(' ')
                     .join('-')}`
                 }"
+                class="border-current border-b-2"
                 >{{ street.classifications[classification] }}</router-link
               >
+              <span v-else>{{ street.classifications[classification] }}</span>
             </dd>
           </div>
         </dl>
