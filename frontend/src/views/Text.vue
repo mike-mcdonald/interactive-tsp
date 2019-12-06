@@ -33,8 +33,6 @@ import TextSection from '@/components/text/Section.vue';
 import Listing from '@/components/text/Listing.vue';
 import { mapState, mapActions } from 'vuex';
 
-const TIMEOUT = 1;
-
 export default Vue.extend({
   name: 'TextView',
   components: {
