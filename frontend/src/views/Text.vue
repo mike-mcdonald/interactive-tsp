@@ -98,10 +98,10 @@ export default Vue.extend({
   }
 
   table {
-    @apply table-fixed border-collapse border-2;
+    @apply table-fixed border-collapse my-3 border-2 border-current;
     th,
     td {
-      @apply border px-4 py-2;
+      @apply border border-current px-4 py-2;
     }
   }
 }
