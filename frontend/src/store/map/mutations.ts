@@ -16,9 +16,12 @@ export const mutations: MutationTree<MapState> = {
   extentChanged(state, extent) {
     state.extent = extent;
   },
-  goTo(state, { target, move }) {
+  changeZoom(state, zoom) {
+    state.zoom.current = zoom;
+  },
+  goTo(state, target) {
     state.zoom.current = target.zoom || state.zoom.current;
-    if (move) state.view?.goTo(target);
+    state.view?.goTo(target);
   },
   layerVisibilityChanged(state, { layerId, visible }) {
     const layer = state.layers.find(l => {
@@ -27,11 +30,10 @@ export const mutations: MutationTree<MapState> = {
 
     if (layer) layer.visible = visible;
   },
-  setGraphics(state, { graphics, move }) {
+  setGraphics(state, graphics) {
     if (state.view) {
       state.view.graphics.removeAll();
       state.view.graphics.addMany(graphics);
-      if (move) state.view.goTo(graphics);
     }
   },
   addGraphic(state, graphic) {

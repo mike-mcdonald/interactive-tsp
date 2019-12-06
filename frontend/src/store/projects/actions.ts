@@ -122,6 +122,7 @@ export const actions: ActionTree<ProjectState, RootState> = {
         graphics.push(...esriGraphics(project.geometry));
       }
     });
-    commit('map/setGraphics', { graphics, move }, { root: true });
+    commit('map/setGraphics', graphics, { root: true });
+    if (move) commit('map/goTo', graphics, { root: true });
   }
 };

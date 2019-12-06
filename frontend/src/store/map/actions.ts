@@ -18,31 +18,27 @@ export const actions: ActionTree<MapState, RootState> = {
   setZoom({ commit, state }, { value, move }: { value: number; move: boolean }) {
     if (state.view && value > 0) {
       if (value >= state.zoom.min && value <= state.zoom.max) {
-        commit('goTo', {
-          target: {
+        commit('changeZoom', value);
+        if (move)
+          commit('goTo', {
             center: state.view.center,
             zoom: value
-          },
-          move
-        });
+          });
       }
     }
   },
   setLocation({ commit, state }, location: Location | __esri.Point) {
     commit('goTo', {
-      target: {
-        center: new Point({
-          x: location.x,
-          y: location.y,
-          spatialReference: location.spatialReference.wkid
-        }),
-        zoom: state.zoom.focus
-      },
-      move: true
+      center: new Point({
+        x: location.x,
+        y: location.y,
+        spatialReference: location.spatialReference.wkid
+      }),
+      zoom: state.zoom.focus
     });
   },
   clearGraphics({ commit }) {
-    commit('setGraphics', { graphics: [] });
+    commit('setGraphics', []);
   },
   addGraphic({ commit }, graphic: Graphic) {
     commit('addGraphic', graphic);

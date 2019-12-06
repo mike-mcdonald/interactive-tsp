@@ -193,7 +193,9 @@ export const actions: ActionTree<StreetState, RootState> = {
   },
   highlightStreet({ commit }, { street, move }) {
     if (street.geometry) {
-      commit('map/setGraphics', { graphics: esriGraphics(street.geometry), move }, { root: true });
+      const graphics = esriGraphics(street.geometry);
+      commit('map/setGraphics', graphics, { root: true });
+      if (move) commit('map/goTo', graphics, { root: true });
     }
   }
 };
