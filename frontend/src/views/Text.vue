@@ -15,7 +15,7 @@
         </ol>
       </nav>
     </aside>
-    <article class="md:w-2/3 px-2">
+    <article id="tsp-text" class="md:w-2/3 px-2">
       <text-section
         v-for="section in sections"
         :key="section.id"
@@ -52,7 +52,7 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-article {
+#tsp-text {
   h1 {
     @apply text-3xl mb-6;
   }
@@ -83,6 +83,26 @@ article {
 
   blockquote {
     @apply px-2 pt-1 border-l-4 border-fog-900 rounded-r bg-fog-200;
+  }
+
+  a {
+    @apply border-current border-b-2;
+  }
+
+  ul {
+    @apply list-outside list-disc pl-4;
+  }
+
+  ol {
+    @apply list-outside list-decimal pl-4;
+  }
+
+  table {
+    @apply table-fixed border-collapse border-2;
+    th,
+    td {
+      @apply border px-4 py-2;
+    }
   }
 }
 
