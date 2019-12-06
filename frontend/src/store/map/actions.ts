@@ -15,12 +15,15 @@ export const actions: ActionTree<MapState, RootState> = {
   setLayerVisibility({ commit }, { layerId, visible }) {
     commit('layerVisibilityChanged', { layerId, visible });
   },
-  setZoom({ commit, state }, value: number) {
+  setZoom({ commit, state }, { value, move }: { value: number; move: boolean }) {
     if (state.view && value > 0) {
       if (value >= state.zoom.min && value <= state.zoom.max) {
         commit('goTo', {
-          center: state.view.center,
-          zoom: value
+          target: {
+            center: state.view.center,
+            zoom: value
+          },
+          move
         });
       }
     }
