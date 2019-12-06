@@ -190,10 +190,10 @@ export default Vue.extend({
       this.setLayerVisibility({ layerId: id, visible: value });
     },
     incrementZoom() {
-      this.setZoom(this.zoom + 1);
+      this.setZoom({ value: this.zoom + 1, move: true });
     },
     decrementZoom() {
-      this.setZoom(this.zoom - 1);
+      this.setZoom({ value: this.zoom - 1, move: true });
     }
   },
   mounted: function() {
