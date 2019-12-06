@@ -20,7 +20,18 @@
             class="flex flex-wrap items-center mb-2"
           >
             <dt>{{ classification.charAt(0).toUpperCase() + classification.slice(1) }} classification:</dt>
-            <dd class="ml-2">{{ street.classifications[classification] }}</dd>
+            <dd class="ml-2">
+              <router-link
+                :to="{
+                  name: 'text',
+                  hash: `#${street.classifications[classification]
+                    .toLowerCase()
+                    .split(' ')
+                    .join('-')}`
+                }"
+                >{{ street.classifications[classification] }}</router-link
+              >
+            </dd>
           </div>
         </dl>
       </section>

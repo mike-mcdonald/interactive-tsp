@@ -80,6 +80,10 @@ article {
   p {
     @apply mb-3;
   }
+
+  blockquote {
+    @apply px-2 pt-1 border-l-4 border-fog-900 rounded-r bg-fog-200;
+  }
 }
 
 @variants hover, focus {
