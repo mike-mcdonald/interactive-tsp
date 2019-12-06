@@ -50,7 +50,7 @@ export const sectionType: GraphQLObjectType = new GraphQLObjectType({
 export const getText = (): Promise<Section[]> =>
   new Promise<Section[]>((resolve, reject) => {
     Metalsmith(__dirname)
-      .source('docs')
+      .source('../../docs')
       .destination('docs')
       .clean(false) // do not clean destination
       // directory before new build
