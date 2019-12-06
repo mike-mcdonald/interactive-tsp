@@ -5,6 +5,7 @@ import { map } from './map/index';
 import streets from './streets/index';
 import portlandmaps from './portlandmaps/index';
 import projects from './projects/index';
+import text from './text/index';
 
 import { mutations } from './mutations';
 
@@ -20,7 +21,8 @@ const store: StoreOptions<RootState> = {
     map,
     portlandmaps,
     projects,
-    streets
+    streets,
+    text
   }
 };
 
