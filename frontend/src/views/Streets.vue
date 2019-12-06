@@ -84,6 +84,7 @@ export default Vue.extend({
     next(vm => {
       // access to component instance via `vm`
       if (to.params.id) {
+        vm.$store.dispatch('text/findText');
         vm.$store.dispatch('streets/selectStreetById', to.params.id);
       }
     });
