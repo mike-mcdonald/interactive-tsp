@@ -9,6 +9,7 @@
             :id="section.id"
             :name="section.name"
             :depth="section.depth"
+            :max-depth="1"
             :sections="section.sections"
           />
         </ol>
