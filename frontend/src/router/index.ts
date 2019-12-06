@@ -27,7 +27,7 @@ export default new Router({
     },
     {
       path: '/text',
-      name: 'Text',
+      name: 'text',
       component: Text
     }
   ],
