@@ -3,7 +3,7 @@ tree:
   - 6
   - 7
   - 5
-id: neighborhood-collector
+id: neighborhood-collector-street
 name: Neighborhood Collectors
 ---
 ### Neighborhood Collectors

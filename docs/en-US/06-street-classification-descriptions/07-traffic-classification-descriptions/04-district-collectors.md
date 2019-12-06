@@ -3,7 +3,7 @@ tree:
   - 6
   - 7
   - 4
-id: district-collector
+id: district-collector-street
 name: District Collectors
 ---
 ### District Collectors
