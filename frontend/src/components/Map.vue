@@ -245,7 +245,7 @@ export default Vue.extend({
 
     whenTrue(view, 'stationary', () => {
       if (view.zoom) {
-        this.setZoom(view.zoom);
+        this.setZoom({ value: view.zoom, move: false });
       }
     });
 
