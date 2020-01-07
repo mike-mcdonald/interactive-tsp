@@ -1,11 +1,15 @@
 import axios from 'axios';
 import bbox from '@turf/bbox';
 
-import { GraphQLObjectType, GraphQLNonNull, GraphQLString, GraphQLFloat, GraphQLInt, parse } from 'graphql';
+import { GraphQLObjectType, GraphQLNonNull, GraphQLString, GraphQLFloat, GraphQLInt } from 'graphql';
 import { Street } from './street';
 import { Feature, Geometry, BBox, LineString, GeometryCollection } from '@turf/helpers';
 import { GeometryObject } from './geojson';
 import proj4 from 'proj4';
+
+// ESRI maps use this wkid
+proj4.defs('102100', proj4.defs('EPSG:3857'));
+proj4.defs('EPSG:102100', proj4.defs('EPSG:3857'));
 
 const URLS = [
   'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/22',
