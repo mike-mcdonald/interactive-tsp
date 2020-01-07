@@ -40,7 +40,16 @@ export default Vue.extend({
   },
   computed: {
     classes() {
-      return [`ml-${+this.depth * 2}`, this.depth == 0 ? 'font-bold' : 'font-base'];
+      return [
+        `ml-${+this.depth * 2}`,
+        'border-2',
+        'border-transparent',
+        'hover:text-blue-800',
+        'focus:text-blue-800',
+        'focus:border-2',
+        'focus:border-current',
+        this.depth == 0 ? 'font-bold' : 'font-base'
+      ];
     }
   }
 });
