@@ -1,13 +1,15 @@
 export interface TextSection {
-  id: String;
-  name: String;
+  id: string;
+  name: string;
   number: number;
   tree: number[];
   depth: number;
-  content: String;
+  content: string;
   sections?: TextSection[];
 }
 
 export interface TextState {
   sections?: TextSection[];
+  index?: lunr.Index;
+  candidates?: TextSection[];
 }

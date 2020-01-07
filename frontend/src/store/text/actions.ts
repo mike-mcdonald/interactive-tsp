@@ -3,18 +3,11 @@ import { TextState, TextSection } from './types';
 import { RootState } from '../types';
 
 import axios from 'axios';
+import lunr from 'lunr';
 
-function traverse(section: TextSection, sections: TextSection[]) {
-  return sections.reduce((prev, curr) => {
-    if (
-      curr.depth == section.depth + 1 &&
-      JSON.stringify(curr.tree) == JSON.stringify([...section.tree, section.number])
-    ) {
-      curr.sections = traverse(curr, sections).sort((a, b) => a.number - b.number);
-      prev.push(curr);
-    }
-    return prev;
-  }, new Array<TextSection>());
+function strip(html: string) {
+  var doc = new DOMParser().parseFromString(html, 'text/html');
+  return doc.body.textContent || '';
 }
 
 export const actions: ActionTree<TextState, RootState> = {
@@ -43,21 +36,45 @@ export const actions: ActionTree<TextState, RootState> = {
           commit('setMessage', 'The text may contain errors...', { root: true });
         }
         if (res.data.data.sections) {
-          let sections = res.data.data.sections
-            .reduce((prev: TextSection[], curr: TextSection) => {
-              if (curr.depth == 0) {
-                curr.sections = traverse(curr, res.data.data.sections).sort((a, b) => a.number - b.number);
-                prev.push(curr);
-              }
-              return prev;
-            }, new Array<TextSection>())
-            .sort((a: TextSection, b: TextSection) => a.number - b.number);
+          commit('setText', res.data.data.sections);
 
-          commit('setText', sections);
+          const idx = lunr(function () {
+            this.ref('id');
+            this.field('name');
+            this.field('content');
+
+            res.data.data.sections.forEach((doc: TextSection) => {
+              let { content, ...d } = doc;
+              content = strip(content);
+              this.add(Object.assign(d, { content }));
+            });
+          });
+
+          commit('setIndex', idx);
         }
       })
       .catch(() => {
         commit('setMessage', 'Error retrieving text!', { root: true });
       });
+  },
+  searchIndex({ state, commit }, query) {
+    let candidates = state.index?.search(query).map(val => {
+      const s = state.sections?.find(sec => {
+        return sec.id == val.ref;
+      });
+      if (s) {
+        const { number, tree, depth, sections, ...c } = s;
+        c.content = strip(c.content)
+          .replace(c.name, ' ')
+          .split(' ')
+          .slice(0, 30)
+          .join(' ')
+          .concat('...');
+        return c;
+      }
+      return undefined;
+    });
+
+    commit('setCandidates', candidates);
   }
 };
