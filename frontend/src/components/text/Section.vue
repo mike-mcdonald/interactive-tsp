@@ -1,6 +1,6 @@
 <template>
-  <section>
-    <a :id="id" :class="['float-left']"></a>
+  <section :class="classes">
+    <a ref="anchor" :id="id" :class="['float-left']"></a>
     <span v-html="content"></span>
     <div>
       <text-section
@@ -30,6 +30,33 @@ export default Vue.extend({
     sections: {
       type: Array
     }
+  },
+  computed: {
+    classes() {
+      if (`#${this.id}` == this.$route.hash) {
+        return ['active', '-mx-2', 'px-2', 'bg-cyan-100', 'border', 'border-cyan-800', 'rounded', 'shadow'];
+      }
+      return undefined;
+    }
+  },
+  mounted() {
+    if (this.$route.hash == `#${this.id}`) {
+      setTimeout(() => {
+        (this.$refs['anchor'] as Element).scrollIntoView();
+      }, 100);
+    }
   }
 });
 </script>
+
+<style lang="scss">
+article {
+  section {
+    &.active {
+      blockquote {
+        @apply bg-cyan-200 border-cyan-900;
+      }
+    }
+  }
+}
+</style>
