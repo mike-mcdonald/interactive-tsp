@@ -22,12 +22,13 @@
       </div>
       <transition name="fade">
         <ul v-if="!$route.params.id" class="list-none">
-          <li v-for="street in streets" :key="street.id" @mouseover="highlightStreet({ street, move: false })">
+          <li v-for="street in streets" :key="street.id">
             <router-link
               :to="street.id"
               append
-              class="flex flex-col m-2 px-2 py-3 shadow rounded bg-white hover:bg-blue-100"
-              :class="{ 'border-t': index == 0 }"
+              class="flex flex-col m-2 px-2 py-3 shadow rounded bg-white hover:bg-blue-100 focus:bg-blue-100"
+              @mouseover.native="highlightStreet({ street, move: false })"
+              @focus.native="highlightStreet({ street, move: false })"
             >
               <div>{{ street.name }}</div>
               <div v-if="street.block" class="text-xs">{{ street.block }} block</div>
