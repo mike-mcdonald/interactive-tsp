@@ -6,7 +6,7 @@
     <div ref="top-left">
       <slot name="top-left">
         <div class="flex flex-col">
-          <button class="p-2 bg-white border border-fog-900" v-on:click="incrementZoom">
+          <button aria-label="Zoom in" class="p-2 bg-white border border-fog-900" v-on:click="incrementZoom">
             <!-- This is from feather.  Their site is here: https://www.feathericons.com -->
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -24,7 +24,7 @@
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
           </button>
-          <button class="p-2 bg-white border border-fog-900" v-on:click="decrementZoom">
+          <button aria-label="Zoom out" class="p-2 bg-white border border-fog-900" v-on:click="decrementZoom">
             <!-- This is from feather.  Their site is here: https://www.feathericons.com -->
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -46,7 +46,12 @@
     </div>
     <div ref="top-right">
       <slot name="top-right">
-        <button v-if="!showSettings" class="p-2 bg-white border border-fog-900" v-on:click="showSettings = true">
+        <button
+          aria-label="Show map settings"
+          v-if="!showSettings"
+          class="p-2 bg-white border border-fog-900"
+          v-on:click="showSettings = true"
+        >
           <!-- This is from feather.  Their site is here: https://www.feathericons.com -->
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -90,7 +95,12 @@
     </div>
     <div ref="bottom-right">
       <slot name="bottom-right">
-        <button v-if="!showLegend" class="p-2 bg-white border border-fog-900" v-on:click="showLegend = true">
+        <button
+          aria-label="Show legend"
+          v-if="!showLegend"
+          class="p-2 bg-white border border-fog-900"
+          v-on:click="showLegend = true"
+        >
           <!--
             This is from feather.  Their site is here: https://www.feathericons.com
             Their license is here: https://github.com/feathericons/feather/blob/master/LICENSE
