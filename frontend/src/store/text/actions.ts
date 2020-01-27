@@ -24,7 +24,7 @@ export const actions: ActionTree<TextState, RootState> = {
     }
 
     axios
-      .get(rootState.graphql_url, {
+      .get(rootState.graphqlUrl, {
         params: {
           query: `{
             sections {

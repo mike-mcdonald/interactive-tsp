@@ -61,7 +61,7 @@ function generateColors(colorHex) {
 module.exports = {
   theme: {
     fontFamily: {
-      sans: ['Open Sans']
+      sans: ['Open Sans', 'sans-serif']
     },
     colors: {
       transparent: 'transparent',

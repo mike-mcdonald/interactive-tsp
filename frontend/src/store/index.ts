@@ -11,10 +11,13 @@ import { mutations } from './mutations';
 
 Vue.use(Vuex);
 
+// following variable comes from webpack DefinePlugin
+declare var GRAPHQL_URL: string;
+
 const store: StoreOptions<RootState> = {
   state: {
     message: undefined,
-    graphql_url: 'http://localhost:4000/graphql'
+    graphqlUrl: GRAPHQL_URL
   },
   mutations,
   modules: {

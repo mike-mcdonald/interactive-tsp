@@ -1,6 +1,6 @@
 const merge = require('webpack-merge');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { HotModuleReplacementPlugin, ProgressPlugin } = require('webpack');
+const { DefinePlugin, HotModuleReplacementPlugin, ProgressPlugin } = require('webpack');
 
 const base = require('./webpack.common.config');
 
@@ -11,6 +11,9 @@ module.exports = merge(base, {
     filename: '[name].js'
   },
   plugins: [
+    new DefinePlugin({
+      GRAPHQL_URL: JSON.stringify('http://localhost:4000/graphql')
+    }),
     new HtmlWebpackPlugin({
       title: 'Transportation System Plan',
       template: 'public/index.html',
@@ -55,7 +58,10 @@ module.exports = merge(base, {
             options: {
               sourceMap: true,
               config: {
-                path: './postcss.config.js'
+                path: './postcss.config.js',
+                ctx: {
+                  mode: 'development'
+                }
               }
             }
           },
