@@ -1,8 +1,8 @@
 <template>
-  <article class="p-2">
-    <h1 class="mb-3 text-3xl lg:text-4xl">{{ street.name }}</h1>
-    <p class="mb-3 text-2xl" v-if="street.block">{{ street.block }} block</p>
-    <div class="flex flex-wrap items-center mb-3">
+  <article>
+    <h1 class="m-2 mb-3 text-3xl lg:text-4xl">{{ street.name }}</h1>
+    <p class="m-2 mb-3 text-2xl" v-if="street.block">{{ street.block }} block</p>
+    <div class="m-2 mb-3 flex flex-wrap items-center">
       <dl>
         <div class="flex flex-wrap items-center">
           <dt>Transportation planning ID:</dt>
@@ -11,7 +11,7 @@
       </dl>
     </div>
     <transition name="fade">
-      <section v-if="street.classifications">
+      <section class="m-2" v-if="street.classifications">
         <h2 class="mb-3 text-2xl lg:text-3xl">Classifications</h2>
         <dl>
           <div
@@ -39,13 +39,15 @@
         </dl>
       </section>
     </transition>
-
     <transition name="fade">
       <section v-if="street.projects && street.projects.length > 0">
-        <h2 class="mb-3 text-2xl lg:text-3xl">Projects affecting this street</h2>
-        <ul class>
-          <li class="my-2 p-2 rounded border" v-for="project in street.projects" :key="project.id">
-            <router-link :to="`/projects/${project.id}`">
+        <h2 class="m-2 mb-3 text-2xl lg:text-3xl">Projects affecting this street</h2>
+        <ul class="list-none">
+          <li v-for="project in street.projects" :key="project.id">
+            <router-link
+              :to="`/projects/${project.id}`"
+              class="flex flex-col m-2 px-2 py-3 shadow rounded bg-white hover:bg-blue-100 focus:bg-blue-100"
+            >
               <h3 class="mb-1">{{ project.name }}</h3>
               <p class="text-xs">{{ project.description }}</p>
               <div class="flex flex-row flex-wrap -mx-2 text-xs text-gray-600">
