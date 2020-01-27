@@ -1,5 +1,6 @@
 <template>
   <main class="flex flex-col-reverse md:flex-row">
+    <h1 class="sr-only">Project listings</h1>
     <section
       class="w-full md:w-1/3 h-screen-50 md:h-screen overflow-y-auto border-t md:border-r md:border-t-0 border-black"
     >
