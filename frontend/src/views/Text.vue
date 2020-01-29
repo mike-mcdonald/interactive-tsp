@@ -4,7 +4,7 @@
       <nav class="md:sticky md:top-10 md:overflow-y-auto md:max-h-(screen-16)">
         <ol class="list-none">
           <text-listing
-            v-for="section in sections"
+            v-for="section in sectionTree"
             :key="section.id"
             :id="section.id"
             :name="section.name"
@@ -15,24 +15,65 @@
         </ol>
       </nav>
     </aside>
-    <article id="tsp-text" class="md:w-2/3 px-2">
-      <text-section
-        v-for="section in sections"
-        :key="section.id"
-        :id="section.id"
-        :content="section.content"
-        :sections="section.sections"
-      />
-    </article>
+    <div class="flex flex-col md:w-2/3 px-2">
+      <nav class="relative my-2">
+        <form title="Search" role="search" action="/" class="flex flex-col" @submit.prevent>
+          <div>
+            <label for="searchInput" class="sr-only">Search</label>
+            <input
+              id="searchInput"
+              name="searchInput"
+              type="search"
+              role="searchbox"
+              placeholder="Search projects..."
+              required="required"
+              class="w-full px-3 py-2 bg-fog-200 border rounded"
+              v-model="searchQuery"
+              @input="handleSearchChange($event.target.value)"
+            />
+          </div>
+        </form>
+        <div v-if="searchQuery" class="absolute top-12 bg-white border rounded shadow-lg">
+          <div
+            v-for="(candidate, index) in candidates"
+            :key="candidate.id"
+            :class="{ 'w-full': true, 'border-b': index + 1 < candidates.length }"
+          >
+            <router-link
+              :to="`#${candidate.id}`"
+              class="flex flex-col p-2 hover:bg-blue-100"
+              @click="handleClick(candidate)"
+              append
+            >
+              <div class="mx-2 font-semibold">{{ candidate.name }}</div>
+              <div class="mx-2" v-html="candidate.content"></div>
+            </router-link>
+          </div>
+        </div>
+      </nav>
+
+      <article id="tsp-text">
+        <text-section
+          v-for="section in sectionTree"
+          :key="section.id"
+          :id="section.id"
+          :content="section.content"
+          :sections="section.sections"
+        />
+      </article>
+    </div>
   </main>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
+import { mapState, mapActions, mapGetters } from 'vuex';
+
+import _ from 'lodash';
 
 import TextSection from '@/components/text/Section.vue';
 import TextListing from '@/components/text/Listing.vue';
-import { mapState, mapActions } from 'vuex';
+import { CombinedVueInstance } from 'vue/types/vue';
 
 export default Vue.extend({
   name: 'TextView',
@@ -40,13 +81,32 @@ export default Vue.extend({
     TextSection,
     TextListing
   },
+  data() {
+    return {
+      searchQuery: ''
+    };
+  },
   computed: {
-    ...mapState('text', ['sections'])
+    ...mapState('text', ['candidates']),
+    ...mapGetters('text', ['sectionTree'])
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
       vm.$store.dispatch('text/findText');
     });
+  },
+  beforeRouteUpdate(to, from, next) {
+    next();
+    this.searchQuery = '';
+  },
+  methods: {
+    ...mapActions('text', ['searchIndex']),
+    handleSearchChange: _.debounce(function(this: any, text: string) {
+      if (text) this.searchIndex(text);
+    }, 500),
+    handleClick(candidate: any) {
+      this.searchQuery = '';
+    }
   }
 });
 </script>
