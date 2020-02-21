@@ -81,7 +81,8 @@ export default Vue.extend({
 <style lang="scss" scoped>
 .hero-image {
   /* Use "linear-gradient" to add a darken background effect to the image (photographer.jpg). This will make the text easier to read */
-  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/img/portlandgov-growth-scenario.jpg');
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url('/img/portlandgov-growth-scenario-1920.jpg');
 
   /* Position and center the image to scale nicely on all screens */
   background-position: center;

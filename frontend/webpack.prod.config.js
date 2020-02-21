@@ -1,8 +1,11 @@
+const path = require('path');
 const merge = require('webpack-merge');
-const { HashedModuleIdsPlugin, NamedChunksPlugin } = require('webpack');
+const { DefinePlugin, HashedModuleIdsPlugin, NamedChunksPlugin } = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const PreloadPlugin = require('preload-webpack-plugin');
+const PrerenderSPAPlugin = require('prerender-spa-plugin');
+const Renderer = PrerenderSPAPlugin.PuppeteerRenderer;
 const TerserPlugin = require('terser-webpack-plugin');
 
 const base = require('./webpack.common.config');
@@ -80,6 +83,9 @@ module.exports = merge(base, {
     ]
   },
   plugins: [
+    new DefinePlugin({
+      GRAPHQL_URL: JSON.stringify('http://localhost:4000/graphql')
+    }),
     new MiniCssExtractPlugin({
       filename: 'css/[name].[contenthash:8].css',
       chunkFilename: 'css/[name].[contenthash:8].css'
@@ -122,6 +128,14 @@ module.exports = merge(base, {
     new PreloadPlugin({
       rel: 'prefetch',
       include: 'asyncChunks'
+    }),
+    new PrerenderSPAPlugin({
+      staticDir: path.join(__dirname, 'dist'),
+      routes: ['/'],
+      renderer: new Renderer({
+        headless: true,
+        renderAfterDocumentEvent: 'render-event'
+      })
     })
   ],
   module: {
@@ -142,7 +156,10 @@ module.exports = merge(base, {
             options: {
               sourceMap: true,
               config: {
-                path: './postcss.config.js'
+                path: './postcss.config.js',
+                ctx: {
+                  mode: 'production'
+                }
               }
             }
           },
