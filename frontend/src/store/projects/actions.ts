@@ -37,7 +37,7 @@ export const actions: ActionTree<ProjectState, RootState> = {
       if (res.data.data.projects) {
         commit('clearProjects');
         // sort by name then block number
-        projects = res.data.data.projects.sort(function(a, b) {
+        projects = res.data.data.projects.sort(function (a, b) {
           var nameA = a.name?.toUpperCase(); // ignore upper and lowercase
           var nameB = b.name?.toUpperCase(); // ignore upper and lowercase
 
@@ -59,7 +59,7 @@ export const actions: ActionTree<ProjectState, RootState> = {
       }
     }
 
-    const idx = lunr(function() {
+    const idx = lunr(function () {
       this.ref('id');
       this.field('name');
       this.field('description');
@@ -119,11 +119,11 @@ export const actions: ActionTree<ProjectState, RootState> = {
         if (data.project) {
           commit('setSelectedProjects', data.project);
           dispatch('map/clearGraphics', undefined, { root: true });
-          dispatch('highlightProjects', { projects: data.project, move: true });
+          dispatch('highlightProjects', { projects: data.project, move: false });
         }
       })
       .catch(() => {
-        commit('setMessage', 'Error retrieving the selected street!', { root: true });
+        commit('setMessage', 'Error retrieving the selected project!', { root: true });
       });
   },
   highlightProjects({ commit }, { projects, move }: { projects: Project[]; move: boolean }) {
