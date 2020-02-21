@@ -1,8 +1,9 @@
 import { ActionTree } from 'vuex';
-import { StreetState, Street } from './types';
+import { StreetState, Street, ClassificationAnalysisData } from './types';
 import { RootState } from '../types';
 import router from '../../router/index';
 
+import area from '@turf/area';
 import bbox from '@turf/bbox';
 import bboxPolygon from '@turf/bbox-polygon';
 import centroid from '@turf/centroid';
@@ -10,63 +11,45 @@ import nearestPointOnLine from '@turf/nearest-point-on-line';
 import * as turf from '@turf/helpers';
 import axios from 'axios';
 import { esriGraphics } from '../utils';
+import proj4 from 'proj4';
+import FeatureLayer from 'esri/layers/FeatureLayer';
+import { UniqueValueRenderer } from 'esri/rasterRenderers';
+import UniqueValueInfo from 'esri/renderers/support/UniqueValueInfo';
 
-const classificationMaps = new Map<string, Map<string, string>>();
-
-new Map([
-  ['transit', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/3'],
-  ['traffic', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/4'],
-  ['emergency', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/7'],
-  ['design', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/10'],
-  ['bicycle', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/12'],
-  ['pedestrian', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/15'],
-  ['freight', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/19']
-]).forEach(async (url: string, key: string) => {
-  const res = await axios.get(url, {
-    params: {
-      f: 'json'
-    }
-  });
-
-  if (res.data) {
-    const map = new Map<string, string>();
-    res.data.drawingInfo.renderer.uniqueValueInfos.map((info: any) => {
-      map.set(info.value, info.label);
-    });
-    classificationMaps.set(key, map);
-  }
-});
-
-classificationMaps.set(
-  'greenscape',
-  new Map<string, string>([
-    ['Y', 'Yes'],
-    ['N', 'No']
-  ])
-);
-
-function mapClassification(type: string, value?: string): string {
-  if (value && classificationMaps.has(type)) {
-    const map = classificationMaps.get(type);
-    if (map) {
-      return map.get(value) || 'N/A';
-    }
-  }
-  return 'NULL';
-}
+// ESRI maps use this wkid
+proj4.defs('102100', proj4.defs('EPSG:3857'));
+proj4.defs('EPSG:102100', proj4.defs('EPSG:3857'));
 
 export const actions: ActionTree<StreetState, RootState> = {
-  findStreets({ commit, rootState }, extent) {
-    const { xmin, ymin, xmax, ymax } = extent;
-    commit('setMessage', undefined, { root: true });
+  findStreets({ commit, dispatch, rootState }, extent: __esri.Extent) {
+    let { xmin, ymin, xmax, ymax } = extent;
+    [xmin, ymin] = proj4(`${extent.spatialReference.wkid}`, 'EPSG:4326', [xmin, ymin]);
+    [xmax, ymax] = proj4(`${extent.spatialReference.wkid}`, 'EPSG:4326', [xmax, ymax]);
+
+    if (area(bboxPolygon([xmin, ymin, xmax, ymax])) > 10000000) {
+      commit('setMessage', 'Zoom in or search for an address to see available streets...', { root: true });
+      return;
+    }
+
+    commit('setMessage', 'Retrieving streets in displayed area...', { root: true });
     axios
       .get<{ errors?: any[]; data: { streets?: Street[] } }>(rootState.graphql_url, {
         params: {
           query: `{
-          streets(bbox:[${xmin},${ymin},${xmax},${ymax}], spatialReference:${extent.spatialReference.wkid}){
+          streets(bbox:[${xmin},${ymin},${xmax},${ymax}], spatialReference:4326){
             id
             name
             block
+            classifications {
+              pedestrian
+              bicycle
+              transit
+              freight
+              design
+              emergency
+              traffic
+              greenscape
+            }
             geometry {
               type
               coordinates
@@ -81,8 +64,9 @@ export const actions: ActionTree<StreetState, RootState> = {
         }
         if (res.data.data.streets) {
           commit('clearStreets');
+          dispatch('clearAnalysis');
           // sort by name then block number
-          let streets = res.data.data.streets.sort(function(a, b) {
+          let streets = res.data.data.streets.sort(function (a, b) {
             var nameA = a.name?.toUpperCase(); // ignore upper and lowercase
             var nameB = b.name?.toUpperCase(); // ignore upper and lowercase
 
@@ -108,6 +92,8 @@ export const actions: ActionTree<StreetState, RootState> = {
             return street;
           });
           commit('addStreets', streets);
+          dispatch('analyzeStreets', streets);
+          commit('setMessage', undefined, { root: true });
         }
       })
       .catch(() => {
@@ -142,9 +128,9 @@ export const actions: ActionTree<StreetState, RootState> = {
             ${street.block ? '' : 'block'}
             ${street.geometry ? '' : `geometry{ type coordinates }`}
             ${
-              street.classifications
-                ? ''
-                : `classifications {
+            street.classifications
+              ? ''
+              : `classifications {
               pedestrian
               bicycle
               transit
@@ -156,9 +142,9 @@ export const actions: ActionTree<StreetState, RootState> = {
             }`
             }
             ${
-              street.projects
-                ? ''
-                : `projects {
+            street.projects
+              ? ''
+              : `projects {
               id
               name
               number
@@ -178,13 +164,8 @@ export const actions: ActionTree<StreetState, RootState> = {
         let data = res.data.data;
         if (data.street) {
           data.street = Object.assign(data.street, street);
-          if (data.street.classifications) {
-            for (const key of Object.keys(data.street.classifications)) {
-              data.street.classifications[key] = mapClassification(key, data.street.classifications[key]);
-            }
-          }
           commit('setSelectedStreet', data.street);
-          dispatch('highlightStreet', { street: data.street, move: true });
+          dispatch('highlightStreet', { street: data.street, move: false });
         }
       })
       .catch(() => {
@@ -197,5 +178,30 @@ export const actions: ActionTree<StreetState, RootState> = {
       commit('map/setGraphics', graphics, { root: true });
       if (move) commit('map/goTo', graphics, { root: true });
     }
+  },
+  clearAnalysis({ commit, state }) {
+    commit(
+      'setAnalysis',
+      state.analysis?.map(a => {
+        const { count, ...analysis } = a;
+        return Object.assign(analysis, { count: 0 });
+      })
+    );
+  },
+  analyzeStreets({ commit, state }, streets: Array<Street>) {
+    const analysis = Array.from(state.analysis || []);
+    if (streets) {
+      streets.forEach(street => {
+        Object.keys(street.classifications || {}).forEach(c => {
+          let entry = analysis.find(val => {
+            if (!street.classifications) return false;
+            return val.classification === c && val.classificationValue === street.classifications[c];
+          });
+
+          if (entry) entry.count = entry.count + 1;
+        });
+      });
+    }
+    commit('setAnalysis', analysis);
   }
 };

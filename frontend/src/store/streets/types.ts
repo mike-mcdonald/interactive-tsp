@@ -21,7 +21,7 @@ export interface Street {
   id: string;
   name?: string;
   block?: number;
-  classifications?: { [key: string]: string };
+  classifications?: { [key: string]: string | undefined };
   projects?: Array<Project>;
   geometry?: turf.LineString;
   minX?: number;
@@ -30,8 +30,17 @@ export interface Street {
   maxY?: number;
 }
 
+export interface ClassificationAnalysisData {
+  classification: string;
+  classificationValue: string;
+  label: string;
+  count: number;
+  color: d3.RGBColor | d3.HSLColor | null;
+}
+
 export interface StreetState {
   layers: Layer[];
   list?: Street[];
   selected?: Street;
+  analysis?: Array<ClassificationAnalysisData>;
 }
