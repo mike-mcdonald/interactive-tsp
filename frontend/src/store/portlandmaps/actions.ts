@@ -36,12 +36,18 @@ export const actions: ActionTree<CandidateState, RootState> = {
         if (res.data.errors) {
           commit('setMessage', 'Zoom in or search for an address to see available streets...', { root: true });
         }
-        if (res.data.data.address) {
+        if (res.data.data.address && res.data.data.address.length > 0) {
           commit(
             'setCandidates',
             res.data.data.address.map((address: AddressCandidate) => {
               return address;
             })
+          );
+        } else {
+          commit(
+            'setMessage',
+            'Did not find any matching locations! Try a more specific search, like adding a cross street.',
+            { root: true }
           );
         }
       })
