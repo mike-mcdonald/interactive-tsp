@@ -7,17 +7,37 @@
         <div
           v-if="message"
           class="mb-2 px-2 py-3 w-full border-b border-tangerine-800 bg-tangerine-300 text-tangerine-900"
-        >
-          {{ message }}
-        </div>
+        >{{ message }}</div>
       </transition>
-      <address-suggest class="m-2" v-on:candidate-select="goToAddress" />
+      <transition name="fade">
+        <section v-if="!$route.params.id" id="filters" class="m-2">
+          <address-suggest v-on:candidate-select="goToAddress" />
+          <div v-for="layer in layers" :key="layer.id">
+            <checkbox
+              :value="layer.visible"
+              :title="layer.title"
+              @input="toggleLayerVisibility(layer, $event)"
+            />
+            <chart
+              v-if="streets.length > 0 && infoDisplay[layer.id]"
+              :dataset="
+                analysis.reduce((prev, curr) => {
+                  if (curr.classification == layer.id) prev.push(curr);
+                  return prev;
+                }, [])
+              "
+            ></chart>
+          </div>
+        </section>
+      </transition>
       <div class="m-2">
         <transition name="fade">
           <div v-if="!$route.params.id && streets">{{ streets.length }} streets found in view</div>
-          <router-link v-if="$route.params.id" to="/streets" class="border-b-2 border-black"
-            >Back to results</router-link
-          >
+          <router-link
+            v-if="$route.params.id"
+            to="/streets"
+            class="border-b-2 border-black"
+          >Back to results</router-link>
         </transition>
       </div>
       <transition name="fade">
@@ -47,7 +67,6 @@
 import Vue from 'vue';
 import { mapState, mapActions, mapMutations } from 'vuex';
 
-import proj4 from 'proj4';
 import { BBox } from '@turf/helpers';
 
 import { Polyline, Extent } from 'esri/geometry';
@@ -55,22 +74,29 @@ import Graphic from 'esri/Graphic';
 import { SimpleLineSymbol } from 'esri/symbols';
 
 import AddressSuggest from 'portland-pattern-lab/source/_patterns/04-organisms/address-search/AddressSuggest.vue';
+import Checkbox from 'portland-pattern-lab/source/_patterns/02-molecules/form/Checkbox.vue';
 
 import AppMap from '@/components/Map.vue';
+import Chart from '@/components/Chart.vue';
 import StreetComponent from '@/components/Street.vue';
 
 import { Street, StreetState } from '../store/streets/types';
 import { AddressCandidate } from '../store/portlandmaps/types';
-
-// ESRI maps use this wkid
-proj4.defs('102100', proj4.defs('EPSG:3857'));
+import Layer from 'esri/layers/Layer';
 
 export default Vue.extend({
   name: 'Streets',
   components: {
     AddressSuggest,
     AppMap,
+    Chart,
+    Checkbox,
     StreetComponent
+  },
+  data() {
+    return {
+      chart: {} as { [key: string]: boolean }
+    };
   },
   computed: {
     ...mapState(['message']),
@@ -78,7 +104,8 @@ export default Vue.extend({
     ...mapState('streets', {
       layers: (state: StreetState) => state.layers,
       streets: (state: StreetState) => state.list,
-      selectedStreet: (state: StreetState) => state.selected
+      selectedStreet: (state: StreetState) => state.selected,
+      analysis: (state: StreetState) => state.analysis
     })
   },
   beforeRouteEnter(to, from, next) {
@@ -96,7 +123,18 @@ export default Vue.extend({
     }
     next();
   },
+  mounted() {
+    this.infoDisplay = this.layers.reduce((prev: { [key: string]: boolean }, curr: Layer) => {
+      prev[curr.id] = curr.visible;
+      return prev;
+    }, {});
+  },
   methods: {
+    ...mapActions('map', ['setLayerVisibility']),
+    toggleLayerVisibility(layer: Layer, value: boolean) {
+      this.infoDisplay[layer.id] = value;
+      this.setLayerVisibility({ layerId: layer.id, visible: value });
+    },
     goToAddress(address: AddressCandidate) {
       this.setLocation(address.location);
     },
