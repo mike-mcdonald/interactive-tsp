@@ -39,8 +39,6 @@ export default new Router({
           resolve({ selector: to.hash });
         }, 100);
       });
-    } else if (savedPosition) {
-      return savedPosition;
     } else {
       return { x: 0, y: 0 };
     }
