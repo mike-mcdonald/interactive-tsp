@@ -22,18 +22,22 @@
             <dt>{{ classification.charAt(0).toUpperCase() + classification.slice(1) }} classification:</dt>
             <dd class="ml-2">
               <router-link
-                v-if="classification != 'greenscape' && street.classifications[classification] != 'N/A'"
+                v-if="
+                  classification != 'greenscape' &&
+                    classificationLabel(classification, street.classifications[classification]) != undefined
+                "
                 :to="{
                   name: 'text',
-                  hash: `#${street.classifications[classification]
+                  hash: `#${classificationLabel(classification, street.classifications[classification])
                     .toLowerCase()
                     .split(' ')
                     .join('-')}`
                 }"
                 class="border-current border-b-2"
-                >{{ street.classifications[classification] }}</router-link
-              >
-              <span v-else>{{ street.classifications[classification] }}</span>
+              >{{ classificationLabel(classification, street.classifications[classification]) }}</router-link>
+              <span
+                v-else
+              >{{ classificationLabel(classification, street.classifications[classification]) }}</span>
             </dd>
           </div>
         </dl>
@@ -42,7 +46,7 @@
 
     <transition name="fade">
       <section v-if="street.projects && street.projects.length > 0">
-        <h2 class="mb-3 text-2xl lg:text-3xl">Projects affecting this street</h2>
+        <h2 class="mb-3 text-2xl lg:text-3xl">Projects near this street</h2>
         <ul class>
           <li class="my-2 p-2 rounded border" v-for="project in street.projects" :key="project.id">
             <router-link :to="`/projects/${project.id}`">
@@ -98,7 +102,7 @@
 </template>
 <script lang="ts">
 import Vue from 'vue';
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapState, mapGetters } from 'vuex';
 
 import { Street, StreetState } from '@/store/streets/types';
 
@@ -110,9 +114,17 @@ export default Vue.extend({
       required: true
     }
   },
+  computed: {
+    ...mapGetters('streets', ['classificationLabel'])
+  },
   methods: {
     classificationKeys: function() {
-      return this.street && this.street.classifications ? Object.keys(this.street.classifications) : [];
+      return Object.keys(this.street.classifications).reduce((prev, curr) => {
+        if (this.street.classifications[curr]) {
+          prev.push(curr);
+        }
+        return prev;
+      }, new Array<String>());
     }
   }
 });
