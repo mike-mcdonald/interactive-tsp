@@ -11,7 +11,7 @@
           {{ message }}
         </div>
       </transition>
-      <section id="filters">
+      <section v-if="!$route.params.id" id="filters">
         <form title="Search" role="search" action="/" class="flex flex-col m-2" @submit.prevent="">
           <div>
             <label for="searchInput" class="sr-only">Search</label>
@@ -57,15 +57,13 @@
       />
       <transition name="fade">
         <ul v-if="!$route.params.id" class="list-none">
-          <li
-            v-for="project in filteredProjects"
-            :key="`${project.id}-${project.name}`"
-            @mouseover="highlightProject(project)"
-          >
+          <li v-for="project in filteredProjects" :key="`${project.id}-${project.name}`">
             <router-link
               :to="project.id"
               append
-              class="flex flex-col m-2 px-2 py-3 shadow rounded bg-white hover:bg-blue-100"
+              class="flex flex-col m-2 px-2 py-3 shadow rounded bg-white hover:bg-blue-100 focus:bg-blue-100"
+              @mouseover.native="highlightProject(project)"
+              @focus.native="highlightProject(project)"
             >
               <h3 class="mb-1">{{ project.name }}</h3>
               <p class="text-xs">{{ project.description }}</p>
@@ -174,6 +172,8 @@ export default Vue.extend({
   beforeRouteUpdate(to, from, next) {
     if (to.params.id) {
       this.$store.dispatch('projects/selectProjectById', to.params.id);
+    } else {
+      this.selectedProjects = new Array<string>();
     }
     next();
   },
