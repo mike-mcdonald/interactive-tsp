@@ -37,7 +37,7 @@ export const actions: ActionTree<ProjectState, RootState> = {
       if (res.data.data.projects) {
         commit('clearProjects');
         // sort by name then block number
-        projects = res.data.data.projects.sort(function(a, b) {
+        projects = res.data.data.projects.sort(function (a, b) {
           var nameA = a.name?.toUpperCase(); // ignore upper and lowercase
           var nameB = b.name?.toUpperCase(); // ignore upper and lowercase
 
@@ -59,7 +59,7 @@ export const actions: ActionTree<ProjectState, RootState> = {
       }
     }
 
-    const idx = lunr(function() {
+    const idx = lunr(function () {
       this.ref('id');
       this.field('name');
       this.field('description');
@@ -90,7 +90,7 @@ export const actions: ActionTree<ProjectState, RootState> = {
   selectProjects({ commit, dispatch, rootState }, project: Project) {
     commit('setMessage', undefined, { root: true });
     axios
-      .get<{ errors?: any[]; data: { project?: Project[] } }>(rootState.graphql_url, {
+      .get<{ errors?: any[]; data: { project?: Project[] } }>(rootState.graphqlUrl, {
         params: {
           query: `{
           project(id:"${project ? project.id : ''}"){

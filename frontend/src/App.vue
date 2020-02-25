@@ -12,13 +12,13 @@
         </router-link>
       </template>
       <nav class="-mx-2 flex flex-row flex-wrap">
-        <router-link to="/streets" class="py-2 px-2 md:py-4 hover:bg-fog-500" active-class="bg-fog-500">
+        <router-link to="/streets" class="py-2 px-2 md:py-4 hover:bg-fog-500" active-class="md:bg-fog-500">
           <span class="border-b-2 border-black">Streets</span>
         </router-link>
-        <router-link to="/projects" class="py-2 px-2 md:py-4 hover:bg-fog-500" active-class="bg-fog-500">
+        <router-link to="/projects" class="py-2 px-2 md:py-4 hover:bg-fog-500" active-class="md:bg-fog-500">
           <span class="border-b-2 border-black">Projects</span>
         </router-link>
-        <router-link to="/text" class="py-2 px-2 md:py-4 hover:bg-fog-500" active-class="bg-fog-500">
+        <router-link to="/text" class="py-2 px-2 md:py-4 hover:bg-fog-500" active-class="md:bg-fog-500">
           <span class="border-b-2 border-black">Text</span>
         </router-link>
       </nav>
@@ -26,12 +26,7 @@
     <router-view />
     <Footer>
       <template v-slot:logos>
-        <img
-          title="PBOT Technology services logo"
-          alt="PBOT Technology services logo"
-          src="/img/PBOT-VerticalApps-Logo-Dark.png"
-          class="w-48"
-        />
+        <img title="PBOT Technology services logo" src="/img/PBOT-VerticalApps-Logo-Dark.png" class="w-48" />
       </template>
     </Footer>
   </div>
@@ -57,19 +52,19 @@ export default Vue.extend({
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,700,800');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,700,800&display=swap');
 
 #app {
   @apply font-sans text-sm text-black;
-  scroll-snap-type: y mandatory;
-  > * {
-    scroll-snap-align: start;
-  }
 }
 
 @screen md {
   #app {
     @apply text-base;
   }
+}
+
+*:focus {
+  @apply shadow-outline;
 }
 </style>
