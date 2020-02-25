@@ -4,14 +4,17 @@ import { RootState } from '../types';
 
 import axios from 'axios';
 import Graphic from 'esri/Graphic';
+import lunr from 'lunr';
 
 import { esriGraphics } from '../utils';
 
 export const actions: ActionTree<ProjectState, RootState> = {
-  findProjects({ commit, rootState }, extent: __esri.Extent) {
-    const { xmin, ymin, xmax, ymax } = extent;
+  async findProjects({ state, commit, dispatch, rootState }, { extent }: { extent?: __esri.Extent }) {
     commit('setMessage', undefined, { root: true });
-      const res = await axios.get<{ errors?: any[]; data: { projects?: Project[] } }>(rootState.graphqlUrl, {
+    let projects = state.list;
+    if (extent) {
+      const { xmin, ymin, xmax, ymax } = extent;
+      const res = await axios.get<{ errors?: any[]; data: { projects?: Project[] } }>(rootState.graphql_url, {
         params: {
           query: `{
           projects(bbox:[${xmin},${ymin},${xmax},${ymax}], spatialReference:${extent.spatialReference.wkid}){
@@ -25,39 +28,48 @@ export const actions: ActionTree<ProjectState, RootState> = {
               coordinates
             }
           }
-        }`
+        }`.replace(/\s+/g, ' ')
         }
-      })
-      .then(res => {
-        if (res.data.errors) {
-          commit('setMessage', 'Error retrieving projects...', { root: true });
-        }
-        if (res.data.data.projects) {
-          commit('clearProjects');
-          // sort by name then block number
-          let projects = res.data.data.projects.sort(function(a, b) {
-            var nameA = a.name?.toUpperCase(); // ignore upper and lowercase
-            var nameB = b.name?.toUpperCase(); // ignore upper and lowercase
-
-            if (!nameA || !nameB) {
-              return Number.MAX_SAFE_INTEGER;
-            }
-            if (nameA < nameB) {
-              return -1;
-            }
-            if (nameA > nameB) {
-              return 1;
-            }
-
-            // names must be equal
-            return 0;
-          });
-          commit('addProjects', projects);
-        }
-      })
-      .catch(() => {
-        commit('setMessage', 'Error retrieving streets!', { root: true });
       });
+      if (res.data.errors) {
+        commit('setMessage', 'Error retrieving projects...', { root: true });
+      }
+      if (res.data.data.projects) {
+        commit('clearProjects');
+        // sort by name then block number
+        projects = res.data.data.projects.sort(function (a, b) {
+          var nameA = a.name?.toUpperCase(); // ignore upper and lowercase
+          var nameB = b.name?.toUpperCase(); // ignore upper and lowercase
+
+          if (!nameA || !nameB) {
+            return Number.MAX_SAFE_INTEGER;
+          }
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
+
+          // names must be equal
+          return 0;
+        });
+
+        commit('addProjects', projects);
+      }
+    }
+
+    const idx = lunr(function () {
+      this.ref('id');
+      this.field('name');
+      this.field('description');
+
+      projects.forEach(doc => {
+        this.add(doc);
+      });
+    });
+
+    commit('setIndex', idx);
   },
   selectProjectById({ commit, dispatch, state }, id: string) {
     commit('setMessage', undefined, { root: true });

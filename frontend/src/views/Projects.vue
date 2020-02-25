@@ -11,10 +11,37 @@
           {{ message }}
         </div>
       </transition>
-      <address-suggest class="m-2" v-on:candidate-select="goToAddress" />
+      <section id="filters">
+        <form title="Search" role="search" action="/" class="flex flex-col m-2" @submit.prevent="">
+          <div>
+            <label for="searchInput" class="sr-only">Search</label>
+            <input
+              id="searchInput"
+              name="searchInput"
+              type="search"
+              role="searchbox"
+              placeholder="Search projects..."
+              required="required"
+              class="w-full px-3 py-2 bg-fog-200 border rounded"
+              :value="filters.text"
+              @input="handleSearchChange($event.target.value)"
+            />
+          </div>
+          <div v-for="layer in layers" :key="layer.id">
+            <input
+              type="checkbox"
+              :id="layer.id"
+              :value="timeframeMap.get(layer.id)"
+              v-model="filters.timeframes"
+              @change="toggleTimeFrameFilter(layer.id, $event.target.checked)"
+            />
+            <label :for="layer.id">{{ layer.title }}</label>
+          </div>
+        </form>
+      </section>
       <div class="m-2">
         <transition name="fade">
-          <div v-if="!$route.params.id && projects">{{ projects.length }} projects found in view</div>
+          <div v-if="!$route.params.id && filteredProjects">{{ filteredProjects.length }} projects found in view</div>
           <router-link v-if="$route.params.id" to="/projects" class="border-b-2 border-black"
             >Back to results</router-link
           >
@@ -30,12 +57,15 @@
       />
       <transition name="fade">
         <ul v-if="!$route.params.id" class="list-none">
-          <li v-for="project in projects" :key="project.id" @mouseover="highlightProject(project)">
+          <li
+            v-for="project in filteredProjects"
+            :key="`${project.id}-${project.name}`"
+            @mouseover="highlightProject(project)"
+          >
             <router-link
               :to="project.id"
               append
               class="flex flex-col m-2 px-2 py-3 shadow rounded bg-white hover:bg-blue-100"
-              :class="{ 'border-t': index == 0 }"
             >
               <h3 class="mb-1">{{ project.name }}</h3>
               <p class="text-xs">{{ project.description }}</p>
@@ -87,20 +117,23 @@
       <project-component v-if="$route.params.id && selectedProject" :project="selectedProject"></project-component>
     </section>
     <section class="w-full md:w-2/3 h-screen-50 md:h-screen">
-      <app-map :layers="layers" v-on:click="handleClick" v-on:extent-change="handleExtentChange"></app-map>
+      <app-map :layers="layers" v-on:click="handleClick" v-on:extent-change="handleExtentChange">
+        <template v-slot:top-right>
+          <div></div>
+        </template>
+      </app-map>
     </section>
   </main>
 </template>
 <script lang="ts">
 import Vue from 'vue';
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters, mapMutations } from 'vuex';
 
+import _ from 'lodash';
 import proj4 from 'proj4';
 import { BBox } from '@turf/helpers';
 
 import { Extent } from 'esri/geometry';
-
-import AddressSuggest from 'portland-pattern-lab/source/_patterns/04-organisms/address-search/AddressSuggest.vue';
 
 import AppMap from '@/components/Map.vue';
 import ProjectComponent from '@/components/Project.vue';
@@ -112,7 +145,6 @@ import { AddressCandidate } from '../store/portlandmaps/types';
 export default Vue.extend({
   name: 'Projects',
   components: {
-    AddressSuggest,
     AppMap,
     ProjectComponent,
     Pager
@@ -120,17 +152,13 @@ export default Vue.extend({
   data() {
     return {
       selectedProjects: new Array<string>(),
-      pageIndex: 0
+      pageIndex: 0,
+      timeframeMap: new Map<string, string>([
+        ['projects-10', '1-10_YRS'],
+        ['projects-20', '11-20_YRS'],
+        ['projects-NA', 'NA']
+      ])
     };
-  },
-  computed: {
-    ...mapState(['message']),
-    ...mapState('map', ['view']),
-    ...mapState('projects', {
-      layers: (state: ProjectState) => state.layers,
-      projects: (state: ProjectState) => state.list,
-      selectedProject: (state: ProjectState) => (state.selected ? state.selected[0] : undefined)
-    })
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
@@ -149,17 +177,46 @@ export default Vue.extend({
     }
     next();
   },
+  computed: {
+    ...mapState(['message']),
+    ...mapState('map', ['extent', 'view']),
+    ...mapState('projects', {
+      layers: (state: ProjectState) => state.layers,
+      projects: (state: ProjectState) => state.list,
+      filters: (state: ProjectState) => state.filter,
+      selectedProject: (state: ProjectState) => (state.selected ? state.selected[0] : undefined)
+    }),
+    ...mapGetters('projects', ['filteredProjects'])
+  },
   methods: {
-    goToAddress(address: AddressCandidate) {
-      this.setLocation(address.location);
+    ...mapActions('map', ['setLocation', 'setLayerVisibility']),
+    ...mapMutations('projects', ['setFilter', 'addTimeframe', 'removeTimeframe']),
+    ...mapActions('projects', ['findProjects', 'highlightProjects']),
+    toggleTimeFrameFilter(layerId: string, value: Boolean) {
+      this.setLayerVisibility({ layerId, visible: value });
+      const filterValue = this.timeframeMap.get(layerId);
+
+      value ? this.addTimeframe(filterValue) : this.removeTimeframe(filterValue);
+    },
+    goTosearch(search: AddressCandidate): void {
+      this.setLocation(search.location);
     },
     highlightProject(project: Project) {
       if (project.geometry) {
         this.highlightProjects({ projects: [project] });
       }
     },
+    handleSearchChange(value: string) {
+      const { text, ...filter } = this.filters;
+      filter.text = value;
+      this.setFilter(filter);
+    },
     handleExtentChange(extent: __esri.Extent) {
-      this.findProjects(extent);
+      this.findProjects({
+        extent,
+        text: this.filters.text,
+        timeframes: this.filters.timeframes
+      });
     },
     handleProjectChange(index: number) {
       this.pageIndex = index;
@@ -178,9 +235,7 @@ export default Vue.extend({
           this.$router.push({ name: 'projects', params: { id: this.selectedProjects[0] } });
         }
       });
-    },
-    ...mapActions('map', ['setLocation']),
-    ...mapActions('projects', ['findProjects', 'highlightProjects'])
+    }
   }
 });
 </script>
