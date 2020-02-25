@@ -10,7 +10,7 @@ export const actions: ActionTree<CandidateState, RootState> = {
   },
   findCandidates({ commit, rootState }, search) {
     axios
-      .get(rootState.graphql_url, {
+      .get(rootState.graphqlUrl, {
         params: {
           query: `
           {

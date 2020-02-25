@@ -90,7 +90,7 @@ export const actions: ActionTree<ProjectState, RootState> = {
   selectProjects({ commit, dispatch, rootState }, project: Project) {
     commit('setMessage', undefined, { root: true });
     axios
-      .get<{ errors?: any[]; data: { project?: Project[] } }>(rootState.graphql_url, {
+      .get<{ errors?: any[]; data: { project?: Project[] } }>(rootState.graphqlUrl, {
         params: {
           query: `{
           project(id:"${project ? project.id : ''}"){

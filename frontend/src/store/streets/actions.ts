@@ -33,7 +33,7 @@ export const actions: ActionTree<StreetState, RootState> = {
 
     commit('setMessage', 'Retrieving streets in displayed area...', { root: true });
     axios
-      .get<{ errors?: any[]; data: { streets?: Street[] } }>(rootState.graphql_url, {
+      .get<{ errors?: any[]; data: { streets?: Street[] } }>(rootState.graphqlUrl, {
         params: {
           query: `{
           streets(bbox:[${xmin},${ymin},${xmax},${ymax}], spatialReference:4326){
@@ -119,7 +119,7 @@ export const actions: ActionTree<StreetState, RootState> = {
   selectStreet({ commit, dispatch, rootState }, street: Street) {
     commit('setMessage', undefined, { root: true });
     axios
-      .get<{ errors?: any[]; data: { street?: Street } }>(rootState.graphql_url, {
+      .get<{ errors?: any[]; data: { street?: Street } }>(rootState.graphqlUrl, {
         params: {
           query: `{
           street(id:"${street ? street.id : ''}"){

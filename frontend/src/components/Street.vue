@@ -1,8 +1,8 @@
 <template>
-  <article class="p-2">
-    <h1 class="mb-3 text-3xl lg:text-4xl">{{ street.name }}</h1>
-    <p class="mb-3 text-2xl" v-if="street.block">{{ street.block }} block</p>
-    <div class="flex flex-wrap items-center mb-3">
+  <article>
+    <h1 class="m-2 mb-3 text-3xl lg:text-4xl">{{ street.name }}</h1>
+    <p class="m-2 mb-3 text-2xl" v-if="street.block">{{ street.block }} block</p>
+    <div class="m-2 mb-3 flex flex-wrap items-center">
       <dl>
         <div class="flex flex-wrap items-center">
           <dt>Transportation planning ID:</dt>
@@ -11,7 +11,7 @@
       </dl>
     </div>
     <transition name="fade">
-      <section v-if="street.classifications">
+      <section class="m-2" v-if="street.classifications">
         <h2 class="mb-3 text-2xl lg:text-3xl">Classifications</h2>
         <dl>
           <div
@@ -43,7 +43,6 @@
         </dl>
       </section>
     </transition>
-
     <transition name="fade">
       <section v-if="street.projects && street.projects.length > 0">
         <h2 class="mb-3 text-2xl lg:text-3xl">Projects near this street</h2>
