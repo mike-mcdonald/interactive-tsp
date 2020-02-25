@@ -55,7 +55,7 @@ export const getText = (): Promise<Section[]> =>
       .clean(false) // do not clean destination
       // directory before new build
       .use(markdown())
-      .build(function(err: Error | null, files: Files) {
+      .build(function (err: Error | null, files: Files) {
         if (err) throw reject(err);
 
         const sections: Section[] = new Array<Section>();

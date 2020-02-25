@@ -3,16 +3,16 @@
     <h1 class="mb-3 text-3xl lg:text-4xl">{{ project.name }}</h1>
     <dl>
       <div class="flex flex-wrap items-center mb-2">
-        <dt>Transportation planning ID:</dt>
-        <dd class="ml-2">{{ project.id }}</dd>
+        <dt>Description:</dt>
+        <dd class="ml-2">{{ project.description }}</dd>
       </div>
       <div class="flex flex-wrap items-center mb-2">
         <dt>Project number:</dt>
         <dd class="ml-2">{{ project.number }}</dd>
       </div>
       <div class="flex flex-wrap items-center mb-2">
-        <dt>Description:</dt>
-        <dd class="ml-2">{{ project.description }}</dd>
+        <dt>Transportation planning ID:</dt>
+        <dd class="ml-2">{{ project.id }}</dd>
       </div>
       <div class="flex flex-wrap items-center mb-2">
         <dt>Location:</dt>

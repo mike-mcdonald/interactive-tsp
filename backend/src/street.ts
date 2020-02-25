@@ -293,10 +293,6 @@ export async function getStreets(bbox: turf.BBox, spatialReference: number): Pro
     [bbox[2], bbox[3]] = proj4(`${spatialReference}`, 'EPSG:4326', [bbox[2], bbox[3]]);
   }
 
-  if (area(bboxPolygon(bbox)) > 250000) {
-    throw new Error(`bounding box is too big: ${area(bboxPolygon(bbox))}`);
-  }
-
   for (const url of URLS) {
     const res = await axios
       .get(`${url}/query`, {

@@ -30,8 +30,18 @@ export interface Street {
   maxY?: number;
 }
 
+export interface ClassificationDisplayInfo {
+  classification: string;
+  classificationValue: string;
+  filter: boolean;
+  label: string;
+  count: number;
+  color: d3.RGBColor | d3.HSLColor | null;
+}
+
 export interface StreetState {
   layers: Layer[];
   list?: Street[];
   selected?: Street;
+  displayInfo?: Array<ClassificationDisplayInfo>;
 }

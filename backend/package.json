@@ -4,7 +4,7 @@
   "description": "Backend GraphQL server for an interactive transporation system plan",
   "main": "index.js",
   "scripts": {
-    "start": "npm run prod && node dist/server.js",
+    "start": "npm run prod && node dist/index.js",
     "dev": "tsc -w",
     "prod": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"

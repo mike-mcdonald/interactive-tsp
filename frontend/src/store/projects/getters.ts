@@ -1,31 +1,38 @@
 import { GetterTree } from 'vuex';
-import { ProjectState, Project } from './types';
+import { ProjectState, Project, ViewModel } from './types';
 import { RootState } from '../types';
 
 export const getters: GetterTree<ProjectState, RootState> = {
-  filteredProjects(state) {
+  mapLayers(state) {
+    return state.models.reduce((prev, curr) => {
+      prev.push(curr.mapLayer);
+      return prev;
+    }, new Array<any>());
+  },
+  filteredProjects: state => (text: string) => {
     let projects = state.list;
 
-    if (state.filter.text && state.index) {
-      projects = state.index.search(state.filter.text).map(val => {
-        return (
-          state.list.find(proj => {
-            return proj.id == val.ref;
-          }) || { id: val.ref }
-        );
-      });
-    }
+    const map = state.models.reduce((prev: Map<string, ViewModel>, curr: ViewModel) => {
+      prev.set(curr.value, curr);
+      return prev;
+    }, new Map<string, ViewModel>());
 
-    if (state.filter.timeframes) {
-      projects = projects.reduce((acc, curr) => {
-        if (
-          curr.estimatedTimeframe &&
-          state.filter.timeframes &&
-          state.filter.timeframes.indexOf(curr.estimatedTimeframe) > -1
-        )
-          acc.push(curr);
-        return acc;
-      }, new Array<Project>());
+    if (text && state.index) {
+      projects = state.index
+        .search(text)
+        .map(val => {
+          return (
+            state.list.find(proj => {
+              return proj.id == val.ref;
+            }) || { id: val.ref }
+          );
+        })
+        .reduce((prev, curr) => {
+          if (curr.estimatedTimeframe && map.has(curr.estimatedTimeframe)) {
+            prev.push(curr);
+          }
+          return prev;
+        }, new Array<Project>());
     }
 
     return projects;

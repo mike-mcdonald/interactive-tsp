@@ -3,7 +3,8 @@ import { TextState, TextSection } from './types';
 import { RootState } from '../types';
 
 import axios from 'axios';
-import lunr from 'lunr';
+import lunr, { Builder, Token } from 'lunr';
+import { customStemming } from '../utils';
 
 function strip(html: string) {
   var doc = new DOMParser().parseFromString(html, 'text/html');
@@ -42,6 +43,8 @@ export const actions: ActionTree<TextState, RootState> = {
             this.ref('id');
             this.field('name');
             this.field('content');
+
+            this.use(customStemming);
 
             res.data.data.sections.forEach((doc: TextSection) => {
               let { content, ...d } = doc;

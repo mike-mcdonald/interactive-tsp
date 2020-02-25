@@ -1,5 +1,5 @@
 import { MutationTree } from 'vuex';
-import { Street, StreetState } from './types';
+import { Street, StreetState, ClassificationDisplayInfo } from './types';
 
 export const mutations: MutationTree<StreetState> = {
   clearStreets(state) {
@@ -13,5 +13,8 @@ export const mutations: MutationTree<StreetState> = {
   },
   setSelectedStreet(state, street: Street) {
     state.selected = street;
+  },
+  setAnalysis(state, analysis: Array<ClassificationDisplayInfo>) {
+    state.displayInfo = analysis;
   }
 };

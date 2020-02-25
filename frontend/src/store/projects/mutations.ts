@@ -1,7 +1,10 @@
 import { MutationTree } from 'vuex';
-import { ProjectState, Project, ProjectFilter } from './types';
+import { ProjectState, Project, ProjectFilter, ViewModel } from './types';
 
 export const mutations: MutationTree<ProjectState> = {
+  setModels(state, models: Array<ViewModel>) {
+    state.models = models;
+  },
   clearProjects(state) {
     state.list = new Array<Project>();
   },
@@ -13,18 +16,6 @@ export const mutations: MutationTree<ProjectState> = {
   },
   setFilter(state, filter: ProjectFilter) {
     state.filter = filter;
-  },
-  addTimeframe(state, timeframe: string) {
-    const idx = state.filter.timeframes?.indexOf(timeframe);
-    if (idx && idx == -1) {
-      state.filter.timeframes?.push(timeframe);
-    }
-  },
-  removeTimeframe(state, timeframe: string) {
-    const idx = state.filter.timeframes?.indexOf(timeframe);
-    if (idx && idx > -1) {
-      state.filter.timeframes?.splice(idx, 1);
-    }
   },
   setSelectedProjects(state, projects: Project[]) {
     state.selected = projects;

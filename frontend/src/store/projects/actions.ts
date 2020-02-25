@@ -1,22 +1,38 @@
 import { ActionTree } from 'vuex';
-import { ProjectState, Project } from './types';
+import { ProjectState, Project, ViewModel } from './types';
 import { RootState } from '../types';
 
 import axios from 'axios';
+import * as d3 from 'd3';
+import { Extent } from 'esri/geometry';
 import Graphic from 'esri/Graphic';
-import lunr from 'lunr';
+import GroupLayer from 'esri/layers/GroupLayer';
+import FeatureLayer from 'esri/layers/FeatureLayer';
+import lunr, { Builder, Token } from 'lunr';
 
-import { esriGraphics } from '../utils';
+import { esriGraphics, customStemming } from '../utils';
 
 export const actions: ActionTree<ProjectState, RootState> = {
-  async findProjects({ state, commit, dispatch, rootState }, { extent }: { extent?: __esri.Extent }) {
+  async findProjects({ state, commit, dispatch, rootState }) {
     commit('setMessage', undefined, { root: true });
-    let projects = state.list;
-    if (extent) {
-      const { xmin, ymin, xmax, ymax } = extent;
-      const res = await axios.get<{ errors?: any[]; data: { projects?: Project[] } }>(rootState.graphql_url, {
-        params: {
-          query: `{
+
+    if (state.list.length > 0) return;
+
+    const extent = new Extent({
+      spatialReference: { wkid: 102100 },
+      xmin: -13678470.214582363,
+      ymin: 5685553.212194719,
+      xmax: -13629932.70162134,
+      ymax: 5723122.011596833
+    });
+
+    let projects = new Array<Project>();
+
+    const { xmin, ymin, xmax, ymax } = extent;
+
+    const res = await axios.get<{ errors?: any[]; data: { projects?: Project[] } }>(rootState.graphql_url, {
+      params: {
+        query: `{
           projects(bbox:[${xmin},${ymin},${xmax},${ymax}], spatialReference:${extent.spatialReference.wkid}){
             id
             name
@@ -29,40 +45,46 @@ export const actions: ActionTree<ProjectState, RootState> = {
             }
           }
         }`.replace(/\s+/g, ' ')
-        }
-      });
-      if (res.data.errors) {
-        commit('setMessage', 'Error retrieving projects...', { root: true });
       }
-      if (res.data.data.projects) {
-        commit('clearProjects');
-        // sort by name then block number
-        projects = res.data.data.projects.sort(function (a, b) {
-          var nameA = a.name?.toUpperCase(); // ignore upper and lowercase
-          var nameB = b.name?.toUpperCase(); // ignore upper and lowercase
+    });
 
-          if (!nameA || !nameB) {
-            return Number.MAX_SAFE_INTEGER;
-          }
-          if (nameA < nameB) {
-            return -1;
-          }
-          if (nameA > nameB) {
-            return 1;
-          }
-
-          // names must be equal
-          return 0;
-        });
-
-        commit('addProjects', projects);
-      }
+    if (res.data.errors) {
+      commit('setMessage', 'Error retrieving projects...', { root: true });
     }
 
-    const idx = lunr(function () {
+    if (res.data.data.projects) {
+      commit('clearProjects');
+      // sort by name then block number
+      projects = Array.from(res.data.data.projects);
+      projects = projects.sort(function(a, b) {
+        var nameA = a.name?.toUpperCase(); // ignore upper and lowercase
+        var nameB = b.name?.toUpperCase(); // ignore upper and lowercase
+
+        if (!nameA || !nameB) {
+          return Number.MAX_SAFE_INTEGER;
+        }
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
+
+        // names must be equal
+        return 0;
+      });
+
+      commit('addProjects', projects);
+
+      dispatch('analyzeProjects');
+    }
+
+    const idx = lunr(function() {
       this.ref('id');
       this.field('name');
       this.field('description');
+
+      this.use(customStemming);
 
       projects.forEach(doc => {
         this.add(doc);
@@ -71,21 +93,19 @@ export const actions: ActionTree<ProjectState, RootState> = {
 
     commit('setIndex', idx);
   },
-  selectProjectById({ commit, dispatch, state }, id: string) {
-    commit('setMessage', undefined, { root: true });
-
-    let project: Project = { id };
-
-    if (state.list) {
-      project = Object.assign(
-        state.list.find(project => {
-          return project.id === id;
-        }) || {},
-        project
-      );
-    }
-    commit('setSelectedProjects', [project]);
-    dispatch('selectProjects', project);
+  analyzeProjects({ commit, state }) {
+    commit(
+      'setModels',
+      state.list.reduce((prev, curr) => {
+        const entry = prev.find(value => {
+          return value.value === curr.estimatedTimeframe;
+        });
+        if (entry) {
+          entry.count = entry.count + 1;
+        }
+        return prev;
+      }, state.models)
+    );
   },
   selectProjects({ commit, dispatch, rootState }, project: Project) {
     commit('setMessage', undefined, { root: true });

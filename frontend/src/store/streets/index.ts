@@ -1,6 +1,6 @@
 import { Module } from 'vuex';
 import { RootState } from '../types';
-import { StreetState, Street } from './types';
+import { StreetState, Street, ClassificationDisplayInfo } from './types';
 
 import { actions } from './actions';
 import { mutations } from './mutations';
@@ -118,10 +118,61 @@ const layers = [
   })
 ];
 
+const analysis = new Array<ClassificationDisplayInfo>();
+
+new Map([
+  ['transit', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/3'],
+  ['traffic', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/4'],
+  ['emergency', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/7'],
+  ['design', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/10'],
+  ['bicycle', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/12'],
+  ['pedestrian', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/15'],
+  ['freight', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/19']
+]).forEach(async (url: string, key: string) => {
+  const res = await axios.get(url, {
+    params: {
+      f: 'json'
+    }
+  });
+
+  if (res.data) {
+    res.data.drawingInfo.renderer.uniqueValueInfos.map((info: any) => {
+      const [r, g, b, a] = info.symbol.color;
+      analysis.push({
+        classification: key,
+        classificationValue: info.value.toString(),
+        filter: key === 'pedestrian',
+        label: info.label,
+        color: d3.rgb(r, g, b, a),
+        count: 0
+      });
+    });
+  }
+});
+
+analysis.push({
+  classification: 'greenscape',
+  classificationValue: 'Y',
+  filter: false,
+  label: 'Yes',
+  color: d3.rgb(255, 255, 255, 255),
+  count: 0
+});
+
+analysis.push({
+  classification: 'greenscape',
+  classificationValue: 'N',
+  filter: false,
+  label: 'No',
+  color: d3.rgb(255, 255, 255, 255),
+  count: 0
+});
+
 const state: StreetState = {
   layers,
   list: new Array<Street>(),
-  selected: undefined
+  selected: undefined,
+  displayInfo: analysis
 };
 
 export default {

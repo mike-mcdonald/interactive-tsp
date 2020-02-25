@@ -1,14 +1,14 @@
 import { ActionTree } from 'vuex';
-import { StreetState, Street } from './types';
+import { StreetState, Street, ClassificationDisplayInfo } from './types';
 import { RootState } from '../types';
 import router from '../../router/index';
 
-import bbox from '@turf/bbox';
-import bboxPolygon from '@turf/bbox-polygon';
-import centroid from '@turf/centroid';
-import nearestPointOnLine from '@turf/nearest-point-on-line';
-import * as turf from '@turf/helpers';
 import axios from 'axios';
+import proj4 from 'proj4';
+
+import area from '@turf/area';
+import bboxPolygon from '@turf/bbox-polygon';
+
 import { esriGraphics } from '../utils';
 
 const classificationMaps = new Map<string, Map<string, string>>();
@@ -50,7 +50,6 @@ function mapClassification(type: string, value?: string): string {
     const map = classificationMaps.get(type);
     if (map) {
       return map.get(value) || 'N/A';
-    }
   }
   return 'NULL';
 }
@@ -58,6 +57,10 @@ function mapClassification(type: string, value?: string): string {
 export const actions: ActionTree<StreetState, RootState> = {
   findStreets({ commit, rootState }, extent) {
     const { xmin, ymin, xmax, ymax } = extent;
+    if (area(bboxPolygon([xmin, ymin, xmax, ymax])) > 5000000) {
+      commit('setMessage', 'Zoom in or search for an address to see available streets...', { root: true });
+      return;
+    }
     commit('setMessage', undefined, { root: true });
     axios
       .get<{ errors?: any[]; data: { streets?: Street[] } }>(rootState.graphqlUrl, {
@@ -99,14 +102,7 @@ export const actions: ActionTree<StreetState, RootState> = {
             // names must be equal
             return (a.block || Number.MAX_SAFE_INTEGER) - (b.block || Number.MIN_SAFE_INTEGER);
           });
-          streets = streets.map(street => {
-            const [minx, miny, maxx, maxy] = bbox(street.geometry);
-            street.minX = minx;
-            street.minY = miny;
-            street.maxX = maxx;
-            street.maxY = maxy;
-            return street;
-          });
+
           commit('addStreets', streets);
         }
       })
@@ -197,5 +193,30 @@ export const actions: ActionTree<StreetState, RootState> = {
       commit('map/setGraphics', graphics, { root: true });
       if (move) commit('map/goTo', graphics, { root: true });
     }
+  },
+  clearAnalysis({ commit, state }) {
+    commit(
+      'setAnalysis',
+      state.displayInfo?.map(a => {
+        const { count, ...analysis } = a;
+        return Object.assign(analysis, { count: 0 });
+      })
+    );
+  },
+  analyzeStreets({ commit, state }, streets: Array<Street>) {
+    const analysis = Array.from(state.displayInfo || []);
+    if (streets) {
+      streets.forEach(street => {
+        Object.keys(street.classifications || {}).forEach(c => {
+          let entry = analysis.find(val => {
+            if (!street.classifications) return false;
+            return val.classification === c && val.classificationValue === street.classifications[c];
+          });
+
+          if (entry) entry.count = entry.count + 1;
+        });
+      });
+    }
+    commit('setAnalysis', analysis);
   }
-};
+}

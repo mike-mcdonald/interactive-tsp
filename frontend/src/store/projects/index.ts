@@ -1,73 +1,87 @@
 import { Module } from 'vuex';
 import { RootState } from '../types';
-import { ProjectState, Project } from './types';
+import { ProjectState, Project, ViewModel } from './types';
 
-import FeatureLayer from 'esri/layers/FeatureLayer';
+import axios from 'axios';
+import * as d3 from 'd3';
 import GroupLayer from 'esri/layers/GroupLayer';
+import FeatureLayer from 'esri/layers/FeatureLayer';
 
 import { actions } from './actions';
 import { getters } from './getters';
 import { mutations } from './mutations';
+import { customStemming } from '../utils';
+import Extent from 'esri/geometry/Extent';
+import lunr from 'lunr';
 
 const namespaced: boolean = true;
 
-const LAYER_URLS = [
-  'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/22',
-  'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/23',
-  'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/24'
-];
+const LAYER_URLS = new Array<string>(
+  ...[
+    'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/23',
+    'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/22',
+    'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/24'
+  ]
+);
 
-const layers = [
-  new GroupLayer({
-    id: 'projects-10',
-    title: 'Projects, years 1-10',
-    visibilityMode: 'inherited',
-    visible: false,
-    layers: LAYER_URLS.map(
-      url =>
-        new FeatureLayer({
-          url,
-          outFields: ['*'],
-          definitionExpression: `estimatedTimeFrame = '1-10_YRS'`
-        })
-    )
-  }),
-  new GroupLayer({
-    id: 'projects-20',
-    title: 'Projects, years 11-20',
-    visibilityMode: 'inherited',
-    visible: false,
-    layers: LAYER_URLS.map(
-      url =>
-        new FeatureLayer({
-          url,
-          outFields: ['*'],
-          definitionExpression: `estimatedTimeFrame = '11-20_YRS'`
-        })
-    )
-  }),
-  new GroupLayer({
-    id: 'projects-NA',
-    title: 'Projects, no timeframe',
-    visibilityMode: 'inherited',
-    visible: false,
-    layers: LAYER_URLS.map(
-      url =>
-        new FeatureLayer({
-          url,
-          outFields: ['*'],
-          definitionExpression: `estimatedTimeFrame = 'NA'`
-        })
-    )
-  })
-];
+const map = new Map<string, string>([
+  ['1-10_YRS', 'projects-10'],
+  ['11-20_YRS', 'projects-20'],
+  ['NA', 'projects-NA']
+]);
+
+const models = new Array<ViewModel>();
+
+LAYER_URLS.some(async url => {
+  const res = await axios.get(url, {
+    params: {
+      f: 'json'
+    }
+  });
+
+  if (res.data) {
+    models.push(
+      ...res.data.drawingInfo.renderer.uniqueValueInfos.map((info: any) => {
+        const [r, g, b, a] = info.symbol.color;
+
+        const key = map.get(info.value.toString());
+
+        if (key) {
+          const model: ViewModel = {
+            key,
+            value: info.value.toString(),
+            label: info.label,
+            color: d3.rgb(r, g, b, a),
+            enabled: true,
+            count: 0,
+            mapLayer: new GroupLayer({
+              id: key,
+              title: info.label,
+              visibilityMode: 'inherited',
+              visible: true,
+              layers: LAYER_URLS.map(
+                (url: string) =>
+                  new FeatureLayer({
+                    url,
+                    outFields: ['*'],
+                    definitionExpression: `estimatedTimeFrame = '${info.value.toString()}'`
+                  })
+              )
+            })
+          };
+
+          return model;
+        }
+      })
+    );
+  }
+
+  return true;
+});
 
 const state: ProjectState = {
-  layers,
+  models,
   list: new Array<Project>(),
-  filter: {
-    timeframes: ['1-10_YRS', '11-20_YRS', 'NA']
-  },
   candidates: undefined,
   index: undefined,
   selected: undefined

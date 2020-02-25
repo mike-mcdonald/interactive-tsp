@@ -4,7 +4,9 @@
       title="Go to previous page"
       rel="prev"
       class="py-2 px-3 rounded border shadow bg-fog-200 text-fog-800"
-      :class="{ invisible: value == 0 }"
+      :class="{
+        invisible: value == 0
+      }"
       @click="$emit('prev')"
       @keyup.enter="$emit('prev')"
     >
@@ -31,7 +33,9 @@
       title="Go to next page"
       rel="prev"
       class="py-2 px-3 rounded border shadow bg-fog-200 text-fog-800"
-      :class="{ invisible: list.length == value + 1 }"
+      :class="{
+        invisible: list.length == value + 1
+      }"
       @click="$emit('next')"
       @keyup-.enter="$emit('next')"
     >
