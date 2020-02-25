@@ -14,7 +14,7 @@ export const actions: ActionTree<ProjectState, RootState> = {
     let projects = state.list;
     if (extent) {
       const { xmin, ymin, xmax, ymax } = extent;
-      const res = await axios.get<{ errors?: any[]; data: { projects?: Project[] } }>(rootState.graphql_url, {
+      const res = await axios.get<{ errors?: any[]; data: { projects?: Project[] } }>(rootState.graphqlUrl, {
         params: {
           query: `{
           projects(bbox:[${xmin},${ymin},${xmax},${ymax}], spatialReference:${extent.spatialReference.wkid}){
