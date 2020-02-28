@@ -30,19 +30,5 @@ export default new Router({
       name: 'text',
       component: Text
     }
-  ],
-  scrollBehavior(to, from, savedPosition) {
-    //https://router.vuejs.org/guide/advanced/scroll-behavior.html
-    if (to.hash) {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve({ selector: to.hash });
-        }, 100);
-      });
-    } else if (savedPosition) {
-      return savedPosition;
-    } else {
-      return { x: 0, y: 0 };
-    }
-  }
+  ]
 });
