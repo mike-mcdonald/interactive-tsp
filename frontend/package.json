@@ -11,6 +11,7 @@
     "postinstall": "rimraf ./node_modules/.cache/"
   },
   "dependencies": {
+    "@turf/area": "^6.0.1",
     "@turf/bbox": "^6.0.1",
     "@turf/bbox-polygon": "^6.0.1",
     "@turf/buffer": "^5.1.5",
@@ -22,6 +23,7 @@
     "apollo-link-http": "^1.5.16",
     "axios": "^0.19.0",
     "core-js": "^2.6.5",
+    "d3": "^5.15.0",
     "graphql": "^14.5.8",
     "graphql-tag": "^2.10.1",
     "lodash": "^4.17.15",
@@ -30,8 +32,10 @@
     "rbush": "^3.0.1",
     "register-service-worker": "^1.6.2",
     "vue": "^2.6.10",
+    "vue-property-decorator": "^8.4.0",
     "vue-router": "^3.0.3",
-    "vuex": "^3.0.1"
+    "vuex": "^3.0.1",
+    "vuex-class": "^0.3.2"
   },
   "devDependencies": {
     "@arcgis/webpack-plugin": "^4.13.0",
@@ -48,6 +52,7 @@
     "@fullhuman/postcss-purgecss": "^2.0.5",
     "@types/arcgis-js-api": "~4.13.0",
     "@types/chai": "^4.1.0",
+    "@types/d3": "^5.7.2",
     "@types/lodash": "^4.14.146",
     "@types/lunr": "^2.3.2",
     "@types/mocha": "^5.2.4",
