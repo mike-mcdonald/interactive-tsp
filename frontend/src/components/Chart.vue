@@ -1,38 +1,16 @@
 <template>
-  <section class="relative">
+  <section>
     <div ref="chart" class="flex flex-row border border-black shadow-inner">
-      <router-link
+      <span
         v-for="entry in dataset"
-        :key="entry.classificationValue"
+        :key="entry.value"
         class="h-4"
         :style="{
           'background-color': entry.color.formatRgb(),
           width: `${(entry.count / total) * 100}%`
         }"
-        :to="{
-          name: 'text',
-          hash: `#${entry.label
-            .toLowerCase()
-            .split(' ')
-            .join('-')}`
-        }"
-        :title="`${entry.label}: ${entry.count} / ${datasetTotal}`"
-        @mouseenter.native="show[entry.classificationValue] = true"
-        @mouseleave.native="show[entry.classificationValue] = false"
-        @touchenter.native="show[entry.classificationValue] = true"
-        @touchleave.native="show[entry.classificationValue] = false"
-      ></router-link>
+      ></span>
     </div>
-    <transition name="fade">
-      <div
-        v-for="entry in dataset"
-        :key="entry.classificationValue"
-        v-if="show[entry.classificationValue]"
-        class="absolute z-50 inset-x-0 top-0 mt-6 p-2 bg-fog-200 border border-fog-900 rounded"
-      >
-        {{ entry.label }}: {{ entry.count }} / {{ datasetTotal }}
-      </div>
-    </transition>
   </section>
 </template>
 
@@ -51,16 +29,6 @@ export default Vue.extend({
       type: Number,
       required: true
     }
-  },
-  data() {
-    const show = this.dataset.reduce((prev: any, curr: any) => {
-      prev[curr.classificationValue] = false;
-      return prev;
-    }, {});
-
-    return {
-      show
-    };
   },
   computed: {
     datasetTotal() {

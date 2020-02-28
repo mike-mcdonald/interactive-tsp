@@ -3,128 +3,20 @@
     <section class="h-full">
       <div ref="map" class="relative h-full w-full"></div>
     </section>
+    <div class="h-full w-full map-ui" ref="manual">
+      <slot name="manual"> </slot>
+    </div>
     <div ref="top-left">
-      <slot name="top-left">
-        <div class="flex flex-col">
-          <button class="p-2 bg-white border border-fog-900" v-on:click="incrementZoom">
-            <!-- This is from feather.  Their site is here: https://www.feathericons.com -->
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="h-5 w-5"
-            >
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-          </button>
-          <button class="p-2 bg-white border border-fog-900" v-on:click="decrementZoom">
-            <!-- This is from feather.  Their site is here: https://www.feathericons.com -->
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="h-5 w-5"
-            >
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-          </button>
-        </div>
-      </slot>
+      <slot name="top-left"> </slot>
     </div>
     <div ref="top-right">
-      <slot name="top-right">
-        <button v-if="!showSettings" class="p-2 bg-white border border-fog-900" v-on:click="showSettings = true">
-          <!-- This is from feather.  Their site is here: https://www.feathericons.com -->
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="h-5 w-5"
-          >
-            <polygon points="12 2 2 7 12 12 22 7 12 2" />
-            <polyline points="2 17 12 22 22 17" />
-            <polyline points="2 12 12 17 22 12" />
-          </svg>
-        </button>
-        <div v-if="showSettings" class="bg-white h-64 overflow-y-auto border border-fog-900">
-          <header class="flex items-baseline justify-between sticky top-0 z-10 bg-gray-100 border-b border-black">
-            <h2 class="p-2 text-2xl">Settings</h2>
-            <button aria-label="Close" class="p-3" @click.stop.prevent="showSettings = false">
-              <X />
-            </button>
-          </header>
-          <main class="overflow-y-auto p-2">
-            <header class="flex items-baseline justify-between">
-              <h3 class="text-xl">Layers</h3>
-            </header>
-            <checkbox
-              v-for="layer in layers"
-              :value="layer.visible"
-              :key="layer.id"
-              :title="layer.title"
-              @input="toggleLayerVisibility(layer.id, $event)"
-            />
-          </main>
-        </div>
-      </slot>
+      <slot name="top-right"> </slot>
     </div>
     <div ref="bottom-left">
       <slot name="bottom-left"></slot>
     </div>
     <div ref="bottom-right">
-      <slot name="bottom-right">
-        <button v-if="!showLegend" class="p-2 bg-white border border-fog-900" v-on:click="showLegend = true">
-          <!--
-            This is from feather.  Their site is here: https://www.feathericons.com
-            Their license is here: https://github.com/feathericons/feather/blob/master/LICENSE
-          -->
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="h-5 w-5"
-          >
-            <line x1="8" y1="6" x2="21" y2="6" />
-            <line x1="8" y1="12" x2="21" y2="12" />
-            <line x1="8" y1="18" x2="21" y2="18" />
-            <line x1="3" y1="6" x2="3.01" y2="6" />
-            <line x1="3" y1="12" x2="3.01" y2="12" />
-            <line x1="3" y1="18" x2="3.01" y2="18" />
-          </svg>
-        </button>
-        <div v-show="showLegend" class="bg-white h-64 overflow-y-auto border border-fog-900">
-          <header class="flex items-baseline justify-between sticky top-0 z-10 bg-gray-100 border-b border-black">
-            <h2 class="p-2 text-2xl">Legend</h2>
-            <button aria-label="Close" class="p-3" @click.stop.prevent="showLegend = false">
-              <X />
-            </button>
-          </header>
-          <main ref="legend"></main>
-        </div>
-      </slot>
+      <slot name="bottom-right"> </slot>
     </div>
   </div>
 </template>
@@ -147,16 +39,11 @@ import SimpleLineSymbol from 'esri/symbols/SimpleLineSymbol';
 import MapView from 'esri/views/MapView';
 import Legend from 'esri/widgets/Legend';
 
-import Checkbox from 'portland-pattern-lab/source/_patterns/02-molecules/form/Checkbox.vue';
-import X from 'portland-pattern-lab/source/_patterns/01-atoms/04-images/X.vue';
 import { MapState } from '../store/map/types';
 
 export default Vue.extend({
   name: 'Map',
-  components: {
-    Checkbox,
-    X
-  },
+
   props: {
     legend: {
       type: Boolean,
@@ -223,6 +110,10 @@ export default Vue.extend({
       position: 'bottom-right',
       index: 2
     });
+    view.ui.add(this.$refs['manual'] as HTMLDivElement, {
+      position: 'manual',
+      index: 2
+    });
 
     if (this.legend) {
       new Legend({
@@ -265,6 +156,11 @@ export default Vue.extend({
       .esri-widget--panel {
         @apply w-full;
       }
+    }
+  }
+  .esri-ui-manual-container {
+    .esri-component {
+      @apply pointer-events-none;
     }
   }
   .esri-widget {

@@ -1,75 +1,52 @@
 import { ActionTree } from 'vuex';
-import { StreetState, Street, ClassificationDisplayInfo } from './types';
+import { StreetState, Street, ViewModel } from './types';
 import { RootState } from '../types';
-import router from '../../router/index';
-
-import axios from 'axios';
-import proj4 from 'proj4';
 
 import area from '@turf/area';
 import bboxPolygon from '@turf/bbox-polygon';
+import axios from 'axios';
+import proj4 from 'proj4';
+import { Extent } from 'esri/geometry';
 
 import { esriGraphics } from '../utils';
 
-const classificationMaps = new Map<string, Map<string, string>>();
-
-new Map([
-  ['transit', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/3'],
-  ['traffic', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/4'],
-  ['emergency', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/7'],
-  ['design', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/10'],
-  ['bicycle', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/12'],
-  ['pedestrian', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/15'],
-  ['freight', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/19']
-]).forEach(async (url: string, key: string) => {
-  const res = await axios.get(url, {
-    params: {
-      f: 'json'
-    }
-  });
-
-  if (res.data) {
-    const map = new Map<string, string>();
-    res.data.drawingInfo.renderer.uniqueValueInfos.map((info: any) => {
-      map.set(info.value, info.label);
-    });
-    classificationMaps.set(key, map);
-  }
-});
-
-classificationMaps.set(
-  'greenscape',
-  new Map<string, string>([
-    ['Y', 'Yes'],
-    ['N', 'No']
-  ])
-);
-
-function mapClassification(type: string, value?: string): string {
-  if (value && classificationMaps.has(type)) {
-    const map = classificationMaps.get(type);
-    if (map) {
-      return map.get(value) || 'N/A';
-  }
-  return 'NULL';
-}
+// ESRI maps use this wkid
+proj4.defs('102100', proj4.defs('EPSG:3857'));
 
 export const actions: ActionTree<StreetState, RootState> = {
-  findStreets({ commit, rootState }, extent) {
-    const { xmin, ymin, xmax, ymax } = extent;
+  findStreets({ commit, dispatch, rootState }, extent: Extent) {
+    let { xmin, ymin, xmax, ymax } = extent;
+
+    if (extent.spatialReference.wkid != 4326) {
+      [xmin, ymin] = proj4(extent.spatialReference.wkid.toString(), 'EPSG:4326', [xmin, ymin]);
+      [xmax, ymax] = proj4(extent.spatialReference.wkid.toString(), 'EPSG:4326', [xmax, ymax]);
+    }
+
     if (area(bboxPolygon([xmin, ymin, xmax, ymax])) > 5000000) {
       commit('setMessage', 'Zoom in or search for an address to see available streets...', { root: true });
       return;
     }
+
     commit('setMessage', undefined, { root: true });
+
     axios
       .get<{ errors?: any[]; data: { streets?: Street[] } }>(rootState.graphqlUrl, {
         params: {
           query: `{
-          streets(bbox:[${xmin},${ymin},${xmax},${ymax}], spatialReference:${extent.spatialReference.wkid}){
+          streets(bbox:[${xmin},${ymin},${xmax},${ymax}], spatialReference:4326){
             id
             name
             block
+            classifications {
+              pedestrian
+              bicycle
+              transit
+              freight
+              design
+              emergency
+              traffic
+              greenscape
+            }
             geometry {
               type
               coordinates
@@ -83,7 +60,8 @@ export const actions: ActionTree<StreetState, RootState> = {
           commit('setMessage', 'Zoom in or search for an address to see available streets...', { root: true });
         }
         if (res.data.data.streets) {
-          commit('clearStreets');
+          commit('setList', []);
+          dispatch('clearAnalysis');
           // sort by name then block number
           let streets = res.data.data.streets.sort(function(a, b) {
             var nameA = a.name?.toUpperCase(); // ignore upper and lowercase
@@ -103,7 +81,8 @@ export const actions: ActionTree<StreetState, RootState> = {
             return (a.block || Number.MAX_SAFE_INTEGER) - (b.block || Number.MIN_SAFE_INTEGER);
           });
 
-          commit('addStreets', streets);
+          commit('setList', streets);
+          dispatch('analyzeStreets', streets);
         }
       })
       .catch(() => {
@@ -174,11 +153,6 @@ export const actions: ActionTree<StreetState, RootState> = {
         let data = res.data.data;
         if (data.street) {
           data.street = Object.assign(data.street, street);
-          if (data.street.classifications) {
-            for (const key of Object.keys(data.street.classifications)) {
-              data.street.classifications[key] = mapClassification(key, data.street.classifications[key]);
-            }
-          }
           commit('setSelectedStreet', data.street);
           dispatch('highlightStreet', { street: data.street, move: true });
         }
@@ -197,26 +171,28 @@ export const actions: ActionTree<StreetState, RootState> = {
   clearAnalysis({ commit, state }) {
     commit(
       'setAnalysis',
-      state.displayInfo?.map(a => {
+      state.models?.map(a => {
         const { count, ...analysis } = a;
         return Object.assign(analysis, { count: 0 });
       })
     );
   },
   analyzeStreets({ commit, state }, streets: Array<Street>) {
-    const analysis = Array.from(state.displayInfo || []);
+    const models = Array.from(state.models || []);
+
     if (streets) {
       streets.forEach(street => {
         Object.keys(street.classifications || {}).forEach(c => {
-          let entry = analysis.find(val => {
+          let entry = models.find(val => {
             if (!street.classifications) return false;
-            return val.classification === c && val.classificationValue === street.classifications[c];
+            return val.key === c && val.value === street.classifications[c];
           });
 
           if (entry) entry.count = entry.count + 1;
         });
       });
     }
-    commit('setAnalysis', analysis);
+
+    commit('setAnalysis', models);
   }
-}
+};

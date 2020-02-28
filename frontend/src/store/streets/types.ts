@@ -1,5 +1,5 @@
 import * as turf from '@turf/helpers';
-import RBush from 'rbush';
+import { RGBColor, HSLColor } from 'd3';
 import Layer from 'esri/layers/Layer';
 
 export interface Project {
@@ -30,18 +30,18 @@ export interface Street {
   maxY?: number;
 }
 
-export interface ClassificationDisplayInfo {
-  classification: string;
-  classificationValue: string;
-  filter: boolean;
+export interface ViewModel {
+  key: string;
+  value: string;
+  enabled: boolean;
   label: string;
   count: number;
-  color: d3.RGBColor | d3.HSLColor | null;
+  color: RGBColor | HSLColor | null;
 }
 
 export interface StreetState {
   layers: Layer[];
   list?: Street[];
   selected?: Street;
-  displayInfo?: Array<ClassificationDisplayInfo>;
+  models?: Array<ViewModel>;
 }

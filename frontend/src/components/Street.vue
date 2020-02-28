@@ -28,7 +28,7 @@
                 "
                 :to="{
                   name: 'text',
-                  hash: `#${street.classifications[classification]
+                  hash: `#${classificationLabel(classification, street.classifications[classification])
                     .toLowerCase()
                     .split(' ')
                     .join('-')}`
@@ -103,7 +103,7 @@
 </template>
 <script lang="ts">
 import Vue from 'vue';
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapState, mapGetters } from 'vuex';
 
 import { Street, StreetState } from '@/store/streets/types';
 
@@ -114,6 +114,9 @@ export default Vue.extend({
       type: Object,
       required: true
     }
+  },
+  computed: {
+    ...mapGetters('streets', ['classificationLabel', 'classificationColor'])
   },
   methods: {
     classificationKeys: function() {

@@ -2,7 +2,7 @@
   <main class="flex flex-col-reverse">
     <section class="flex flex-col md:flex-row container mx-auto h-screen-50 overflow-y-auto">
       <div id="filters" class="w-full md:w-1/3 p-2">
-        <form class="flex flex-col m-2" @submit.prevent="">
+        <form class="flex flex-col m-2" @submit.prevent>
           <div v-for="model in dataset" :key="model.key">
             <label class="block mb-1 font-semibold" :for="model.key">
               <input
@@ -141,12 +141,14 @@
       </div>
     </section>
     <section class="w-full h-screen-50 border-b border-black">
-      <app-map :layers="mapLayers" v-on:click="handleClick"> </app-map>
+      <app-map :layers="mapLayers" v-on:click="handleClick"></app-map>
     </section>
   </main>
 </template>
 <script lang="ts">
 import Vue from 'vue';
+import Component from 'vue-class-component';
+import { RawLocation, Route } from 'vue-router';
 import { mapState, mapActions, mapGetters, mapMutations } from 'vuex';
 
 import * as d3 from 'd3';
@@ -155,6 +157,7 @@ import proj4 from 'proj4';
 import { BBox } from '@turf/helpers';
 
 import { Extent } from 'esri/geometry';
+import MapView from 'esri/views/MapView';
 
 import AppMap from '@/components/Map.vue';
 import ProjectComponent from '@/components/Project.vue';
@@ -163,40 +166,12 @@ import Pager from '@/components/Pager.vue';
 import { ProjectState, Project, ViewModel } from '../store/projects/types';
 import { AddressCandidate } from '../store/portlandmaps/types';
 
-export default Vue.extend({
+@Component({
   name: 'Projects',
   components: {
     AppMap,
     ProjectComponent,
     Pager
-  },
-  data() {
-    return {
-      searchText: undefined,
-      selectedProjects: new Array<string>(),
-      pageIndex: 0,
-      show: {}
-    };
-  },
-  beforeRouteEnter(to, from, next) {
-    next(vm => {
-      // select the projects layer
-      vm.$store.dispatch('map/setLayerVisibility', { layerId: 'projects-10', visible: true });
-      vm.$store.dispatch('map/setLayerVisibility', { layerId: 'projects-20', visible: true });
-      vm.$store.dispatch('map/setLayerVisibility', { layerId: 'projects-NA', visible: true });
-      vm.$store.dispatch('projects/findProjects');
-      if (to.params.id) {
-        vm.$store.dispatch('projects/selectProjects', { id: to.params.id });
-      }
-    });
-  },
-  beforeRouteUpdate(to, from, next) {
-    if (to.params.id) {
-      this.$store.dispatch('projects/selectProjects', { id: to.params.id });
-    } else {
-      this.selectedProjects = new Array<string>();
-    }
-    next();
   },
   computed: {
     ...mapState(['message']),
@@ -207,101 +182,147 @@ export default Vue.extend({
       index: (state: ProjectState) => state.index,
       selectedProject: (state: ProjectState) => (state.selected ? state.selected[0] : undefined)
     }),
-    ...mapGetters('projects', ['mapLayers']),
-    total() {
-      return this.models.reduce((prev: number, curr: ViewModel) => {
-        return prev + (curr.enabled ? curr.count : 0);
-      }, 0);
-    },
-    filteredProjects() {
-      const enabledTimeframes = this.models.reduce((prev: Map<string, boolean>, curr: ViewModel) => {
-        if (curr.enabled) {
-          prev.set(curr.value, curr.enabled);
-        }
-        return prev;
-      }, new Map<string, boolean>());
-
-      let projects = this.projects;
-
-      if (this.searchText && this.searchText.length > 0) {
-        projects = this.index.search(this.searchText).map((val: any) => {
-          return (
-            this.projects.find((proj: Project) => {
-              return proj.id == val.ref;
-            }) || { id: val.ref }
-          );
-        });
-      }
-
-      return projects.reduce((prev: Array<Project>, curr: Project) => {
-        if (curr.estimatedTimeframe && enabledTimeframes.has(curr.estimatedTimeframe)) {
-          prev.push(curr);
-        }
-        return prev;
-      }, new Array<Project>());
-    },
-    dataset() {
-      return this.models.map((model: ViewModel) => {
-        model.count = this.filteredProjects.reduce((prev: number, curr: Project) => {
-          if (curr.estimatedTimeframe == model.value) {
-            prev = prev + 1;
-          }
-          return prev;
-        }, 0);
-        return model;
-      });
-    }
+    ...mapGetters('projects', ['mapLayers'])
   },
   methods: {
     ...mapActions('map', ['setLayerVisibility']),
-    ...mapMutations('projects', ['setModels', 'addTimeframe', 'removeTimeframe']),
-    ...mapActions('projects', ['findProjects', 'filterProjects', 'highlightProjects']),
-    toggleTimeFrameFilter(model: ViewModel, value: boolean) {
-      this.setModels(
-        this.models.reduce((prev: Array<ViewModel>, curr: ViewModel) => {
-          if (curr.key === model.key) {
-            curr.enabled = value;
-            curr.mapLayer.visible = value;
-            this.setLayerVisibility({ layerId: curr.key, visible: value });
-          }
-          return prev;
-        }, this.models)
-      );
-    },
-    highlightProject(project: Project) {
-      if (project.geometry) {
-        this.highlightProjects({ projects: [project] });
+    ...mapMutations('projects', ['setModels']),
+    ...mapActions('projects', ['findProjects', 'highlightProjects'])
+  }
+})
+export default class Projects extends Vue {
+  view!: MapView;
+  models!: Array<ViewModel>;
+  projects!: Array<Project>;
+  index!: lunr.Index;
+  selectedProject!: Project;
+
+  setLayerVisibility!: (payload: { layerId: string; visible: boolean }) => void;
+  setModels!: (models: Array<ViewModel>) => void;
+  highlightProjects!: (payload: { projects: Array<Project> }) => void;
+
+  searchText = '';
+  selectedProjects = new Array<string>();
+  pageIndex = 0;
+  show = {};
+
+  beforeRouteEnter(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => void)) => void) {
+    next(vm => {
+      // select the projects layer
+      vm.$store.dispatch('map/setLayerVisibility', { layerId: 'projects-10', visible: true });
+      vm.$store.dispatch('map/setLayerVisibility', { layerId: 'projects-20', visible: true });
+      vm.$store.dispatch('map/setLayerVisibility', { layerId: 'projects-NA', visible: true });
+      vm.$store.dispatch('projects/findProjects');
+      if (to.params.id) {
+        vm.$store.dispatch('projects/selectProjects', { id: to.params.id });
       }
-    },
-    handleSearchChange(value: string) {
-      this.searchText = value;
-    },
-    handleProjectChange(index: number) {
-      this.pageIndex = index;
-      this.$router.push({ name: 'projects', params: { id: this.selectedProjects[index] } });
-    },
-    handleClick(event: __esri.MapViewClickEvent) {
-      this.pageIndex = 0;
-      this.view.hitTest(event).then((response: __esri.HitTestResult) => {
-        if (response.results.length) {
-          this.selectedProjects = new Array<string>();
-          response.results.forEach(result => {
-            // push each id to the pagination component
-            this.selectedProjects.push(result.graphic.attributes.TranPlanID);
-          });
-          // do something with the result graphic
-          this.$router.push({ name: 'projects', params: { id: this.selectedProjects[0] } });
-        }
+    });
+  }
+
+  beforeRouteUpdate(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => void)) => void) {
+    if (to.params.id) {
+      this.$store.dispatch('projects/selectProjects', { id: to.params.id });
+    } else {
+      this.selectedProjects = new Array<string>();
+    }
+    next();
+  }
+
+  get total() {
+    return this.models.reduce((prev: number, curr: ViewModel) => {
+      return prev + (curr.enabled ? curr.count : 0);
+    }, 0);
+  }
+
+  get filteredProjects() {
+    const enabledTimeframes = this.models.reduce((prev: Map<string, boolean>, curr: ViewModel) => {
+      if (curr.enabled) {
+        prev.set(curr.value, curr.enabled);
+      }
+      return prev;
+    }, new Map<string, boolean>());
+
+    let projects = this.projects;
+
+    if (this.searchText && this.searchText.length > 0) {
+      projects = this.index.search(this.searchText).map((val: any) => {
+        return (
+          this.projects.find((proj: Project) => {
+            return proj.id == val.ref;
+          }) || { id: val.ref }
+        );
       });
     }
-  },
+
+    return projects.reduce((prev: Array<Project>, curr: Project) => {
+      if (curr.estimatedTimeframe && enabledTimeframes.has(curr.estimatedTimeframe)) {
+        prev.push(curr);
+      }
+      return prev;
+    }, new Array<Project>());
+  }
+
+  get dataset() {
+    return this.models.map((model: ViewModel) => {
+      model.count = this.filteredProjects.reduce((prev: number, curr: Project) => {
+        if (curr.estimatedTimeframe == model.value) {
+          prev = prev + 1;
+        }
+        return prev;
+      }, 0);
+      return model;
+    });
+  }
+
+  toggleTimeFrameFilter(model: ViewModel, value: boolean) {
+    this.setModels(
+      this.models.reduce((prev: Array<ViewModel>, curr: ViewModel) => {
+        if (curr.key === model.key) {
+          curr.enabled = value;
+          curr.mapLayer.visible = value;
+          this.setLayerVisibility({ layerId: curr.key, visible: value });
+        }
+        return prev;
+      }, this.models)
+    );
+  }
+  highlightProject(project: Project) {
+    if (project.geometry) {
+      this.highlightProjects({ projects: [project] });
+    }
+  }
+
+  handleSearchChange(value: string) {
+    this.searchText = value;
+  }
+
+  handleProjectChange(index: number) {
+    this.pageIndex = index;
+    this.$router.push({ name: 'projects', params: { id: this.selectedProjects[index] } });
+  }
+
+  handleClick(event: __esri.MapViewClickEvent) {
+    this.pageIndex = 0;
+    this.view.hitTest(event).then((response: __esri.HitTestResult) => {
+      if (response.results.length) {
+        this.selectedProjects = new Array<string>();
+        response.results.forEach(result => {
+          // push each id to the pagination component
+          this.selectedProjects.push(result.graphic.attributes.TranPlanID);
+        });
+        // do something with the result graphic
+        this.$router.push({ name: 'projects', params: { id: this.selectedProjects[0] } });
+      }
+    });
+  }
+
   mounted() {
     this.show = this.models.reduce((prev, curr) => {
       prev[curr.key] = false;
       return prev;
-    }, {});
+    }, {} as { [key: string]: boolean });
   }
-});
+}
 </script>
 
 <style lang="scss" scoped>

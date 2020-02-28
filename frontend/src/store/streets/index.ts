@@ -1,18 +1,21 @@
 import { Module } from 'vuex';
 import { RootState } from '../types';
-import { StreetState, Street, ClassificationDisplayInfo } from './types';
+import { StreetState, Street, ViewModel } from './types';
 
-import { actions } from './actions';
-import { mutations } from './mutations';
-import RBush from 'rbush';
+import axios from 'axios';
+import { rgb } from 'd3';
 import FeatureLayer from 'esri/layers/FeatureLayer';
 import GroupLayer from 'esri/layers/GroupLayer';
+
+import { getters } from './getters';
+import { actions } from './actions';
+import { mutations } from './mutations';
 
 const namespaced: boolean = true;
 
 const layers = [
   new GroupLayer({
-    id: 'pedestrian-classifications',
+    id: 'pedestrian',
     title: 'Pedestrian classes',
     visibilityMode: 'inherited',
     visible: true,
@@ -28,7 +31,7 @@ const layers = [
     )
   }),
   new GroupLayer({
-    id: 'bicycle-classifications',
+    id: 'bicycle',
     title: 'Bicycle classes',
     visibilityMode: 'inherited',
     visible: false,
@@ -44,7 +47,7 @@ const layers = [
     )
   }),
   new GroupLayer({
-    id: 'transit-classifications',
+    id: 'transit',
     title: 'Transit classes',
     visibilityMode: 'inherited',
     visible: false,
@@ -61,7 +64,7 @@ const layers = [
     )
   }),
   new GroupLayer({
-    id: 'freight-classifications',
+    id: 'freight',
     title: 'Freight classes',
     visibilityMode: 'inherited',
     visible: false,
@@ -78,7 +81,7 @@ const layers = [
     )
   }),
   new GroupLayer({
-    id: 'street-design-classifications',
+    id: 'design',
     title: 'Street design classes',
     visibilityMode: 'inherited',
     visible: false,
@@ -94,7 +97,7 @@ const layers = [
     )
   }),
   new GroupLayer({
-    id: 'emergency-classifications',
+    id: 'emergency',
     title: 'Emergency response classes',
     visibilityMode: 'inherited',
     visible: false,
@@ -110,7 +113,7 @@ const layers = [
     )
   }),
   new FeatureLayer({
-    id: 'traffic-classifications',
+    id: 'traffic',
     title: 'Traffic classes',
     url: 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/4',
     visible: false,
@@ -118,7 +121,7 @@ const layers = [
   })
 ];
 
-const analysis = new Array<ClassificationDisplayInfo>();
+const analysis = new Array<ViewModel>();
 
 new Map([
   ['transit', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/3'],
@@ -139,11 +142,11 @@ new Map([
     res.data.drawingInfo.renderer.uniqueValueInfos.map((info: any) => {
       const [r, g, b, a] = info.symbol.color;
       analysis.push({
-        classification: key,
-        classificationValue: info.value.toString(),
-        filter: key === 'pedestrian',
+        key,
+        value: info.value.toString(),
+        enabled: key === 'pedestrian',
         label: info.label,
-        color: d3.rgb(r, g, b, a),
+        color: rgb(r, g, b, a),
         count: 0
       });
     });
@@ -151,20 +154,20 @@ new Map([
 });
 
 analysis.push({
-  classification: 'greenscape',
-  classificationValue: 'Y',
-  filter: false,
+  key: 'greenscape',
+  value: 'Y',
+  enabled: false,
   label: 'Yes',
-  color: d3.rgb(255, 255, 255, 255),
+  color: rgb(255, 255, 255, 255),
   count: 0
 });
 
 analysis.push({
-  classification: 'greenscape',
-  classificationValue: 'N',
-  filter: false,
+  key: 'greenscape',
+  value: 'N',
+  enabled: false,
   label: 'No',
-  color: d3.rgb(255, 255, 255, 255),
+  color: rgb(255, 255, 255, 255),
   count: 0
 });
 
@@ -172,12 +175,13 @@ const state: StreetState = {
   layers,
   list: new Array<Street>(),
   selected: undefined,
-  displayInfo: analysis
+  models: analysis
 };
 
 export default {
   namespaced,
   state,
+  getters,
   actions,
   mutations
 } as Module<StreetState, RootState>;

@@ -8,14 +8,14 @@ import { RootState } from '../types';
 export const getters: GetterTree<StreetState, RootState> = {
   classificationLabel: state => (type: string, value: string) => {
     return (
-      state.displayInfo?.find(val => {
-        return val.classification === type && val.classificationValue === value;
+      state.models?.find(val => {
+        return val.key === type && val.value === value;
       })?.label || 'N/A'
     );
   },
   classificationColor: state => (type: string, value: string) => {
-    const info = state.displayInfo?.find(val => {
-      return val.classification === type && val.classificationValue === value;
+    const info = state.models?.find(val => {
+      return val.key === type && val.value === value;
     });
     return info?.color || d3.rgb(255, 255, 255, 0);
   },

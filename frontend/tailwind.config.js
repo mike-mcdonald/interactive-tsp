@@ -110,7 +110,18 @@ module.exports = {
         '(screen-16)': 'calc(100vh - 4rem)'
       },
       inset: theme => {
-        return { '2': theme('spacing.2'), '10': '2.5rem', '12': '3rem', '16': '4rem', '20': '5rem', '24': '6rem' };
+        return {
+          '2': theme('spacing.2'),
+          '3': theme('spacing.3'),
+          '4': theme('spacing.4'),
+          '5': theme('spacing.5'),
+          '6': theme('spacing.6'),
+          '10': theme('spacing.10'),
+          '12': theme('spacing.12'),
+          '16': theme('spacing.16'),
+          '20': theme('spacing.20'),
+          '24': theme('spacing.24')
+        };
       },
       borderWidth: {
         '6': '6px'
