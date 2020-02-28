@@ -2,7 +2,6 @@ import MapView from 'esri/views/MapView';
 
 import { MutationTree } from 'vuex';
 import { MapState } from './types';
-import Layer from 'esri/layers/Layer';
 
 export const mutations: MutationTree<MapState> = {
   setView(state, view: MapView) {
@@ -20,8 +19,11 @@ export const mutations: MutationTree<MapState> = {
     state.zoom.current = zoom;
   },
   goTo(state, target) {
-    state.zoom.current = target.zoom || state.zoom.current;
-    state.view?.goTo(target);
+    const zoom = (state.zoom.current = target.zoom || state.zoom.focus);
+    state.view?.goTo({
+      target,
+      zoom
+    });
   },
   layerVisibilityChanged(state, { layerId, visible }) {
     const layer = state.layers.find(l => {

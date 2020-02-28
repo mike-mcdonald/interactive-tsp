@@ -1,5 +1,5 @@
 import { MutationTree } from 'vuex';
-import { ProjectState, Project, ProjectFilter, ViewModel } from './types';
+import { ProjectState, Project, ViewModel } from './types';
 
 export const mutations: MutationTree<ProjectState> = {
   setModels(state, models: Array<ViewModel>) {
@@ -13,9 +13,6 @@ export const mutations: MutationTree<ProjectState> = {
       state.list = new Array<Project>();
     }
     state.list.push(...projects);
-  },
-  setFilter(state, filter: ProjectFilter) {
-    state.filter = filter;
   },
   setSelectedProjects(state, projects: Project[]) {
     state.selected = projects;
