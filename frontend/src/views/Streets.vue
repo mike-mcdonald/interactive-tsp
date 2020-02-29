@@ -1,13 +1,22 @@
 <template>
   <main>
     <div class="w-full h-screen border-b border-black md:border-0 sticky top-0">
-      <app-map :layers="layers" v-on:click="handleClick" v-on:extent-change="findStreets($event)">
+      <app-map
+        :layers="
+          models.reduce((prev, curr) => {
+            if (curr.layer) prev.push(curr.layer);
+            return prev;
+          }, [])
+        "
+        v-on:click="handleClick"
+        v-on:extent-change="findStreets($event)"
+      >
         <template v-slot:manual>
           <div class="px-2 py-4 w-full h-full flex flex-col-reverse justify-between md:flex-row pointer-events-none">
-            <section class="h-64 md:w-1/3 md:h-full pointer-events-auto">
+            <section class="h-64 md:w-1/4 md:h-full pointer-events-auto">
               <div
                 v-if="!$route.params.id"
-                class="px-2 py-3 bg-white border border-fog-900 shadow max-h-full overflow-y-auto"
+                class="px-2 py-3 bg-white border border-fog-900 rounded shadow max-h-full overflow-y-auto"
               >
                 <transition name="fade">
                   <div
@@ -18,9 +27,11 @@
                   </div>
                 </transition>
                 <address-suggest v-on:candidate-select="goToAddress" />
-                <div v-if="streets.length > 0">{{ streets.length }} streets found in view</div>
+                <div v-if="filteredStreets.length > 0" class="my-2">
+                  {{ filteredStreets.length }} streets found in view
+                </div>
                 <ul class="list-none -mx-2">
-                  <li v-for="street in streets" :key="street.id" class="p-2">
+                  <li v-for="street in filteredStreets" :key="street.id" class="p-2">
                     <router-link
                       :to="street.id"
                       append
@@ -32,17 +43,17 @@
                       <div v-if="street.block" class="text-xs">{{ street.block }} block</div>
                       <div class="flex flex-row flex-wrap -mx-1 text-xs text-gray-600">
                         <span
-                          v-for="c in enabledClassifications"
+                          v-for="c in filteredClassifications(street.classifications)"
                           :key="c"
                           class="flex flex-row flex-wrap items-center mx-1"
                         >
                           <span
                             class="h-2 w-2 p-1 mr-1 border border-fog-800"
                             :style="{
-                              'background-color': classificationColor(c, street.classifications[c]).formatRgb()
+                              'background-color': classificationColor(c.group, c.value).formatRgb()
                             }"
                           ></span>
-                          <span>{{ classificationLabel(c, street.classifications[c]) }}</span>
+                          <span>{{ classificationLabel(c.group, c.value) }}</span>
                         </span>
                       </div>
                     </router-link>
@@ -54,44 +65,23 @@
                 <street-component v-if="selectedStreet" :street="selectedStreet" />
               </div>
             </section>
-            <section id="filters" class="h-64 md:h-full p-2 md:max-w-lg pointer-events-auto">
-              <div class="bg-white rounded border border-fog-900">
-                <header class="p-2"><h2>Map settings</h2></header>
+            <section id="filters" class="md:w-1/4 h-64 md:h-full p-2 pointer-events-auto">
+              <div class="max-h-full overflow-y-auto bg-white border border-fog-900">
+                <header class="p-2">
+                  <h2>Map settings</h2>
+                </header>
                 <main class="p-2">
-                  <div v-for="layer in layers" :key="layer.id">
-                    <section class="flex items-center justify-between">
-                      <checkbox
-                        :value="layer.visible"
-                        :title="layer.title"
-                        @input="toggleLayerVisibility(layer, $event)"
-                      />
-                      <button>layer settings</button>
-                    </section>
-                    <chart
-                      v-if="streets.length > 0 && models.find(value => value.key == layer.id && value.enabled)"
-                      :total="streets.length"
+                  <div v-for="(model, index) in allClassifications" :key="index">
+                    <classification
+                      :group="model"
                       :dataset="
                         models.reduce((prev, curr) => {
-                          if (curr.key == layer.id) prev.push(curr);
+                          if (curr.group === model) prev.push(curr);
                           return prev;
                         }, [])
                       "
-                    ></chart>
-                    <!-- <section class="flex flex-col p-2 bg-fog-200 text-fog-900 border border-fog-900 rounded">
-                <span
-                  v-for="model in models.reduce((prev, curr) => {
-                    if (curr.key == layer.id) prev.push(curr);
-                    return prev;
-                  }, [])"
-                  :key="model.value"
-                >
-                  <checkbox
-                    :value="model.layer.visible"
-                    :title="model.layer.title"
-                    @input="toggleLayerVisibility(model.layer, $event)"
-                  />
-                </span>
-              </section> -->
+                      :total="streets.length"
+                    ></classification>
                   </div>
                 </main>
               </div>
@@ -107,7 +97,6 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Route, RawLocation } from 'vue-router';
 import { mapState, mapActions, mapMutations, mapGetters } from 'vuex';
-import { State, Getter, Action, Mutation, namespace } from 'vuex-class';
 
 import { BBox } from '@turf/helpers';
 import proj4 from 'proj4';
@@ -122,7 +111,7 @@ import Checkbox from 'portland-pattern-lab/source/_patterns/02-molecules/form/Ch
 
 import AddressSuggest from '@/components/AddressSuggest.vue';
 import AppMap from '@/components/Map.vue';
-import Chart from '@/components/Chart.vue';
+import Classification from '@/components/streets/Classification.vue';
 import StreetComponent from '@/components/Street.vue';
 
 import { Street, StreetState, ViewModel } from '../store/streets/types';
@@ -132,17 +121,17 @@ import { MapState } from '../store/map/types';
 // ESRI maps use this wkid
 proj4.defs('102100', proj4.defs('EPSG:3857'));
 
-const mapModule = namespace('map');
-const streetsModule = namespace('streets');
-
 @Component({
   name: 'Streets',
   components: {
     AddressSuggest,
     AppMap,
-    Chart,
     Checkbox,
+    Classification,
     StreetComponent
+  },
+  data() {
+    return { showInfo: {} };
   },
   computed: {
     ...mapState(['message']),
@@ -150,7 +139,6 @@ const streetsModule = namespace('streets');
       view: (state: MapState) => state.view
     }),
     ...mapState('streets', {
-      layers: (state: StreetState) => state.layers,
       streets: (state: StreetState) => state.list,
       selectedStreet: (state: StreetState) => state.selected,
       models: (state: StreetState) => state.models
@@ -188,11 +176,44 @@ export default class Streets extends Vue {
   setLocation!: (location: Location) => void;
   setLayerVisibility!: (payload: { layerId: string; visible: boolean }) => void;
 
-  get enabledClassifications() {
+  get allClassifications() {
     return this.models.reduce((prev, curr) => {
-      if (curr.enabled) prev.add(curr.key);
+      prev.add(curr.group);
       return prev;
     }, new Set<string>());
+  }
+
+  get enabledClassifications() {
+    return this.models.reduce((prev, curr) => {
+      if (curr.enabled) prev.add(curr);
+      return prev;
+    }, new Set<ViewModel>());
+  }
+
+  get filteredStreets() {
+    return this.streets.reduce((prev, curr) => {
+      if (
+        this.models.find(value => {
+          if (!curr.classifications || !value.enabled) return false;
+          return curr.classifications[value.group] == value.value;
+        })
+      ) {
+        prev.push(curr);
+      }
+      return prev;
+    }, new Array<Street>());
+  }
+
+  filteredClassifications(classifications: { [key: string]: string }) {
+    return Object.keys(classifications).reduce((prev, curr) => {
+      const enabled = this.models.find(
+        value => value.group == curr && value.value == classifications[curr] && value.enabled
+      );
+
+      if (enabled) prev.push({ group: curr, value: classifications[curr] });
+
+      return prev;
+    }, new Array<any>());
   }
 
   goToAddress(address: AddressCandidate) {
@@ -212,19 +233,46 @@ export default class Streets extends Vue {
   }
 
   toggleLayerVisibility(layer: Layer, visible: boolean) {
-    this.models.filter(value => value.key == layer.id).forEach(model => (model.enabled = visible));
+    this.models.filter(value => value.group == layer.id).forEach(model => (model.enabled = visible));
     visible ? this.enabledClassifications.add(layer.id) : this.enabledClassifications.delete(layer.id);
     this.setLayerVisibility({ layerId: layer.id, visible });
   }
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.25s;
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
+}
+
+.bounce-enter-active {
+  animation: bounce-in 0.33s;
+}
+.bounce-leave-active {
+  animation: bounce-in 0.33s reverse;
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+main {
+  *::-webkit-scrollbar {
+    @apply w-3 bg-fog-200 rounded-sm;
+  }
+  *::-webkit-scrollbar-thumb {
+    @apply bg-fog-600 rounded-sm;
+  }
+  *::-webkit-scrollbar-track {
+    @apply bg-fog-200 rounded-sm;
+  }
 }
 </style>
