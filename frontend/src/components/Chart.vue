@@ -1,28 +1,32 @@
 <template>
-  <section>
-    <div ref="chart" class="flex flex-row border border-black shadow-inner">
-      <span
-        v-for="entry in dataset"
-        :key="entry.value"
-        class="h-4"
-        :style="{
-          'background-color': entry.color.formatRgb(),
-          width: `${(entry.count / total) * 100}%`
-        }"
-      ></span>
-    </div>
+  <section class="relative">
+    <main class="flex items-center justify-between -mx-2">
+      <div ref="chart" class="flex flex-row mx-2 w-full border border-black">
+        <div
+          v-for="entry in dataset"
+          :key="entry.value"
+          class="h-4"
+          :style="{
+            'background-color': entry.color.formatRgb(),
+            width: `${(entry.count / total) * 100}%`
+          }"
+          :aria-label="`${entry.label}: ${entry.count} / ${datasetTotal(dataset)}`"
+        ></div>
+      </div>
+    </main>
   </section>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
 import { mapState } from 'vuex';
+import { ViewModel } from '../store/streets/types';
 
 export default Vue.extend({
   name: 'Chart',
   props: {
     dataset: {
-      type: Array,
+      type: Array as () => Array<ViewModel>,
       required: true
     },
     total: {
@@ -30,11 +34,10 @@ export default Vue.extend({
       required: true
     }
   },
-  computed: {
-    datasetTotal() {
-      return this.dataset.reduce((prev: any, curr: any) => {
-        prev = prev + curr.count;
-        return prev;
+  methods: {
+    datasetTotal(dataset: Array<ViewModel>) {
+      return dataset.reduce((prev, curr) => {
+        return prev + curr.count;
       }, 0);
     }
   }
@@ -42,11 +45,18 @@ export default Vue.extend({
 </script>
 
 <style lang="scss" scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.25s;
+.bounce-enter-active {
+  animation: bounce-in 0.33s;
 }
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  opacity: 0;
+.bounce-leave-active {
+  animation: bounce-in 0.33s reverse;
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 </style>
