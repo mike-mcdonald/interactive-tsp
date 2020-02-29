@@ -31,16 +31,16 @@ export interface Street {
 }
 
 export interface ViewModel {
-  key: string;
   value: string;
+  group: string;
   enabled: boolean;
   label: string;
   count: number;
   color: RGBColor | HSLColor | null;
+  layer?: Layer;
 }
 
 export interface StreetState {
-  layers: Layer[];
   list?: Street[];
   selected?: Street;
   models?: Array<ViewModel>;

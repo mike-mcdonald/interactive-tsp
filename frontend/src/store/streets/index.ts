@@ -10,6 +10,7 @@ import GroupLayer from 'esri/layers/GroupLayer';
 import { getters } from './getters';
 import { actions } from './actions';
 import { mutations } from './mutations';
+import UniqueValueInfo from 'esri/renderers/support/UniqueValueInfo';
 
 const namespaced: boolean = true;
 
@@ -20,8 +21,8 @@ const layers = [
     visibilityMode: 'inherited',
     visible: true,
     layers: [
-      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/15',
-      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/16'
+      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/16',
+      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/15'
     ].map(
       url =>
         new FeatureLayer({
@@ -36,8 +37,8 @@ const layers = [
     visibilityMode: 'inherited',
     visible: false,
     layers: [
-      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/12',
-      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/13'
+      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/13',
+      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/12'
     ].map(
       url =>
         new FeatureLayer({
@@ -52,9 +53,9 @@ const layers = [
     visibilityMode: 'inherited',
     visible: false,
     layers: [
-      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/1',
       'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/2',
-      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/3'
+      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/3',
+      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/1'
     ].map(
       url =>
         new FeatureLayer({
@@ -69,9 +70,9 @@ const layers = [
     visibilityMode: 'inherited',
     visible: false,
     layers: [
-      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/18',
       'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/19',
-      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/20'
+      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/20',
+      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/18'
     ].map(
       url =>
         new FeatureLayer({
@@ -86,8 +87,8 @@ const layers = [
     visibilityMode: 'inherited',
     visible: false,
     layers: [
-      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/9',
-      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/10'
+      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/10',
+      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/9'
     ].map(
       url =>
         new FeatureLayer({
@@ -102,8 +103,8 @@ const layers = [
     visibilityMode: 'inherited',
     visible: false,
     layers: [
-      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/6',
-      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/7'
+      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/7',
+      'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/6'
     ].map(
       url =>
         new FeatureLayer({
@@ -121,17 +122,17 @@ const layers = [
   })
 ];
 
-const analysis = new Array<ViewModel>();
+const models = new Array<ViewModel>();
 
 new Map([
-  ['transit', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/3'],
-  ['traffic', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/4'],
-  ['emergency', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/7'],
-  ['design', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/10'],
-  ['bicycle', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/12'],
   ['pedestrian', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/15'],
-  ['freight', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/19']
-]).forEach(async (url: string, key: string) => {
+  ['bicycle', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/12'],
+  ['transit', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/3'],
+  ['freight', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/19'],
+  ['design', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/10'],
+  ['emergency', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/7'],
+  ['traffic', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/4']
+]).forEach(async (url: string, group: string) => {
   const res = await axios.get(url, {
     params: {
       f: 'json'
@@ -139,22 +140,33 @@ new Map([
   });
 
   if (res.data) {
-    res.data.drawingInfo.renderer.uniqueValueInfos.map((info: any) => {
-      const [r, g, b, a] = info.symbol.color;
-      analysis.push({
-        key,
-        value: info.value.toString(),
-        enabled: key === 'pedestrian',
-        label: info.label,
-        color: rgb(r, g, b, a),
-        count: 0
-      });
-    });
+    models.push(
+      ...res.data.drawingInfo.renderer.uniqueValueInfos.map(
+        (json: any): ViewModel => {
+          const info = UniqueValueInfo.fromJSON(json);
+          const { r, g, b, a } = info.symbol.color;
+          return {
+            group,
+            value: info.value.toString(),
+            enabled: group === 'pedestrian',
+            label: info.label,
+            color: rgb(r, g, b, a),
+            count: 0,
+            layer: new FeatureLayer({
+              url,
+              outFields: ['*'],
+              definitionExpression: `${group} = '${info.value.toString()}'`,
+              visible: group === 'pedestrian'
+            })
+          };
+        }
+      )
+    );
   }
 });
 
-analysis.push({
-  key: 'greenscape',
+models.push({
+  group: 'greenscape',
   value: 'Y',
   enabled: false,
   label: 'Yes',
@@ -162,8 +174,8 @@ analysis.push({
   count: 0
 });
 
-analysis.push({
-  key: 'greenscape',
+models.push({
+  group: 'greenscape',
   value: 'N',
   enabled: false,
   label: 'No',
@@ -172,10 +184,9 @@ analysis.push({
 });
 
 const state: StreetState = {
-  layers,
   list: new Array<Street>(),
   selected: undefined,
-  models: analysis
+  models
 };
 
 export default {

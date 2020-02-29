@@ -8,7 +8,7 @@ export const mutations: MutationTree<StreetState> = {
   setSelectedStreet(state, street: Street) {
     state.selected = street;
   },
-  setAnalysis(state, models: Array<ViewModel>) {
+  setModels(state, models: Array<ViewModel>) {
     state.models = models;
   }
 };

@@ -63,7 +63,7 @@ export const actions: ActionTree<StreetState, RootState> = {
           commit('setList', []);
           dispatch('clearAnalysis');
           // sort by name then block number
-          let streets = res.data.data.streets.sort(function(a, b) {
+          let streets = res.data.data.streets.sort(function (a, b) {
             var nameA = a.name?.toUpperCase(); // ignore upper and lowercase
             var nameB = b.name?.toUpperCase(); // ignore upper and lowercase
 
@@ -117,9 +117,9 @@ export const actions: ActionTree<StreetState, RootState> = {
             ${street.block ? '' : 'block'}
             ${street.geometry ? '' : `geometry{ type coordinates }`}
             ${
-              street.classifications
-                ? ''
-                : `classifications {
+            street.classifications
+              ? ''
+              : `classifications {
               pedestrian
               bicycle
               transit
@@ -131,9 +131,9 @@ export const actions: ActionTree<StreetState, RootState> = {
             }`
             }
             ${
-              street.projects
-                ? ''
-                : `projects {
+            street.projects
+              ? ''
+              : `projects {
               id
               name
               number
@@ -170,7 +170,7 @@ export const actions: ActionTree<StreetState, RootState> = {
   },
   clearAnalysis({ commit, state }) {
     commit(
-      'setAnalysis',
+      'setModels',
       state.models?.map(a => {
         const { count, ...analysis } = a;
         return Object.assign(analysis, { count: 0 });
@@ -185,7 +185,7 @@ export const actions: ActionTree<StreetState, RootState> = {
         Object.keys(street.classifications || {}).forEach(c => {
           let entry = models.find(val => {
             if (!street.classifications) return false;
-            return val.key === c && val.value === street.classifications[c];
+            return val.group === c && val.value === street.classifications[c];
           });
 
           if (entry) entry.count = entry.count + 1;
@@ -193,6 +193,6 @@ export const actions: ActionTree<StreetState, RootState> = {
       });
     }
 
-    commit('setAnalysis', models);
+    commit('setModels', models);
   }
 };
