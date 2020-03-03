@@ -241,13 +241,13 @@ export default class Streets extends Vue {
   }
 
   filteredClassifications(classifications: { [key: string]: string }) {
-    return Object.keys(classifications).reduce((prev, curr) => {
-      const enabled = this.models.find(
-        value => value.group == curr && value.value == classifications[curr] && value.enabled
-      );
-
-      if (enabled) prev.push({ group: curr, value: classifications[curr] });
-
+    return Array.from(
+      Array.from(this.enabledModels).reduce((prev, curr) => {
+        prev.add(curr.group);
+        return prev;
+      }, new Set<string>())
+    ).reduce((prev, curr) => {
+      prev.push({ group: curr, value: classifications[curr] });
       return prev;
     }, new Array<any>());
   }
