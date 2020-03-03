@@ -29,10 +29,10 @@ export const actions: ActionTree<MapState, RootState> = {
   },
   setLocation({ commit, state }, location: Location | __esri.Point) {
     commit('goTo', {
-      center: new Point({
+      target: new Point({
         x: location.x,
         y: location.y,
-        spatialReference: location.spatialReference.wkid
+        spatialReference: location.spatialReference
       }),
       zoom: state.zoom.focus
     });
