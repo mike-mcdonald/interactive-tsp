@@ -30,5 +30,17 @@ export default new Router({
       name: 'text',
       component: Text
     }
-  ]
+  ],
+  scrollBehavior(to) {
+    //https://router.vuejs.org/guide/advanced/scroll-behavior.html
+    if (to.hash) {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve({ selector: to.hash });
+        }, 100);
+      });
+    } else {
+      return undefined;
+    }
+  }
 });
