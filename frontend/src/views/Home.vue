@@ -1,16 +1,20 @@
 <template>
   <main>
-    <div class="hero-image h-screen-66">
+    <div class="hero-image bg-no-repeat bg-center bg-cover h-screen-66">
       <div class="w-5/6 md:w-3/4 lg:w-1/2 px-2 pt-6 mx-auto text-white">
         <h1 class="block text-center">Welcome to Portland in the year 2035</h1>
         <section class="flex flex-col md:flex-row">
           <div class="w-full md:w-1/2 p-2">
-            <router-link to="/streets" class="block w-full px-2 py-3 bg-blue-500 border border-blue-900 text-center"
+            <router-link
+              to="/streets"
+              class="block w-full px-2 py-3 bg-blue-500 border border-blue-900 rounded-sm text-center"
               >Check out your streets</router-link
             >
           </div>
           <div class="w-full md:w-1/2 p-2">
-            <router-link to="/text" class="block w-full px-2 py-3 bg-blue-500 border border-blue-900 text-center"
+            <router-link
+              to="/text"
+              class="block w-full px-2 py-3 bg-blue-500 border border-blue-900 rounded-sm text-center"
               >Read about our plans</router-link
             >
           </div>
@@ -80,15 +84,8 @@ export default Vue.extend({
 
 <style lang="scss" scoped>
 .hero-image {
-  /* Use "linear-gradient" to add a darken background effect to the image (photographer.jpg). This will make the text easier to read */
   background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
     url('/img/portlandgov-growth-scenario-1920.jpg');
-
-  /* Position and center the image to scale nicely on all screens */
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  position: relative;
 }
 
 h1 {

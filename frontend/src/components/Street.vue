@@ -1,5 +1,5 @@
 <template>
-  <article class="p-2">
+  <article>
     <h1 class="mb-3 text-3xl lg:text-4xl">{{ street.name || 'Unnamed segment' }}</h1>
     <p class="mb-3 text-2xl" v-if="street.block">{{ street.block }} block</p>
     <div class="flex flex-wrap items-center mb-3">
@@ -11,7 +11,7 @@
       </dl>
     </div>
     <transition name="fade">
-      <section class="m-2" v-if="street.classifications">
+      <section v-if="street.classifications">
         <h2 class="mb-3 text-2xl lg:text-3xl">Classifications</h2>
         <dl>
           <div

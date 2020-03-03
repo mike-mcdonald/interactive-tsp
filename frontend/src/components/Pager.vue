@@ -3,7 +3,7 @@
     <button
       title="Go to previous page"
       rel="prev"
-      class="py-2 px-3 rounded border shadow bg-fog-200 text-fog-800"
+      class="py-2 px-3"
       :class="{
         invisible: value == 0
       }"
@@ -12,27 +12,14 @@
     >
       <span class="sr-only">Previous page</span>
       <span class="flex items-center">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="h-5 w-5"
-        >
-          <polyline points="15 18 9 12 15 6" />
-        </svg>
+        <i v-html="feather.icons['chevron-left'].toSvg({ class: 'w-5 h-5' })" />
       </span>
     </button>
     <span class="mx-2">{{ value + 1 }} of {{ list.length }}</span>
     <button
       title="Go to next page"
       rel="prev"
-      class="py-2 px-3 rounded border shadow bg-fog-200 text-fog-800"
+      class="py-2 px-3"
       :class="{
         invisible: list.length == value + 1
       }"
@@ -41,20 +28,7 @@
     >
       <span class="sr-only">Next page</span>
       <span class="flex items-center">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="h-5 w-5"
-        >
-          <polyline points="9 18 15 12 9 6" />
-        </svg>
+        <i v-html="feather.icons['chevron-right'].toSvg({ class: 'w-5 h-5' })" />
       </span>
     </button>
   </section>
@@ -62,6 +36,9 @@
 
 <script lang="ts">
 import Vue from 'vue';
+
+import feather from 'feather-icons';
+
 export default Vue.extend({
   name: 'Pager',
   props: {
@@ -71,6 +48,9 @@ export default Vue.extend({
     list: {
       type: Array
     }
+  },
+  data() {
+    return { feather };
   }
 });
 </script>

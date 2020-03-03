@@ -1,5 +1,5 @@
 <template>
-  <section class="relative">
+  <section v-if="dataset.length > 0">
     <main class="flex items-center justify-between -mx-2">
       <div ref="chart" class="flex flex-row mx-2 w-full border border-black">
         <div

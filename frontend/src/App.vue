@@ -67,4 +67,14 @@ export default Vue.extend({
 *:focus {
   @apply shadow-outline;
 }
+
+*::-webkit-scrollbar {
+  @apply w-3 bg-fog-200 rounded-sm;
+}
+*::-webkit-scrollbar-thumb {
+  @apply bg-fog-600 rounded-sm;
+}
+*::-webkit-scrollbar-track {
+  @apply bg-fog-200 rounded-sm;
+}
 </style>

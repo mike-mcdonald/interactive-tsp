@@ -21,7 +21,7 @@
           class="w-full px-3 py-2 md:border-b lg:border-0 rounded-l md:rounded-l-0 lg:rounded-l bg-fog-200"
         />
         <section class="flex flex-row-reverse ml-auto">
-          <button aria-label="Search" class="m-1 px-3 py-2 border-l">
+          <button aria-label="Search" class="my-1 px-3 py-2 border-l">
             <Search />
           </button>
           <transition name="fade">

@@ -25,7 +25,7 @@
               name="searchInput"
               type="search"
               role="searchbox"
-              placeholder="Search projects..."
+              placeholder="Search the plan..."
               required="required"
               class="w-full px-3 py-2 bg-fog-200 border rounded"
               v-model="searchQuery"
@@ -69,7 +69,7 @@
 import Vue from 'vue';
 import { mapState, mapActions, mapGetters } from 'vuex';
 
-import _ from 'lodash';
+import debounce from 'lodash-es/debounce';
 
 import TextSection from '@/components/text/Section.vue';
 import TextListing from '@/components/text/Listing.vue';
@@ -101,7 +101,7 @@ export default Vue.extend({
   },
   methods: {
     ...mapActions('text', ['searchIndex']),
-    handleSearchChange: _.debounce(function(this: any, text: string) {
+    handleSearchChange: debounce(function(this: any, text: string) {
       if (text) this.searchIndex(text);
     }, 500),
     handleClick(candidate: any) {

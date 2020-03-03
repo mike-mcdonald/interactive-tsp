@@ -13,70 +13,87 @@
       >
         <template v-slot:manual>
           <div class="px-2 py-4 w-full h-full flex flex-col-reverse justify-between md:flex-row pointer-events-none">
-            <section class="h-64 md:w-1/4 md:h-full pointer-events-auto">
-              <div
-                v-if="!$route.params.id"
-                class="px-2 py-3 bg-white border border-fog-900 rounded shadow max-h-full overflow-y-auto"
-              >
-                <transition name="fade">
-                  <div
-                    v-if="message"
-                    class="mb-2 px-2 py-3 w-full border-l-8 border-tangerine-800 bg-tangerine-300 text-tangerine-900"
-                  >
-                    {{ message }}
-                  </div>
-                </transition>
-                <address-suggest v-on:candidate-select="goToAddress" />
-                <div v-if="filteredStreets.length > 0" class="my-2">
-                  {{ filteredStreets.length }} streets found in view
-                </div>
-                <ul class="list-none -mx-2">
-                  <li v-for="street in filteredStreets" :key="street.id" class="p-2">
-                    <router-link
-                      :to="street.id"
-                      append
-                      class="flex-shrink flex flex-col h-full px-2 py-3 shadow border rounded bg-white hover:bg-blue-100 focus:bg-blue-100"
-                      @mouseover.native="highlightStreet({ street, move: false })"
-                      @focus.native="highlightStreet({ street, move: false })"
-                    >
-                      <div>{{ street.name }}</div>
-                      <div v-if="street.block" class="text-xs">{{ street.block }} block</div>
-                      <div class="flex flex-row flex-wrap -mx-1 text-xs text-gray-600">
-                        <span
-                          v-for="c in filteredClassifications(street.classifications)"
-                          :key="c"
-                          class="flex flex-row flex-wrap items-center mx-1"
-                        >
-                          <span
-                            class="h-2 w-2 p-1 mr-1 border border-fog-800"
-                            :style="{
-                              'background-color': classificationColor(c.group, c.value).formatRgb()
-                            }"
-                          ></span>
-                          <span>{{ classificationLabel(c.group, c.value) }}</span>
-                        </span>
+            <section class="w-full md:w-1/3 h-64 md:h-full flex items-end md:items-start">
+              <div class="map-panel">
+                <div v-if="!$route.params.id">
+                  <header class="bg-fog-100 border-b border-fog-500 sticky top-0">
+                    <transition name="fade">
+                      <div
+                        v-if="message"
+                        class="px-2 py-3 w-full border-l-8 border-tangerine-800 bg-tangerine-300 text-tangerine-900"
+                      >
+                        {{ message }}
                       </div>
-                    </router-link>
-                  </li>
-                </ul>
-              </div>
-              <div v-else class="px-2 py-3 bg-white border border-fog-900 shadow max-h-full overflow-y-auto">
-                <router-link to="/streets" class="mx-2 border-b-2 border-black">Back to results</router-link>
-                <street-component v-if="selectedStreet" :street="selectedStreet" />
+                    </transition>
+                    <address-suggest class="p-2" v-on:candidate-select="goToAddress" />
+                    <div v-if="streets.length > 0" class="p-2 flex items-center justify-between">
+                      <span>{{ filteredStreets.length }} out of {{ streets.length }} streets found in view</span>
+                      <button
+                        v-if="filteredStreets.length > 0"
+                        class="px-2 py-1 text-sm"
+                        @click="showStreets = !showStreets"
+                      >
+                        <i v-if="!showStreets" v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
+                        <i v-if="showStreets" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
+                      </button>
+                    </div>
+                  </header>
+                  <div v-if="filteredStreets.length > 0" v-show="showStreets">
+                    <ul class="p-2 list-none">
+                      <li v-for="street in filteredStreets" :key="street.id" class="my-2">
+                        <router-link
+                          :to="street.id"
+                          append
+                          class="flex-shrink flex flex-col h-full px-2 py-3 shadow border rounded bg-white hover:bg-blue-100 focus:bg-blue-100"
+                          @mouseover.native="highlightStreet({ street, move: false })"
+                          @focus.native="highlightStreet({ street, move: false })"
+                        >
+                          <div>{{ street.name }}</div>
+                          <div v-if="street.block" class="text-xs">{{ street.block }} block</div>
+                          <div class="flex flex-row flex-wrap -mx-1 text-xs text-gray-600">
+                            <span
+                              v-for="c in filteredClassifications(street.classifications)"
+                              :key="`${c.group}-${c.value}`"
+                              class="flex flex-row flex-wrap items-center mx-1"
+                            >
+                              <span
+                                class="h-2 w-2 p-1 mr-1 border border-fog-800"
+                                :style="{
+                                  'background-color': classificationColor(c.group, c.value).formatRgb()
+                                }"
+                              ></span>
+                              <span>{{ classificationLabel(c.group, c.value) }}</span>
+                            </span>
+                          </div>
+                        </router-link>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div v-else>
+                  <header class="m-2">
+                    <router-link to="/streets" class="border-b-2 border-black">Back to results</router-link>
+                  </header>
+                  <street-component class="p-2" v-if="selectedStreet" :street="selectedStreet" />
+                </div>
               </div>
             </section>
-            <section id="filters" class="md:w-1/4 h-64 md:h-full p-2 pointer-events-auto">
-              <div class="max-h-full overflow-y-auto bg-white border border-fog-900">
-                <header class="p-2">
+            <section id="filters" class="w-full md:w-1/3 h-64 md:h-full">
+              <div class="map-panel">
+                <header class="p-2 flex items-center justify-between bg-fog-100 border-b border-fog-500 sticky top-0">
                   <h2>Map settings</h2>
+                  <button class="px-2 py-1 text-sm" @click="showFilters = !showFilters">
+                    <i v-if="!showFilters" v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
+                    <i v-if="showFilters" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
+                  </button>
                 </header>
-                <main class="p-2">
-                  <div v-for="(model, index) in allClassifications" :key="index">
+                <main v-show="showFilters" class="p-2">
+                  <div v-for="(group, index) in controllableModelGroups" :key="index">
                     <classification
-                      :group="model"
+                      :group="group"
                       :dataset="
                         models.reduce((prev, curr) => {
-                          if (curr.group === model) prev.push(curr);
+                          if (curr.group === group) prev.push(curr);
                           return prev;
                         }, [])
                       "
@@ -99,6 +116,7 @@ import { Route, RawLocation } from 'vue-router';
 import { mapState, mapActions, mapMutations, mapGetters } from 'vuex';
 
 import { BBox } from '@turf/helpers';
+import feather from 'feather-icons';
 import proj4 from 'proj4';
 
 import { Polyline, Extent } from 'esri/geometry';
@@ -131,7 +149,7 @@ proj4.defs('102100', proj4.defs('EPSG:3857'));
     StreetComponent
   },
   data() {
-    return { showInfo: {} };
+    return { showInfo: {}, feather };
   },
   computed: {
     ...mapState(['message']),
@@ -176,15 +194,19 @@ export default class Streets extends Vue {
   setLocation!: (location: Location) => void;
   setLayerVisibility!: (payload: { layerId: string; visible: boolean }) => void;
 
-  get allClassifications() {
+  feather = feather;
+  showStreets = true;
+  showFilters = true;
+
+  get controllableModelGroups() {
     return this.models.reduce((prev, curr) => {
-      prev.add(curr.group);
+      if (curr.group != 'greenscape') prev.add(curr.group);
       return prev;
     }, new Set<string>());
   }
 
-  get enabledClassifications() {
-    return this.models.reduce((prev, curr) => {
+  get enabledModels() {
+    return Array.from(this.models).reduce((prev, curr) => {
       if (curr.enabled) prev.add(curr);
       return prev;
     }, new Set<ViewModel>());
@@ -231,16 +253,14 @@ export default class Streets extends Vue {
       });
     });
   }
-
-  toggleLayerVisibility(layer: Layer, visible: boolean) {
-    this.models.filter(value => value.group == layer.id).forEach(model => (model.enabled = visible));
-    visible ? this.enabledClassifications.add(layer.id) : this.enabledClassifications.delete(layer.id);
-    this.setLayerVisibility({ layerId: layer.id, visible });
-  }
 }
 </script>
 
 <style lang="scss" scoped>
+.map-panel {
+  @apply w-full bg-white border border-fog-900 rounded-sm shadow max-h-full overflow-y-auto pointer-events-auto;
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.25s;
@@ -261,18 +281,6 @@ export default class Streets extends Vue {
   }
   100% {
     transform: scale(1);
-  }
-}
-
-main {
-  *::-webkit-scrollbar {
-    @apply w-3 bg-fog-200 rounded-sm;
-  }
-  *::-webkit-scrollbar-thumb {
-    @apply bg-fog-600 rounded-sm;
-  }
-  *::-webkit-scrollbar-track {
-    @apply bg-fog-200 rounded-sm;
   }
 }
 </style>

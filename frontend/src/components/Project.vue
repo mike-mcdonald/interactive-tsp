@@ -1,5 +1,5 @@
 <template>
-  <article class="p-2">
+  <article>
     <h1 class="mb-3 text-3xl lg:text-4xl">{{ project.name }}</h1>
     <dl>
       <div class="flex flex-wrap items-center mb-2">

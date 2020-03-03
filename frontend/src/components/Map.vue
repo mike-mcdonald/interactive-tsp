@@ -3,20 +3,20 @@
     <section class="h-full">
       <div ref="map" class="relative h-full w-full"></div>
     </section>
-    <div class="h-full w-full map-ui" ref="manual">
-      <slot name="manual"> </slot>
+    <div class="h-full w-full" ref="manual">
+      <slot name="manual"></slot>
     </div>
     <div ref="top-left">
-      <slot name="top-left"> </slot>
+      <slot name="top-left"></slot>
     </div>
     <div ref="top-right">
-      <slot name="top-right"> </slot>
+      <slot name="top-right"></slot>
     </div>
     <div ref="bottom-left">
       <slot name="bottom-left"></slot>
     </div>
     <div ref="bottom-right">
-      <slot name="bottom-right"> </slot>
+      <slot name="bottom-right"></slot>
     </div>
   </div>
 </template>
@@ -25,7 +25,7 @@
 import Vue from 'vue';
 import { mapState, mapActions, mapMutations } from 'vuex';
 
-import * as _ from 'lodash';
+import debounce from 'lodash-es/debounce';
 import * as turf from '@turf/helpers';
 
 import { whenTrue } from 'esri/core/watchUtils';
@@ -69,6 +69,11 @@ export default Vue.extend({
       basemaps: (state: MapState) => state.basemaps,
       zoom: (state: MapState) => state.zoom.current
     })
+  },
+  watch: {
+    layers(newLayers) {
+      this.setLayers(newLayers);
+    }
   },
   methods: {
     ...mapActions('map', ['setExtent', 'setZoom', 'setLayerVisibility']),
@@ -124,13 +129,13 @@ export default Vue.extend({
 
     view.watch(
       'extent',
-      _.debounce((newValue: __esri.Extent) => {
+      debounce((newValue: Extent) => {
         this.setExtent(newValue);
         this.$emit('extent-change', newValue);
       }, 500)
     );
 
-    view.on('click', (event: __esri.MapViewClickEvent) => {
+    view.on('click', (event: MapViewClickEvent) => {
       this.$emit('click', event);
     });
 
