@@ -5,16 +5,10 @@ export const mutations: MutationTree<ProjectState> = {
   setModels(state, models: Array<ViewModel>) {
     state.models = models;
   },
-  clearProjects(state) {
-    state.list = new Array<Project>();
+  setProjects(state, projects: Array<Project>) {
+    state.list = projects;
   },
-  addProjects(state, projects: Project[]) {
-    if (!state.list) {
-      state.list = new Array<Project>();
-    }
-    state.list.push(...projects);
-  },
-  setSelectedProjects(state, projects: Project[]) {
+  setSelected(state, projects: Array<Array<Project>>) {
     state.selected = projects;
   },
   setIndex(state, index: lunr.Index) {

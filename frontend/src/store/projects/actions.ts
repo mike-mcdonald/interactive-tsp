@@ -1,20 +1,19 @@
 import { ActionTree } from 'vuex';
-import { ProjectState, Project, ViewModel } from './types';
+import { ProjectState, Project } from './types';
 import { RootState } from '../types';
 
+import bbox from '@turf/bbox';
+import bboxPolygon from '@turf/bbox-polygon';
 import axios from 'axios';
-import * as d3 from 'd3';
-import { Extent } from 'esri/geometry';
+import { Extent, Polygon } from 'esri/geometry';
 import Graphic from 'esri/Graphic';
-import GroupLayer from 'esri/layers/GroupLayer';
-import FeatureLayer from 'esri/layers/FeatureLayer';
-import lunr, { Builder, Token } from 'lunr';
+import lunr from 'lunr';
 
-import { esriGraphics, customStemming } from '../utils';
+import { esriGraphics, customStemming, esriGeometry } from '../utils';
 
 export const actions: ActionTree<ProjectState, RootState> = {
   async findProjects({ state, commit, dispatch, rootState }) {
-    commit('setMessage', undefined, { root: true });
+    commit('setMessage', 'Retrieving projects...', { root: true });
 
     if (state.list.length > 0) return;
 
@@ -36,13 +35,17 @@ export const actions: ActionTree<ProjectState, RootState> = {
           projects(bbox:[${xmin},${ymin},${xmax},${ymax}], spatialReference:${extent.spatialReference.wkid}){
             id
             name
+            number
+            location
             description
-            estimatedTimeframe
+            agency
             estimatedCost
-            geometry {
-              type
-              coordinates
-            }
+            estimatedTimeframe
+            district
+            facilityOwner
+            patternArea
+            fundingCategory
+            geometry { type coordinates }
           }
         }`.replace(/\s+/g, ' ')
       }
@@ -53,7 +56,7 @@ export const actions: ActionTree<ProjectState, RootState> = {
     }
 
     if (res.data.data.projects) {
-      commit('clearProjects');
+      commit('setProjects', []);
       // sort by name then block number
       projects = Array.from(res.data.data.projects);
       projects = projects.sort(function(a, b) {
@@ -74,9 +77,11 @@ export const actions: ActionTree<ProjectState, RootState> = {
         return 0;
       });
 
-      commit('addProjects', projects);
+      commit('setProjects', projects);
 
       dispatch('analyzeProjects');
+
+      commit('setMessage', undefined, { root: true });
     }
 
     const idx = lunr(function() {
@@ -107,53 +112,55 @@ export const actions: ActionTree<ProjectState, RootState> = {
       }, state.models)
     );
   },
-  selectProjects({ commit, dispatch, rootState }, project: Project) {
-    commit('setMessage', undefined, { root: true });
-    axios
-      .get<{ errors?: any[]; data: { project?: Project[] } }>(rootState.graphqlUrl, {
-        params: {
-          query: `{
-          project(id:"${project ? project.id : ''}"){
-            id
-            name
-            geometry { type coordinates }
-            number
-            location
-            description
-            agency
-            estimatedCost
-            estimatedTimeframe
-            district
-            facilityOwner
-            patternArea
-            fundingCategory
+  async selectProjects({ commit, rootState }, projects: Array<Project>) {
+    commit('setMessage', 'Retrieving projects...', { root: true });
+
+    Promise.all(
+      projects.map(async project => {
+        const res = await axios.get<{ errors?: any[]; data: { project?: Array<Project> } }>(rootState.graphqlUrl, {
+          params: {
+            query: `{
+                project(id:"${project ? project.id : ''}"){
+                  id
+                  name
+                  geometry { type coordinates }
+                  number
+                  location
+                  description
+                  agency
+                  estimatedCost
+                  estimatedTimeframe
+                  district
+                  facilityOwner
+                  patternArea
+                  fundingCategory
+                }
+              }`.replace(/\s+/g, ' ')
           }
-        }`
-        }
-      })
-      .then(res => {
+        });
+
         if (res.data.errors) {
           commit('setMessage', 'Some data may contain errors...', { root: true });
         }
         let data = res.data.data;
-        if (data.project) {
-          commit('setSelectedProjects', data.project);
-          dispatch('map/clearGraphics', undefined, { root: true });
-          dispatch('highlightProjects', { projects: data.project, move: true });
-        }
+
+        return data.project || new Array<Project>();
       })
-      .catch(() => {
-        commit('setMessage', 'Error retrieving the selected street!', { root: true });
-      });
-  },
-  highlightProjects({ commit }, { projects, move }: { projects: Project[]; move: boolean }) {
-    const graphics = new Array<Graphic>();
-    projects.forEach(project => {
-      if (project.geometry) {
-        graphics.push(...esriGraphics(project.geometry));
-      }
+    ).then((arr: Array<Array<Project>>) => {
+      commit('setSelected', arr);
+      commit('setMessage', undefined, { root: true });
     });
-    commit('map/setGraphics', graphics, { root: true });
-    if (move) commit('map/goTo', graphics, { root: true });
+  },
+  highlightProject({ commit }, { project, move }: { project: Project; move: boolean }) {
+    if (project.geometry) {
+      const graphics = new Array<Graphic>();
+      graphics.push(...esriGraphics(project.geometry));
+      commit('map/setGraphics', graphics, { root: true });
+
+      if (move) {
+        const extent = new Polygon(esriGeometry(bboxPolygon(bbox(project.geometry)).geometry));
+        commit('map/goTo', extent, { root: true });
+      }
+    }
   }
 };

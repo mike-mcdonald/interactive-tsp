@@ -1,5 +1,5 @@
 import { Geometry } from '@turf/helpers';
-import { RGBColor } from 'd3';
+import { RGBColor } from 'd3-color';
 import { Index } from 'lunr';
 
 export interface Project {
@@ -37,5 +37,5 @@ export interface ProjectState {
   list: Array<Project>;
   candidates: Array<Project> | undefined;
   index: Index | undefined;
-  selected?: Array<Project>;
+  selected?: Array<Array<Project>>;
 }

@@ -3,16 +3,13 @@ import { RootState } from '../types';
 import { ProjectState, Project, ViewModel } from './types';
 
 import axios from 'axios';
-import * as d3 from 'd3';
+import { rgb } from 'd3-color';
 import GroupLayer from 'esri/layers/GroupLayer';
 import FeatureLayer from 'esri/layers/FeatureLayer';
 
 import { actions } from './actions';
 import { getters } from './getters';
 import { mutations } from './mutations';
-import { customStemming } from '../utils';
-import Extent from 'esri/geometry/Extent';
-import lunr from 'lunr';
 
 const namespaced: boolean = true;
 
@@ -51,7 +48,7 @@ LAYER_URLS.some(async url => {
             key,
             value: info.value.toString(),
             label: info.label,
-            color: d3.rgb(r, g, b, a),
+            color: rgb(r, g, b, a),
             enabled: true,
             count: 0,
             mapLayer: new GroupLayer({
