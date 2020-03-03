@@ -12,13 +12,25 @@
         </router-link>
       </template>
       <nav class="-mx-2 flex flex-row flex-wrap">
-        <router-link to="/streets" class="py-2 px-2 md:py-4 hover:bg-fog-500" active-class="md:bg-fog-500">
+        <router-link
+          to="/streets"
+          class="py-2 px-2 md:py-4 hover:bg-fog-500"
+          active-class="md:bg-fog-500"
+        >
           <span class="border-b-2 border-black">Streets</span>
         </router-link>
-        <router-link to="/projects" class="py-2 px-2 md:py-4 hover:bg-fog-500" active-class="md:bg-fog-500">
+        <router-link
+          to="/projects"
+          class="py-2 px-2 md:py-4 hover:bg-fog-500"
+          active-class="md:bg-fog-500"
+        >
           <span class="border-b-2 border-black">Projects</span>
         </router-link>
-        <router-link to="/text" class="py-2 px-2 md:py-4 hover:bg-fog-500" active-class="md:bg-fog-500">
+        <router-link
+          to="/text"
+          class="py-2 px-2 md:py-4 hover:bg-fog-500"
+          active-class="md:bg-fog-500"
+        >
           <span class="border-b-2 border-black">Text</span>
         </router-link>
       </nav>
@@ -26,7 +38,11 @@
     <router-view />
     <Footer>
       <template v-slot:logos>
-        <img title="PBOT Technology services logo" src="/img/PBOT-VerticalApps-Logo-Dark.png" class="w-48" />
+        <img
+          title="PBOT Technology services logo"
+          src="/img/PBOT-VerticalApps-Logo-Dark.png"
+          class="w-48"
+        />
       </template>
     </Footer>
   </div>
@@ -66,6 +82,10 @@ export default Vue.extend({
 
 *:focus {
   @apply shadow-outline;
+}
+
+* {
+  scrollbar-width: thin;
 }
 
 *::-webkit-scrollbar {
