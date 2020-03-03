@@ -9,6 +9,7 @@ import proj4 from 'proj4';
 import { Extent } from 'esri/geometry';
 
 import { esriGraphics } from '../utils';
+import bbox from '@turf/bbox';
 
 // ESRI maps use this wkid
 proj4.defs('102100', proj4.defs('EPSG:3857'));
@@ -22,7 +23,7 @@ export const actions: ActionTree<StreetState, RootState> = {
       [xmax, ymax] = proj4(extent.spatialReference.wkid.toString(), 'EPSG:4326', [xmax, ymax]);
     }
 
-    if (area(bboxPolygon([xmin, ymin, xmax, ymax])) > 5000000) {
+    if (area(bboxPolygon([xmin, ymin, xmax, ymax])) > 1250000) {
       commit('setMessage', 'Zoom in or search for an address to see available streets...', { root: true });
       return;
     }
@@ -63,7 +64,7 @@ export const actions: ActionTree<StreetState, RootState> = {
           commit('setList', []);
           dispatch('clearAnalysis');
           // sort by name then block number
-          let streets = res.data.data.streets.sort(function(a, b) {
+          let streets = res.data.data.streets.sort(function (a, b) {
             var nameA = a.name?.toUpperCase(); // ignore upper and lowercase
             var nameB = b.name?.toUpperCase(); // ignore upper and lowercase
 
@@ -118,9 +119,9 @@ export const actions: ActionTree<StreetState, RootState> = {
             ${street.block ? '' : 'block'}
             ${street.geometry ? '' : `geometry{ type coordinates }`}
             ${
-              street.classifications
-                ? ''
-                : `classifications {
+            street.classifications
+              ? ''
+              : `classifications {
               pedestrian
               bicycle
               transit
@@ -132,9 +133,9 @@ export const actions: ActionTree<StreetState, RootState> = {
             }`
             }
             ${
-              street.projects
-                ? ''
-                : `projects {
+            street.projects
+              ? ''
+              : `projects {
               id
               name
               number
@@ -162,11 +163,17 @@ export const actions: ActionTree<StreetState, RootState> = {
         commit('setMessage', 'Error retrieving the selected street!', { root: true });
       });
   },
-  highlightStreet({ commit }, { street, move }) {
+  highlightStreet({ commit, rootState }, { street, move }: { street: Street; move: boolean }) {
     if (street.geometry) {
       const graphics = esriGraphics(street.geometry);
       commit('map/setGraphics', graphics, { root: true });
-      if (move) commit('map/goTo', graphics, { root: true });
+      if (move) {
+        const target: any = { target: graphics };
+        if (area(bboxPolygon(bbox(street.geometry))) < 5000) {
+          target.zoom = rootState.map?.zoom.focus;
+        }
+        commit('map/goTo', target, { root: true });
+      }
     }
   },
   clearAnalysis({ commit, state }) {
