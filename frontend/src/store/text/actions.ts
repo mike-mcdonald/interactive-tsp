@@ -21,7 +21,7 @@ export const actions: ActionTree<TextState, RootState> = {
       .get(rootState.graphqlUrl, {
         params: {
           query: `{
-            sections {
+            document(name:"transportation-system-plan") {
               id
               name
               number
@@ -29,15 +29,15 @@ export const actions: ActionTree<TextState, RootState> = {
               depth
               content
             }
-          }`
+          }`.replace(/\s+/g, ' ')
         }
       })
       .then(res => {
         if (res.data.errors) {
           commit('setMessage', 'The text may contain errors...', { root: true });
         }
-        if (res.data.data.sections) {
-          commit('setText', res.data.data.sections);
+        if (res.data.data.document) {
+          commit('setText', res.data.data.document);
 
           const idx = lunr(function() {
             this.ref('id');
@@ -46,7 +46,7 @@ export const actions: ActionTree<TextState, RootState> = {
 
             this.use(customStemming);
 
-            res.data.data.sections.forEach((doc: TextSection) => {
+            res.data.data.document.forEach((doc: TextSection) => {
               let { content, ...d } = doc;
               content = strip(content);
               this.add(Object.assign(d, { content }));
