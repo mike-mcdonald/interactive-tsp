@@ -12,7 +12,9 @@
         v-on:extent-change="findStreets($event)"
       >
         <template v-slot:manual>
-          <div class="px-2 py-4 w-full h-full flex flex-col-reverse justify-between md:flex-row pointer-events-none">
+          <div
+            class="px-2 py-4 w-full h-full flex flex-col-reverse justify-between md:flex-row pointer-events-none"
+          >
             <section class="w-full md:w-1/3 h-64 md:h-full flex items-end md:items-start">
               <div class="map-panel">
                 <div v-if="!$route.params.id">
@@ -21,9 +23,7 @@
                       <div
                         v-if="message"
                         class="px-2 py-3 w-full border-l-8 border-tangerine-800 bg-tangerine-300 text-tangerine-900"
-                      >
-                        {{ message }}
-                      </div>
+                      >{{ message }}</div>
                     </transition>
                     <address-suggest class="p-2" v-on:candidate-select="goToAddress" />
                     <div v-if="streets.length > 0" class="p-2 flex items-center justify-between">
@@ -33,8 +33,14 @@
                         class="px-2 py-1 text-sm"
                         @click="showStreets = !showStreets"
                       >
-                        <i v-if="!showStreets" v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
-                        <i v-if="showStreets" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
+                        <i
+                          v-if="!showStreets"
+                          v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })"
+                        />
+                        <i
+                          v-if="showStreets"
+                          v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })"
+                        />
                       </button>
                     </div>
                   </header>
@@ -80,11 +86,19 @@
             </section>
             <section id="filters" class="w-full md:w-1/3 h-64 md:h-full">
               <div class="map-panel">
-                <header class="p-2 flex items-center justify-between bg-fog-100 border-b border-fog-500 sticky top-0">
+                <header
+                  class="p-2 flex items-center justify-between bg-fog-100 border-b border-fog-500 sticky top-0"
+                >
                   <h2>Map settings</h2>
                   <button class="px-2 py-1 text-sm" @click="showFilters = !showFilters">
-                    <i v-if="!showFilters" v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
-                    <i v-if="showFilters" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
+                    <i
+                      v-if="!showFilters"
+                      v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })"
+                    />
+                    <i
+                      v-if="showFilters"
+                      v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })"
+                    />
                   </button>
                 </header>
                 <main v-show="showFilters" class="p-2">
@@ -246,8 +260,12 @@ export default class Streets extends Vue {
     this.view.hitTest(event).then((response: __esri.HitTestResult) => {
       response.results.some(result => {
         const graphic = result.graphic;
+
+        if (!graphic.attributes) return false;
+
         if (Object.keys(graphic.attributes).find(key => key === 'TranPlanID')) {
-          this.$router.push({ name: 'streets', params: { id: graphic.attributes.TranPlanID } });
+          if (graphic.attributes.TranPlanID != this.$route.params.id)
+            this.$router.push({ name: 'streets', params: { id: graphic.attributes.TranPlanID } });
           return true;
         }
       });
