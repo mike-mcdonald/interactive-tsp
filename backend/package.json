@@ -4,10 +4,11 @@
   "description": "Backend GraphQL server for an interactive transporation system plan",
   "main": "index.js",
   "scripts": {
-    "start": "npm run prod && node dist/index.js",
-    "dev": "tsc -w",
-    "prod": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npm run build && node dist/index.js",
+    "dev": "npm run build && tsc -w",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postbuild": "copyfiles -u 2 src/text/**/*.md dist/text"
   },
   "author": "",
   "license": "ISC",
@@ -38,6 +39,7 @@
     "@types/metalsmith": "^2.3.0",
     "@typescript-eslint/eslint-plugin": "^2.7.0",
     "@typescript-eslint/parser": "^2.7.0",
+    "copyfiles": "^2.2.0",
     "eslint": "^6.6.0",
     "eslint-config-prettier": "^6.6.0",
     "eslint-plugin-prettier": "^3.1.1",
