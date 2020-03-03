@@ -1,4 +1,5 @@
 import debounce from 'lodash-es/debounce';
+import Layer from 'esri/layers/Layer';
 import MapView from 'esri/views/MapView';
 
 import { MutationTree } from 'vuex';
@@ -9,7 +10,7 @@ export const mutations: MutationTree<MapState> = {
     state.view = view;
     view.map = state.map;
   },
-  setLayers: debounce(function(state, layers) {
+  setLayers: debounce(function (state: MapState, layers: Array<Layer>) {
     state.layers = layers;
     state.map.layers.removeAll();
     state.map.layers.addMany(layers);
@@ -22,7 +23,9 @@ export const mutations: MutationTree<MapState> = {
   },
   goTo(state, target) {
     state.view?.goTo(target, {
-      animate: true
+      animate: true,
+      duration: 500,
+      easing: 'easeOutCubic'
     });
   },
   layerVisibilityChanged(state, { layerId, visible }) {
