@@ -27,7 +27,7 @@
                     </transition>
                     <address-suggest class="p-2" v-on:candidate-select="goToAddress" />
                     <div v-if="streets.length > 0" class="p-2 flex items-center justify-between">
-                      <span>{{ filteredStreets.length }} out of {{ streets.length }} streets found in view</span>
+                      <span>Listing {{ filteredStreets.length }} of {{ streets.length }} streets within view</span>
                       <button
                         v-if="filteredStreets.length > 0"
                         class="px-2 py-1 text-sm"
