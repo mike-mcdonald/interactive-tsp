@@ -27,7 +27,7 @@ export const actions: ActionTree<StreetState, RootState> = {
       return;
     }
 
-    commit('setMessage', undefined, { root: true });
+    commit('setMessage', 'Retrieving streets...', { root: true });
 
     axios
       .get<{ errors?: any[]; data: { streets?: Street[] } }>(rootState.graphqlUrl, {
@@ -52,7 +52,7 @@ export const actions: ActionTree<StreetState, RootState> = {
               coordinates
             }
           }
-        }`
+        }`.replace(/\s+/g, ' ')
         }
       })
       .then(res => {
@@ -63,7 +63,7 @@ export const actions: ActionTree<StreetState, RootState> = {
           commit('setList', []);
           dispatch('clearAnalysis');
           // sort by name then block number
-          let streets = res.data.data.streets.sort(function (a, b) {
+          let streets = res.data.data.streets.sort(function(a, b) {
             var nameA = a.name?.toUpperCase(); // ignore upper and lowercase
             var nameB = b.name?.toUpperCase(); // ignore upper and lowercase
 
@@ -83,6 +83,7 @@ export const actions: ActionTree<StreetState, RootState> = {
 
           commit('setList', streets);
           dispatch('analyzeStreets', streets);
+          commit('setMessage', undefined, { root: true });
         }
       })
       .catch(() => {
@@ -117,9 +118,9 @@ export const actions: ActionTree<StreetState, RootState> = {
             ${street.block ? '' : 'block'}
             ${street.geometry ? '' : `geometry{ type coordinates }`}
             ${
-            street.classifications
-              ? ''
-              : `classifications {
+              street.classifications
+                ? ''
+                : `classifications {
               pedestrian
               bicycle
               transit
@@ -131,9 +132,9 @@ export const actions: ActionTree<StreetState, RootState> = {
             }`
             }
             ${
-            street.projects
-              ? ''
-              : `projects {
+              street.projects
+                ? ''
+                : `projects {
               id
               name
               number
@@ -143,7 +144,7 @@ export const actions: ActionTree<StreetState, RootState> = {
             }`
             }
           }
-        }`
+        }`.replace(/\s+/g, ' ')
         }
       })
       .then(res => {

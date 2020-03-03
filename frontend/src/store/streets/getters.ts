@@ -1,6 +1,6 @@
 import { GetterTree } from 'vuex';
 
-import * as d3 from 'd3';
+import { rgb } from 'd3-color';
 
 import { StreetState, Street } from './types';
 import { RootState } from '../types';
@@ -17,7 +17,7 @@ export const getters: GetterTree<StreetState, RootState> = {
     const info = state.models?.find(val => {
       return val.group === type && val.value === value;
     });
-    return info?.color || d3.rgb(255, 255, 255, 0);
+    return info?.color || rgb(255, 255, 255, 0);
   },
   filteredStreets: state => {
     let streets = state.list;

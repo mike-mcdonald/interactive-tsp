@@ -1,5 +1,5 @@
 import * as turf from '@turf/helpers';
-import { RGBColor, HSLColor } from 'd3';
+import { RGBColor, HSLColor } from 'd3-color';
 import Layer from 'esri/layers/Layer';
 
 export interface Project {
