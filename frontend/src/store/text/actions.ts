@@ -17,6 +17,8 @@ export const actions: ActionTree<TextState, RootState> = {
       return;
     }
 
+    commit('setMessage', 'Retrieving text...', { root: true });
+
     axios
       .get(rootState.graphqlUrl, {
         params: {
@@ -39,7 +41,7 @@ export const actions: ActionTree<TextState, RootState> = {
         if (res.data.data.document) {
           commit('setText', res.data.data.document);
 
-          const idx = lunr(function() {
+          const idx = lunr(function () {
             this.ref('id');
             this.field('name');
             this.field('content');
@@ -54,6 +56,8 @@ export const actions: ActionTree<TextState, RootState> = {
           });
 
           commit('setIndex', idx);
+
+          commit('setMessage', undefined, { root: true });
         }
       })
       .catch(() => {
