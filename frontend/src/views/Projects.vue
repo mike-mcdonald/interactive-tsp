@@ -2,7 +2,9 @@
   <section class="w-full h-screen">
     <app-map :layers="mapLayers" v-on:click="handleClick">
       <template v-slot:manual>
-        <main class="px-2 py-4 w-full h-full flex flex-col-reverse justify-between md:flex-row pointer-events-none">
+        <main
+          class="px-2 py-4 w-full h-full flex flex-col-reverse justify-between md:flex-row pointer-events-none"
+        >
           <section class="w-full md:w-1/3 h-64 md:h-full flex items-end md:items-start">
             <div
               v-if="!$route.params.id"
@@ -13,9 +15,7 @@
                   <div
                     v-if="message"
                     class="mb-2 px-2 py-3 w-full border-l-8 border-tangerine-800 bg-tangerine-300 text-tangerine-900"
-                  >
-                    {{ message }}
-                  </div>
+                  >{{ message }}</div>
                 </transition>
                 <form class="p-2" @submit.prevent>
                   <label for="searchInput" class="sr-only">Search</label>
@@ -39,8 +39,14 @@
                       class="px-2 py-1 text-sm"
                       @click="showProjects = !showProjects"
                     >
-                      <i v-if="!showProjects" v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
-                      <i v-if="showProjects" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
+                      <i
+                        v-if="!showProjects"
+                        v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })"
+                      />
+                      <i
+                        v-if="showProjects"
+                        v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })"
+                      />
                     </button>
                   </div>
                 </transition>
@@ -60,7 +66,9 @@
                       <p class="text-xs">{{ project.description }}</p>
                       <div class="flex flex-row flex-wrap -mx-2 text-xs text-gray-600">
                         <span class="mx-2 flex flex-row items-center">
-                          <i v-html="feather.icons['dollar-sign'].toSvg({ class: 'w-3 h-3 mr-1' })" />
+                          <i
+                            v-html="feather.icons['dollar-sign'].toSvg({ class: 'w-3 h-3 mr-1' })"
+                          />
                           <span>{{ project.estimatedCost.toLocaleString() }}</span>
                         </span>
                         <span class="mx-2 flex flex-row items-center">
@@ -113,11 +121,19 @@
             <div
               class="bg-white border border-fog-900 rounded-sm shadow max-h-full overflow-y-auto pointer-events-auto"
             >
-              <header class="p-2 flex items-center justify-between bg-fog-100 border-b border-fog-500">
+              <header
+                class="p-2 flex items-center justify-between bg-fog-100 border-b border-fog-500"
+              >
                 <h2>Map settings</h2>
                 <button class="px-2 py-1 text-sm" @click="showFilters = !showFilters">
-                  <i v-if="!showFilters" v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
-                  <i v-if="showFilters" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
+                  <i
+                    v-if="!showFilters"
+                    v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })"
+                  />
+                  <i
+                    v-if="showFilters"
+                    v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })"
+                  />
                 </button>
               </header>
               <main v-show="showFilters" class="p-2">
@@ -197,7 +213,7 @@ import { AddressCandidate } from '../store/portlandmaps/types';
   methods: {
     ...mapActions('map', ['setLayerVisibility']),
     ...mapMutations('projects', ['setModels']),
-    ...mapActions('projects', ['findProjects', 'selectProjects', 'highlightProject'])
+    ...mapActions('projects', ['findProjects', 'highlightProject'])
   },
   beforeRouteEnter(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => void)) => void) {
     next(vm => {
@@ -205,7 +221,13 @@ import { AddressCandidate } from '../store/portlandmaps/types';
       vm.$store.dispatch('map/setLayerVisibility', { layerId: 'projects-10', visible: true });
       vm.$store.dispatch('map/setLayerVisibility', { layerId: 'projects-20', visible: true });
       vm.$store.dispatch('map/setLayerVisibility', { layerId: 'projects-NA', visible: true });
-      vm.$store.dispatch('projects/findProjects');
+
+      if (to.params.id) {
+        vm.$store.dispatch('projects/highlightProject', { project: { id: to.params.id }, move: true });
+      } else {
+        // side effect of the above is finding all projects...
+        vm.$store.dispatch('projects/findProjects');
+      }
     });
   }
 })
@@ -217,7 +239,6 @@ export default class Projects extends Vue {
 
   setLayerVisibility!: (payload: { layerId: string; visible: boolean }) => void;
   setModels!: (models: Array<ViewModel>) => void;
-  selectProjects!: (projects: Array<Project>) => void;
   highlightProject!: (payload: { project: Project; move?: boolean }) => void;
 
   searchText = '';

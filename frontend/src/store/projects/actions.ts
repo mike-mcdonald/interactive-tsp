@@ -58,8 +58,7 @@ export const actions: ActionTree<ProjectState, RootState> = {
     if (res.data.data.projects) {
       commit('setProjects', []);
       // sort by name then block number
-      projects = Array.from(res.data.data.projects);
-      projects = projects.sort(function(a, b) {
+      projects = Array.from(res.data.data.projects).sort(function (a, b) {
         var nameA = a.name?.toUpperCase(); // ignore upper and lowercase
         var nameB = b.name?.toUpperCase(); // ignore upper and lowercase
 
@@ -84,7 +83,7 @@ export const actions: ActionTree<ProjectState, RootState> = {
       commit('setMessage', undefined, { root: true });
     }
 
-    const idx = lunr(function() {
+    const idx = lunr(function () {
       this.ref('id');
       this.field('name');
       this.field('description');
@@ -112,53 +111,21 @@ export const actions: ActionTree<ProjectState, RootState> = {
       }, state.models)
     );
   },
-  async selectProjects({ commit, rootState }, projects: Array<Project>) {
-    commit('setMessage', 'Retrieving projects...', { root: true });
+  async highlightProject({ commit, dispatch, state }, { project, move }: { project: Project; move: boolean }) {
+    let p = project;
 
-    Promise.all(
-      projects.map(async project => {
-        const res = await axios.get<{ errors?: any[]; data: { project?: Array<Project> } }>(rootState.graphqlUrl, {
-          params: {
-            query: `{
-                project(id:"${project ? project.id : ''}"){
-                  id
-                  name
-                  geometry { type coordinates }
-                  number
-                  location
-                  description
-                  agency
-                  estimatedCost
-                  estimatedTimeframe
-                  district
-                  facilityOwner
-                  patternArea
-                  fundingCategory
-                }
-              }`.replace(/\s+/g, ' ')
-          }
-        });
+    if (!project.geometry) {
+      await dispatch('findProjects');
+      p = state.list.find(value => value.id === project.id)!;
+    }
 
-        if (res.data.errors) {
-          commit('setMessage', 'Some data may contain errors...', { root: true });
-        }
-        let data = res.data.data;
-
-        return data.project || new Array<Project>();
-      })
-    ).then((arr: Array<Array<Project>>) => {
-      commit('setSelected', arr);
-      commit('setMessage', undefined, { root: true });
-    });
-  },
-  highlightProject({ commit }, { project, move }: { project: Project; move: boolean }) {
-    if (project.geometry) {
+    if (p.geometry) {
       const graphics = new Array<Graphic>();
-      graphics.push(...esriGraphics(project.geometry));
+      graphics.push(...esriGraphics(p.geometry));
       commit('map/setGraphics', graphics, { root: true });
 
       if (move) {
-        const extent = new Polygon(esriGeometry(bboxPolygon(bbox(project.geometry)).geometry));
+        const extent = new Polygon(esriGeometry(bboxPolygon(bbox(p.geometry)).geometry));
         commit('map/goTo', extent, { root: true });
       }
     }
