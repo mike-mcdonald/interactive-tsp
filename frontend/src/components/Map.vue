@@ -135,7 +135,7 @@ export default Vue.extend({
       }, 500)
     );
 
-    view.on('click', (event: MapViewClickEvent) => {
+    view.on('click', (event: __esri.MapViewClickEvent) => {
       this.$emit('click', event);
     });
 
