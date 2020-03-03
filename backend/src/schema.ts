@@ -24,10 +24,16 @@ import { projectType, getProjectsById, getProjectsByBBox } from './project';
 const queryType = new GraphQLObjectType({
   name: 'Query',
   fields: () => ({
-    sections: {
+    document: {
       type: GraphQLList(sectionType),
-      description: 'Sections that make up the Transportation system plan',
-      resolve: async (): Promise<Section[]> => await getText()
+      description: 'Retrieves a series of HTML sections that make up a document',
+      args: {
+        name: {
+          description: 'The name of the document to retrieve',
+          type: GraphQLString
+        }
+      },
+      resolve: async (root, { name }): Promise<Section[]> => await getText(name)
     },
     address: {
       type: GraphQLList(addressType),

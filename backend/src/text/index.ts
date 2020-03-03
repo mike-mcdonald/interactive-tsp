@@ -47,16 +47,16 @@ export const sectionType: GraphQLObjectType = new GraphQLObjectType({
   })
 });
 
-export const getText = (): Promise<Section[]> =>
+export const getText = (documentName: string): Promise<Section[]> =>
   new Promise<Section[]>((resolve, reject) => {
     Metalsmith(__dirname)
-      .source('../../docs')
-      .destination('docs')
+      .source(`./${documentName}`)
+      .destination(`./${documentName}/built`)
       .clean(false) // do not clean destination
       // directory before new build
       .use(markdown())
       .build(function (err: Error | null, files: Files) {
-        if (err) throw reject(err);
+        if (err) reject(err);
 
         const sections: Section[] = new Array<Section>();
 
