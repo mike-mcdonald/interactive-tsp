@@ -1,6 +1,7 @@
 const path = require('path');
 const merge = require('webpack-merge');
 const { DefinePlugin, HashedModuleIdsPlugin, NamedChunksPlugin } = require('webpack');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const PreloadPlugin = require('preload-webpack-plugin');
@@ -136,6 +137,10 @@ module.exports = merge(base, {
         headless: true,
         renderAfterDocumentEvent: 'render-event'
       })
+    }),
+    new BundleAnalyzerPlugin({
+      analyzerMode: 'disabled',
+      generateStatsFile: true
     })
   ],
   module: {
