@@ -243,13 +243,15 @@ export default class Streets extends Vue {
   filteredClassifications(classifications: { [key: string]: string }) {
     return Array.from(
       Array.from(this.enabledModels).reduce((prev, curr) => {
-        prev.add(curr.group);
+        prev.add(curr);
         return prev;
-      }, new Set<string>())
+      }, new Set<ViewModel>())
     ).reduce((prev, curr) => {
-      prev.push({ group: curr, value: classifications[curr] });
+      if (classifications[curr.group] === curr.value) {
+        prev.add({ group: curr.group, value: classifications[curr.group] });
+      }
       return prev;
-    }, new Array<any>());
+    }, new Set<any>());
   }
 
   goToAddress(address: AddressCandidate) {
