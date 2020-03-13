@@ -1,12 +1,13 @@
 <template>
-  <section class="flex items-center justify-between">
+  <section class="p-2 border border-fog-900 rounded bg-fog-100 flex items-center justify-between text-fog-900">
     <button
       title="Go to previous page"
       rel="prev"
-      class="py-2 px-3"
+      class="py-2 px-3 border border-fog-900 rounded hover:bg-fog-200 focus:bg-fog-200"
       :class="{
         invisible: value == 0
       }"
+      :disabled="value == 0"
       @click="$emit('prev')"
       @keyup.enter="$emit('prev')"
     >
@@ -19,10 +20,11 @@
     <button
       title="Go to next page"
       rel="prev"
-      class="py-2 px-3"
+      class="py-2 px-3 border border-fog-900 rounded hover:bg-fog-200 focus:bg-fog-200"
       :class="{
         invisible: list.length == value + 1
       }"
+      :disabled="list.length == value + 1"
       @click="$emit('next')"
       @keyup-.enter="$emit('next')"
     >

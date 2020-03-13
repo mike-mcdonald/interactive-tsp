@@ -5,7 +5,7 @@
         title="Search"
         role="search"
         action="/"
-        class="flex flex-no-wrap md:flex-wrap lg:flex-no-wrap items-center border shadow rounded outline-none focus:shadow-outline "
+        class="flex flex-no-wrap md:flex-wrap lg:flex-no-wrap items-center border shadow rounded"
         @submit.prevent="findCandidates(search)"
       >
         <label for="addressInput" class="sr-only">Address</label>
@@ -15,10 +15,10 @@
           name="addressInput"
           type="search"
           role="searchbox"
-          placeholder="Enter an address to search"
+          placeholder="Search for an address..."
           required="required"
           aria-controls="address-suggest-results"
-          class="w-full px-3 py-2 md:border-b lg:border-0 rounded-l md:rounded-l-0 lg:rounded-l bg-fog-200"
+          class="appearance-none w-full px-3 py-2 md:border-b lg:border-0 rounded-l md:rounded-l-0 lg:rounded-l bg-fog-200 focus:outline-none focus:shadow-outline"
         />
         <section class="flex flex-row-reverse ml-auto">
           <button aria-label="Search" class="my-1 px-3 py-2 border-l">

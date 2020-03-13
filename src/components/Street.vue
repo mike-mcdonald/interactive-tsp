@@ -1,47 +1,42 @@
 <template>
   <article>
     <h1 class="mb-3 text-3xl lg:text-4xl">{{ street.name || 'Unnamed segment' }}</h1>
-    <p class="mb-3 text-2xl" v-if="street.block">{{ street.block }} block</p>
-    <div class="flex flex-wrap items-center mb-3">
+    <p class="my-3 text-2xl font-thin" v-if="street.block">{{ street.block }} block</p>
+    <section>
       <dl>
-        <div class="flex flex-wrap items-center">
-          <dt>Transportation planning ID:</dt>
-          <dd class="ml-2">{{ street.id }}</dd>
+        <div class="my-3 xl:grid xl:grid-cols-2 xl:gap-3">
+          <dt class="font-semibold">Transportation plan ID:</dt>
+          <dd>{{ street.id }}</dd>
+        </div>
+        <div
+          v-for="(classification, index) in classificationKeys()"
+          :key="index"
+          class="my-3 xl:grid xl:grid-cols-2 xl:gap-3"
+        >
+          <dt class="font-semibold">
+            {{ classification.charAt(0).toUpperCase() + classification.slice(1) }} classification:
+          </dt>
+          <dd>
+            <router-link
+              v-if="
+                classification != 'greenscape' &&
+                  classificationLabel(classification, street.classifications[classification]) != 'N/A'
+              "
+              :to="{
+                name: 'text',
+                hash: `#${classificationLabel(classification, street.classifications[classification])
+                  .toLowerCase()
+                  .split(' ')
+                  .join('-')}`
+              }"
+              class="border-current border-b-2"
+              >{{ classificationLabel(classification, street.classifications[classification]) }}</router-link
+            >
+            <span v-else>{{ classificationLabel(classification, street.classifications[classification]) }}</span>
+          </dd>
         </div>
       </dl>
-    </div>
-    <transition name="fade">
-      <section v-if="street.classifications">
-        <h2 class="mb-3 text-2xl lg:text-3xl">Classifications</h2>
-        <dl>
-          <div
-            v-for="(classification, index) in classificationKeys()"
-            :key="index"
-            class="flex flex-wrap items-center mb-2"
-          >
-            <dt>{{ classification.charAt(0).toUpperCase() + classification.slice(1) }} classification:</dt>
-            <dd class="ml-2">
-              <router-link
-                v-if="
-                  classification != 'greenscape' &&
-                    classificationLabel(classification, street.classifications[classification]) != 'N/A'
-                "
-                :to="{
-                  name: 'text',
-                  hash: `#${classificationLabel(classification, street.classifications[classification])
-                    .toLowerCase()
-                    .split(' ')
-                    .join('-')}`
-                }"
-                class="border-current border-b-2"
-                >{{ classificationLabel(classification, street.classifications[classification]) }}</router-link
-              >
-              <span v-else>{{ classificationLabel(classification, street.classifications[classification]) }}</span>
-            </dd>
-          </div>
-        </dl>
-      </section>
-    </transition>
+    </section>
     <transition name="fade">
       <section v-if="street.projects && street.projects.length > 0">
         <h2 class="mb-3 text-2xl lg:text-3xl">Projects near this street</h2>
@@ -52,8 +47,8 @@
               class="flex flex-col my-2 px-2 py-3 shadow border rounded bg-white hover:bg-blue-100 focus:bg-blue-100"
             >
               <h3 class="mb-1">{{ project.name }}</h3>
-              <p class="text-xs">{{ project.description }}</p>
-              <div class="flex flex-row flex-wrap -mx-2 text-xs text-gray-600">
+              <p class="text-sm">{{ project.description }}</p>
+              <div class="flex flex-row flex-wrap -mx-2 text-sm text-gray-600">
                 <span class="mx-2 flex flex-row items-center">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

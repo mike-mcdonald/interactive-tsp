@@ -7,7 +7,16 @@
       <slot name="manual"></slot>
     </div>
     <div ref="top-left">
-      <slot name="top-left"></slot>
+      <slot name="top-left">
+        <div class="flex flex-col">
+          <button class="p-2 bg-white border border-fog-900" v-on:click="incrementZoom">
+            <i v-html="feather.icons['plus'].toSvg({ class: 'w-5 h-5' })" />
+          </button>
+          <button class="p-2 bg-white border border-fog-900" v-on:click="decrementZoom">
+            <i v-html="feather.icons['minus'].toSvg({ class: 'w-5 h-5' })" />
+          </button>
+        </div>
+      </slot>
     </div>
     <div ref="top-right">
       <slot name="top-right"></slot>
@@ -25,8 +34,9 @@
 import Vue from 'vue';
 import { mapState, mapActions, mapMutations } from 'vuex';
 
-import debounce from 'lodash-es/debounce';
 import * as turf from '@turf/helpers';
+import feather from 'feather-icons';
+import debounce from 'lodash-es/debounce';
 
 import { whenTrue } from 'esri/core/watchUtils';
 import Map from 'esri/Map';
@@ -55,8 +65,9 @@ export default Vue.extend({
   },
   data: function() {
     return {
-      displayExtent: {},
       clickPoint: null,
+      displayExtent: {},
+      feather,
       selectedGraphic: null,
       showSettings: false,
       showLegend: false

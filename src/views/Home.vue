@@ -8,7 +8,7 @@
             <router-link
               to="/streets"
               class="block w-full px-2 py-3 bg-blue-500 border border-blue-900 rounded-sm text-center"
-              >Check out your streets</router-link
+              >Browse your streets</router-link
             >
           </div>
           <div class="w-full md:w-1/2 p-2">

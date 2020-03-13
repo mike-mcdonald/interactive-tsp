@@ -1,9 +1,5 @@
 <template>
-  <li
-    tabindex="0"
-    role="button"
-    class="px-2 py-1 transition-fast hover:translate-t-2px hover:text-blue-900"
-  >
+  <li tabindex="0" role="button" class="transition-fast hover:translate-t-2px hover:text-blue-900">
     <router-link :to="`#${this.id}`" :class="classes" append>{{ name }}</router-link>
     <ol v-if="depth < maxDepth">
       <text-listing
@@ -48,6 +44,7 @@ export default Vue.extend({
         `ml-${+this.depth * 2}`,
         'px-2',
         'py-1',
+        'flex',
         'border-2',
         'border-transparent',
         'hover:text-blue-800',
