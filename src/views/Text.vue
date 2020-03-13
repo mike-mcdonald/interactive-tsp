@@ -1,7 +1,7 @@
 <template>
   <main class="container mx-auto my-4 flex flex-col md:flex-row-reverse justify-between">
     <aside class="md:w-1/3 px-2">
-      <nav class="md:sticky md:top-10 md:overflow-y-auto md:max-h-(screen-16)">
+      <nav class="md:sticky md:top-10 md:overflow-y-auto md:max-h-(screen-16) text-sm md:text-base">
         <ol class="p-2 list-none">
           <text-listing
             v-for="section in sectionTree"
@@ -31,7 +31,7 @@
                 role="searchbox"
                 placeholder="Search the plan..."
                 required="required"
-                class="appearance-none w-full px-3 py-2 bg-fog-200 border rounded focus:outline-none focus:shadow-outline"
+                class="appearance-none placeholder-gray-900 w-full px-3 py-2 bg-gray-100 border border-gray-500 rounded shadow focus:outline-none focus:shadow-outline"
                 v-model="searchQuery"
                 @input="handleSearchChange($event.target.value)"
               />
@@ -41,7 +41,10 @@
             <div
               v-for="(candidate, index) in candidates"
               :key="candidate.id"
-              :class="{ 'w-full': true, 'border-b': index + 1 < candidates.length }"
+              :class="{
+                'w-full': true,
+                'border-b': index + 1 < candidates.length
+              }"
             >
               <router-link
                 :to="`#${candidate.id}`"
@@ -121,35 +124,35 @@ export default Vue.extend({
 <style lang="scss">
 #tsp-text {
   h1 {
-    @apply text-3xl mb-6;
+    @apply text-3xl my-6;
   }
 
   h2 {
-    @apply text-2xl mb-5;
+    @apply text-2xl my-5;
   }
 
   h3 {
-    @apply text-xl mb-4;
+    @apply text-xl my-4;
   }
 
   h4 {
-    @apply text-lg mb-3;
+    @apply text-lg my-3;
   }
 
   h5 {
-    @apply text-base mb-2;
+    @apply text-base my-2;
   }
 
   h6 {
-    @apply text-sm mb-1;
+    @apply text-sm my-1;
   }
 
   p {
-    @apply mb-3;
+    @apply my-3;
   }
 
   blockquote {
-    @apply px-2 pt-1 border-l-4 border-fog-900 rounded-r bg-fog-200;
+    @apply px-4 py-2 border border-l-4 border-gray-900 rounded;
   }
 
   a {
@@ -169,6 +172,23 @@ export default Vue.extend({
     th,
     td {
       @apply border border-current px-4 py-2;
+    }
+  }
+}
+
+@media print {
+  input,
+  button,
+  nav {
+    display: none;
+  }
+  #tsp-text {
+    page-break-before: always;
+    & > section {
+      page-break-before: always;
+    }
+    blockquote {
+      @apply py-0 border-0 border-l-4 rounded-none;
     }
   }
 }

@@ -6,16 +6,23 @@
       <section class="m-2">
         <messages />
       </section>
-      <section v-if="!$route.params.id" id="filters" class="m-2 border border-fog-500 rounded-sm bg-fog-100">
+      <section
+        v-if="!$route.params.id"
+        id="filters"
+        class="m-2 border border-gray-500 rounded shadow bg-gray-100 text-gray-900"
+      >
         <header
-          class="p-2 border-fog-500 flex items-center justify-between"
+          class="p-2 border-gray-500 flex items-center justify-between"
           :class="{
             'border-b': showFilters
           }"
         >
           <h2>Display settings</h2>
           <button class="px-2 py-1 text-sm" @click="showFilters = !showFilters">
-            <i v-if="!showFilters" v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
+            <i
+              v-if="!showFilters"
+              v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })"
+            />
             <i v-if="showFilters" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
           </button>
         </header>
@@ -49,18 +56,23 @@
                   @mouseover.native="highlightStreet({ street, move: false })"
                   @focus.native="highlightStreet({ street, move: false })"
                 >
-                  <div>{{ street.name }}</div>
-                  <div v-if="street.block" class="text-sm">{{ street.block }} block</div>
+                  <div>{{ street.name || 'Unnamed segment' }}</div>
+                  <div v-if="street.block" class="text-base font-thin">{{ street.block }} block</div>
                   <div class="flex flex-row flex-wrap -mx-1 text-sm text-gray-600">
                     <span
-                      v-for="c in filteredClassifications(street.classifications)"
+                      v-for="c in filteredClassifications(
+                        street.classifications
+                      )"
                       :key="`${c.group}-${c.value}`"
                       class="flex flex-row flex-wrap items-center mx-1"
                     >
                       <span
-                        class="h-2 w-2 p-1 mr-1 border border-fog-900"
+                        class="h-2 w-2 p-1 mr-1 border border-gray-900"
                         :style="{
-                          'background-color': classificationColor(c.group, c.value).formatRgb()
+                          'background-color': classificationColor(
+                            c.group,
+                            c.value
+                          ).formatRgb()
                         }"
                       ></span>
                       <span>{{ classificationLabel(c.group, c.value) }}</span>
@@ -88,9 +100,8 @@
           }, [])
         "
         v-on:click="handleClick"
-        v-on:extent-change="findStreets($event)"
-      >
-      </app-map>
+        v-on:extent-change="handleExtentChange"
+      ></app-map>
     </section>
   </main>
 </template>
@@ -119,7 +130,11 @@ import Messages from '@/components/Messages.vue';
 import StreetComponent from '@/components/Street.vue';
 
 import { Street, StreetState, ViewModel } from '../store/streets/types';
-import { AddressCandidate, Location, CandidateState } from '../store/portlandmaps/types';
+import {
+  AddressCandidate,
+  Location,
+  CandidateState
+} from '../store/portlandmaps/types';
 import { MapState } from '../store/map/types';
 
 // ESRI maps use this wkid
@@ -155,20 +170,37 @@ proj4.defs('102100', proj4.defs('EPSG:3857'));
   },
   methods: {
     ...mapActions('map', ['setLocation', 'setLayerVisibility']),
-    ...mapActions('streets', ['findStreets', 'selectStreet', 'selectStreetById', 'highlightStreet'])
+    ...mapActions('streets', [
+      'findStreets',
+      'selectStreet',
+      'selectStreetById',
+      'highlightStreet'
+    ])
   },
-  beforeRouteEnter(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => void)) => void) {
+  beforeRouteEnter(
+    to: Route,
+    from: Route,
+    next: (to?: RawLocation | false | ((vm: Vue) => void)) => void
+  ) {
     next((vm: Vue) => {
       // access to component instance via `vm`
       if (to.params.id) {
         vm.$store.dispatch('text/findText');
-        vm.$store.dispatch('streets/selectStreetById', to.params.id);
+        vm.$store.dispatch('streets/selectStreet', { id: to.params.id });
+      } else {
+        vm.$store.dispatch('streets/findStreets', vm.$store.state.map.extent);
       }
     });
   },
-  beforeRouteUpdate(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => void)) => void) {
+  beforeRouteUpdate(
+    to: Route,
+    from: Route,
+    next: (to?: RawLocation | false | ((vm: Vue) => void)) => void
+  ) {
     if (to.params.id) {
-      this.$store.dispatch('streets/selectStreetById', to.params.id);
+      this.$store.dispatch('streets/selectStreet', { id: to.params.id });
+    } else {
+      this.$store.dispatch('streets/findStreets', this.$store.state.map.extent);
     }
     next();
   }
@@ -182,6 +214,7 @@ export default class Streets extends Vue {
   selectedStreet!: Street;
   models!: Array<ViewModel>;
 
+  findStreets!: (extent: Extent) => void;
   setLocation!: (location: Location) => void;
   setLayerVisibility!: (payload: { layerId: string; visible: boolean }) => void;
 
@@ -244,18 +277,27 @@ export default class Streets extends Vue {
 
         if (Object.keys(graphic.attributes).find(key => key === 'TranPlanID')) {
           if (graphic.attributes.TranPlanID != this.$route.params.id)
-            this.$router.push({ name: 'streets', params: { id: graphic.attributes.TranPlanID } });
+            this.$router.push({
+              name: 'streets',
+              params: { id: graphic.attributes.TranPlanID }
+            });
           return true;
         }
       });
     });
+  }
+
+  handleExtentChange(extent: Extent) {
+    if (!this.$route.params.id) {
+      this.findStreets(extent);
+    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
 .map-panel {
-  @apply w-full bg-white border border-fog-900 rounded-sm shadow max-h-full overflow-y-auto pointer-events-auto;
+  @apply w-full bg-white border border-gray-900 rounded shadow max-h-full overflow-y-auto pointer-events-auto;
 }
 
 .fade-enter-active,

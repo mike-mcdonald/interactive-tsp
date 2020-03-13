@@ -3,11 +3,21 @@
     <section
       class="w-full md:w-1/3 h-full md:h-(screen-16) overflow-y-auto border-t md:border-t-0 md:border-r border-black"
     >
-      <section v-if="!$route.params.id" id="filters" class="m-2 border border-fog-500 rounded-sm bg-fog-100">
-        <header class="p-2 flex items-center justify-between bg-fog-100" :class="{ 'border-b': showFilters }">
+      <section class="m-2">
+        <messages />
+      </section>
+      <section
+        v-if="!$route.params.id"
+        id="filters"
+        class="m-2 border border-gray-500 rounded shadow bg-gray-100 text-gray-900"
+      >
+        <header class="p-2 flex items-center justify-between" :class="{ 'border-b': showFilters }">
           <h2>Display settings</h2>
           <button class="px-2 py-1 text-sm" @click="showFilters = !showFilters">
-            <i v-if="!showFilters" v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
+            <i
+              v-if="!showFilters"
+              v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })"
+            />
             <i v-if="showFilters" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
           </button>
         </header>
@@ -23,7 +33,7 @@
                 />
                 <div
                   v-if="model.color"
-                  class="h-4 w-4 px-2 mx-2"
+                  class="h-4 w-4 px-2 mx-2 border border-gray-900"
                   :style="{
                     'background-color': model.color.formatRgb()
                   }"
@@ -37,7 +47,6 @@
       <section class="m-2">
         <div v-if="!$route.params.id">
           <header>
-            <messages />
             <form class="text-base" @submit.prevent>
               <label for="searchInput" class="sr-only">Search</label>
               <input
@@ -47,7 +56,7 @@
                 role="searchbox"
                 placeholder="Search projects..."
                 required="required"
-                class="appearance-none w-full px-3 py-2 bg-fog-200 border rounded-sm focus:outline-none focus:shadow-outline"
+                class="appearance-none placeholder-gray-900 w-full px-3 py-2 bg-gray-100 border border-gray-500 rounded shadow focus:outline-none focus:shadow-outline"
                 :value="searchText"
                 @input="handleSearchChange($event.target.value)"
               />
@@ -68,11 +77,23 @@
                   <p class="text-xs">{{ project.description }}</p>
                   <div class="flex flex-row flex-wrap -mx-2 text-xs text-gray-600">
                     <span class="mx-2 flex flex-row items-center">
-                      <i v-html="feather.icons['dollar-sign'].toSvg({ class: 'w-3 h-3 mr-1' })" />
+                      <i
+                        v-html="
+                          feather.icons['dollar-sign'].toSvg({
+                            class: 'w-3 h-3 mr-1'
+                          })
+                        "
+                      />
                       <span>{{ project.estimatedCost.toLocaleString() }}</span>
                     </span>
                     <span class="mx-2 flex flex-row items-center">
-                      <i v-html="feather.icons.calendar.toSvg({ class: 'w-3 h-3 mr-1' })" />
+                      <i
+                        v-html="
+                          feather.icons.calendar.toSvg({
+                            class: 'w-3 h-3 mr-1'
+                          })
+                        "
+                      />
                       <span>{{ project.estimatedTimeframe }}</span>
                     </span>
                   </div>
@@ -116,7 +137,7 @@
     </section>
     <section class="w-full md:w-2/3 h-screen-50 md:h-(screen-16)">
       <app-map :layers="mapLayers" v-on:click="handleClick">
-        <template v-slot:manual> </template>
+        <template v-slot:manual></template>
       </app-map>
     </section>
   </main>
@@ -167,15 +188,31 @@ import { AddressCandidate } from '../store/portlandmaps/types';
     ...mapMutations('projects', ['setModels']),
     ...mapActions('projects', ['findProjects', 'highlightProject'])
   },
-  beforeRouteEnter(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => void)) => void) {
+  beforeRouteEnter(
+    to: Route,
+    from: Route,
+    next: (to?: RawLocation | false | ((vm: Vue) => void)) => void
+  ) {
     next(vm => {
       // select the projects layer
-      vm.$store.dispatch('map/setLayerVisibility', { layerId: 'projects-10', visible: true });
-      vm.$store.dispatch('map/setLayerVisibility', { layerId: 'projects-20', visible: true });
-      vm.$store.dispatch('map/setLayerVisibility', { layerId: 'projects-NA', visible: true });
+      vm.$store.dispatch('map/setLayerVisibility', {
+        layerId: 'projects-10',
+        visible: true
+      });
+      vm.$store.dispatch('map/setLayerVisibility', {
+        layerId: 'projects-20',
+        visible: true
+      });
+      vm.$store.dispatch('map/setLayerVisibility', {
+        layerId: 'projects-NA',
+        visible: true
+      });
 
       if (to.params.id) {
-        vm.$store.dispatch('projects/highlightProject', { project: { id: to.params.id }, move: true });
+        vm.$store.dispatch('projects/highlightProject', {
+          project: { id: to.params.id },
+          move: true
+        });
       } else {
         // side effect of the above is finding all projects...
         vm.$store.dispatch('projects/findProjects');
@@ -210,12 +247,15 @@ export default class Projects extends Vue {
   }
 
   get filteredProjects() {
-    const enabledTimeframes = this.models.reduce((prev: Map<string, boolean>, curr: ViewModel) => {
-      if (curr.enabled) {
-        prev.set(curr.value, curr.enabled);
-      }
-      return prev;
-    }, new Map<string, boolean>());
+    const enabledTimeframes = this.models.reduce(
+      (prev: Map<string, boolean>, curr: ViewModel) => {
+        if (curr.enabled) {
+          prev.set(curr.value, curr.enabled);
+        }
+        return prev;
+      },
+      new Map<string, boolean>()
+    );
 
     let projects = this.projects;
 
@@ -230,7 +270,10 @@ export default class Projects extends Vue {
     }
 
     return projects.reduce((prev: Array<Project>, curr: Project) => {
-      if (curr.estimatedTimeframe && enabledTimeframes.has(curr.estimatedTimeframe)) {
+      if (
+        curr.estimatedTimeframe &&
+        enabledTimeframes.has(curr.estimatedTimeframe)
+      ) {
         prev.push(curr);
       }
       return prev;
@@ -248,12 +291,15 @@ export default class Projects extends Vue {
 
   get dataset() {
     return this.models.map((model: ViewModel) => {
-      model.count = this.filteredProjects.reduce((prev: number, curr: Project) => {
-        if (curr.estimatedTimeframe == model.value) {
-          prev = prev + 1;
-        }
-        return prev;
-      }, 0);
+      model.count = this.filteredProjects.reduce(
+        (prev: number, curr: Project) => {
+          if (curr.estimatedTimeframe == model.value) {
+            prev = prev + 1;
+          }
+          return prev;
+        },
+        0
+      );
       return model;
     });
   }
@@ -303,21 +349,26 @@ export default class Projects extends Vue {
   handleClick(event: __esri.MapViewClickEvent) {
     this.view.hitTest(event).then((response: __esri.HitTestResult) => {
       if (response.results.length) {
+        this.selectionIndex = this.projectIndex = 0;
         const projects = response.results.reduce((prev, curr) => {
           // push each id to the pagination component
           const graphic = curr.graphic;
 
           if (!graphic.attributes) return prev;
 
-          if (Object.keys(graphic.attributes).find(key => key === 'TranPlanID')) {
+          if (
+            Object.keys(graphic.attributes).find(key => key === 'TranPlanID')
+          ) {
             prev.add(curr.graphic.attributes.TranPlanID);
           }
 
           return prev;
         }, new Set<any>());
         this.projectList = Array.from(projects);
-        this.selectionIndex = this.projectIndex = 0;
-        this.$router.push({ name: 'projects', params: { id: this.projectList[0] } });
+        this.$router.push({
+          name: 'projects',
+          params: { id: this.projectList[0] }
+        });
         this.handleSelectionChange(this.selectionIndex);
       }
     });

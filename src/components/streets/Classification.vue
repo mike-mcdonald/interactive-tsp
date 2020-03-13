@@ -2,7 +2,7 @@
   <section>
     <main class="my-2 flex flex-col">
       <section class="flex items-center justify-between">
-        <label :for="group" class="flex items-center font-semibold">
+        <label :for="group" class="flex items-center">
           <input
             type="checkbox"
             :id="group"
@@ -10,7 +10,10 @@
             :title="group"
             @change="setGroupVisibility($event.target.checked)"
           />
-          <span class="mx-2 flex">{{ group.charAt(0).toUpperCase() + group.slice(1) }} classifications</span>
+          <span class="mx-2 flex">
+            {{ group.charAt(0).toUpperCase() + group.slice(1) }}
+            classifications
+          </span>
         </label>
         <button class="px-2 py-1 text-sm" @click="show = !show">
           <i v-if="!show" v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
@@ -19,8 +22,13 @@
       </section>
     </main>
     <transition name="bounce">
-      <footer v-if="show" class="my-2 p-2 bg-fog-200 text-fog-900 border border-fog-900 rounded-sm">
-        <label v-for="entry in dataset" :key="entry.value" :for="entry.key" class="flex items-center">
+      <footer v-if="show" class="my-2 p-2 bg-fog-100 text-fog-900 border border-fog-900 rounded">
+        <label
+          v-for="entry in dataset"
+          :key="entry.value"
+          :for="entry.key"
+          class="flex items-center"
+        >
           <input
             type="checkbox"
             :id="entry.key"
@@ -29,7 +37,7 @@
           />
           <div
             v-if="entry.color"
-            class="h-4 w-4 px-2 mx-2"
+            class="h-4 w-4 px-2 mx-2 border border-gray-900"
             :style="{
               'background-color': entry.color.formatRgb()
             }"
@@ -44,8 +52,7 @@
                   .join('-')}`
               }"
               class="border-current border-b-2"
-              >{{ entry.label }}</router-link
-            >
+            >{{ entry.label }}</router-link>
           </span>
         </label>
       </footer>

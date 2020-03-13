@@ -1,9 +1,11 @@
 <template>
-  <section class="p-2 border border-fog-900 rounded bg-fog-100 flex items-center justify-between text-fog-900">
+  <nav
+    class="p-2 border border-gray-900 rounded bg-gray-100 flex items-center justify-between text-gray-900"
+  >
     <button
       title="Go to previous page"
       rel="prev"
-      class="py-2 px-3 border border-fog-900 rounded hover:bg-fog-200 focus:bg-fog-200"
+      class="py-2 px-3 border border-gray-900 rounded hover:bg-gray-200 focus:bg-gray-200"
       :class="{
         invisible: value == 0
       }"
@@ -20,7 +22,7 @@
     <button
       title="Go to next page"
       rel="prev"
-      class="py-2 px-3 border border-fog-900 rounded hover:bg-fog-200 focus:bg-fog-200"
+      class="py-2 px-3 border border-gray-900 rounded hover:bg-gray-200 focus:bg-gray-200"
       :class="{
         invisible: list.length == value + 1
       }"
@@ -33,7 +35,7 @@
         <i v-html="feather.icons['chevron-right'].toSvg({ class: 'w-5 h-5' })" />
       </span>
     </button>
-  </section>
+  </nav>
 </template>
 
 <script lang="ts">
