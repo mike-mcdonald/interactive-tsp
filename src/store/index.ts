@@ -16,7 +16,7 @@ declare var GRAPHQL_URL: string;
 
 const store: StoreOptions<RootState> = {
   state: {
-    message: undefined,
+    messages: undefined,
     graphqlUrl: GRAPHQL_URL
   },
   mutations,

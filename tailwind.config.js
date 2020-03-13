@@ -134,6 +134,10 @@ module.exports = {
       maxHeight: {
         xs: '20rem',
         sm: '30rem',
+        '1/4': '25%',
+        '1/3': '33.33%',
+        '1/2': '50%',
+        '3/4': '75%',
         '(screen-16)': 'calc(100vh - 4rem)'
       },
       boxShadow: {

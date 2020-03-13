@@ -17,7 +17,7 @@ export const actions: ActionTree<TextState, RootState> = {
       return;
     }
 
-    commit('setMessage', 'Retrieving text...', { root: true });
+    commit('setMessages', [{ type: 'info', text: 'Retrieving text...' }], { root: true });
 
     axios
       .get(rootState.graphqlUrl, {
@@ -36,12 +36,12 @@ export const actions: ActionTree<TextState, RootState> = {
       })
       .then(res => {
         if (res.data.errors) {
-          commit('setMessage', 'The text may contain errors...', { root: true });
+          commit('setMessages', [{ type: 'warning', text: 'The text may contain errors...' }], { root: true });
         }
         if (res.data.data.document) {
           commit('setText', res.data.data.document);
 
-          const idx = lunr(function () {
+          const idx = lunr(function() {
             this.ref('id');
             this.field('name');
             this.field('content');
@@ -57,11 +57,11 @@ export const actions: ActionTree<TextState, RootState> = {
 
           commit('setIndex', idx);
 
-          commit('setMessage', undefined, { root: true });
+          commit('setMessages', undefined, { root: true });
         }
       })
       .catch(() => {
-        commit('setMessage', 'Error retrieving text!', { root: true });
+        commit('setMessages', [{ type: 'error', text: 'Error retrieving text!' }], { root: true });
       });
   },
   searchIndex({ state, commit }, query) {

@@ -13,7 +13,7 @@ import { esriGraphics, customStemming, esriGeometry } from '../utils';
 
 export const actions: ActionTree<ProjectState, RootState> = {
   async findProjects({ state, commit, dispatch, rootState }) {
-    commit('setMessage', 'Retrieving projects...', { root: true });
+    commit('setMessages', [{ type: 'info', text: 'Retrieving projects...' }], { root: true });
 
     if (state.list.length > 0) return;
 
@@ -29,9 +29,10 @@ export const actions: ActionTree<ProjectState, RootState> = {
 
     const { xmin, ymin, xmax, ymax } = extent;
 
-    const res = await axios.get<{ errors?: any[]; data: { projects?: Project[] } }>(rootState.graphqlUrl, {
-      params: {
-        query: `{
+    const res = await axios
+      .get<{ errors?: any[]; data: { projects?: Project[] } }>(rootState.graphqlUrl, {
+        params: {
+          query: `{
           projects(bbox:[${xmin},${ymin},${xmax},${ymax}], spatialReference:${extent.spatialReference.wkid}){
             id
             name
@@ -48,17 +49,21 @@ export const actions: ActionTree<ProjectState, RootState> = {
             geometry { type coordinates }
           }
         }`.replace(/\s+/g, ' ')
-      }
-    });
+        }
+      })
+      .catch(err => {
+        commit('setMessages', [{ type: 'error', text: 'Error retrieving projects...' }], { root: true });
+        throw err;
+      });
 
     if (res.data.errors) {
-      commit('setMessage', 'Error retrieving projects...', { root: true });
+      commit('setMessages', [{ type: 'warning', text: 'Some projects may contain errors...' }], { root: true });
     }
 
     if (res.data.data.projects) {
       commit('setProjects', []);
       // sort by name then block number
-      projects = Array.from(res.data.data.projects).sort(function (a, b) {
+      projects = Array.from(res.data.data.projects).sort(function(a, b) {
         var nameA = a.name?.toUpperCase(); // ignore upper and lowercase
         var nameB = b.name?.toUpperCase(); // ignore upper and lowercase
 
@@ -80,10 +85,10 @@ export const actions: ActionTree<ProjectState, RootState> = {
 
       dispatch('analyzeProjects');
 
-      commit('setMessage', undefined, { root: true });
+      commit('setMessages', undefined, { root: true });
     }
 
-    const idx = lunr(function () {
+    const idx = lunr(function() {
       this.ref('id');
       this.field('name');
       this.field('description');

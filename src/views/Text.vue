@@ -2,7 +2,7 @@
   <main class="container mx-auto my-4 flex flex-col md:flex-row-reverse justify-between">
     <aside class="md:w-1/3 px-2">
       <nav class="md:sticky md:top-10 md:overflow-y-auto md:max-h-(screen-16)">
-        <ol class="list-none">
+        <ol class="p-2 list-none">
           <text-listing
             v-for="section in sectionTree"
             :key="section.id"
@@ -18,12 +18,7 @@
     <div class="flex flex-col md:w-2/3 px-2">
       <header>
         <section>
-          <transition name="fade">
-            <div
-              v-if="message"
-              class="px-2 py-3 w-full border-l-8 border-tangerine-800 bg-tangerine-300 text-tangerine-900"
-            >{{ message }}</div>
-          </transition>
+          <messages />
         </section>
         <nav class="relative my-2">
           <form title="Search" role="search" action="/" class="flex flex-col" @submit.prevent>
@@ -36,7 +31,7 @@
                 role="searchbox"
                 placeholder="Search the plan..."
                 required="required"
-                class="w-full px-3 py-2 bg-fog-200 border rounded"
+                class="appearance-none w-full px-3 py-2 bg-fog-200 border rounded focus:outline-none focus:shadow-outline"
                 v-model="searchQuery"
                 @input="handleSearchChange($event.target.value)"
               />
@@ -80,6 +75,7 @@ import { mapState, mapActions, mapGetters } from 'vuex';
 
 import debounce from 'lodash-es/debounce';
 
+import Messages from '@/components/Messages.vue';
 import TextSection from '@/components/text/Section.vue';
 import TextListing from '@/components/text/Listing.vue';
 import { CombinedVueInstance } from 'vue/types/vue';
@@ -87,6 +83,7 @@ import { CombinedVueInstance } from 'vue/types/vue';
 export default Vue.extend({
   name: 'TextView',
   components: {
+    Messages,
     TextSection,
     TextListing
   },
@@ -96,13 +93,12 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState(['message']),
     ...mapState('text', ['candidates']),
     ...mapGetters('text', ['sectionTree'])
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      vm.$store.commit('setMessage', undefined);
+      vm.$store.commit('setMessages', undefined);
       vm.$store.dispatch('text/findText');
     });
   },

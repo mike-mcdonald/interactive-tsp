@@ -35,8 +35,7 @@ export interface ViewModel {
   group: string;
   enabled: boolean;
   label: string;
-  count: number;
-  color: RGBColor | HSLColor | null;
+  color?: RGBColor | HSLColor | null;
   layer?: Layer;
 }
 

@@ -1,8 +1,8 @@
 import { MutationTree } from 'vuex';
-import { RootState } from './types';
+import { RootState, Message } from './types';
 
 export const mutations: MutationTree<RootState> = {
-  setMessage(state, message) {
-    state.message = message;
+  setMessages(state, messages: Array<Message>) {
+    state.messages = messages;
   }
 };

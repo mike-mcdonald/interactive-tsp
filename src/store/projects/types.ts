@@ -1,4 +1,4 @@
-import { Geometry } from '@turf/helpers';
+import { Geometry } from 'geojson';
 import { RGBColor } from 'd3-color';
 import { Index } from 'lunr';
 

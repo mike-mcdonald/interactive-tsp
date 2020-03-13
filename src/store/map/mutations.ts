@@ -10,7 +10,7 @@ export const mutations: MutationTree<MapState> = {
     state.view = view;
     view.map = state.map;
   },
-  setLayers: debounce(function (state: MapState, layers: Array<Layer>) {
+  setLayers: debounce(function(state: MapState, layers: Array<Layer>) {
     state.layers = layers;
     state.map.layers.removeAll();
     state.map.layers.addMany(layers);
@@ -24,7 +24,7 @@ export const mutations: MutationTree<MapState> = {
   goTo(state, target) {
     state.view?.goTo(target, {
       animate: true,
-      duration: 500,
+      duration: 800,
       easing: 'easeOutCubic'
     });
   },
