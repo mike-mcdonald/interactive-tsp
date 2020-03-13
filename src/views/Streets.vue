@@ -61,7 +61,7 @@
                   @mouseover.native="highlightStreet({ street, move: false })"
                   @focus.native="highlightStreet({ street, move: false })"
                 >
-                  <div>{{ street.name || 'Unnamed segment' }}</div>
+                  <div>{{ street.name.trim() || 'Unnamed segment' }}</div>
                   <div v-if="street.block" class="text-base font-thin">{{ street.block }} block</div>
                   <div class="flex flex-row flex-wrap -mx-1 text-sm text-gray-600">
                     <span

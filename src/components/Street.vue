@@ -1,6 +1,6 @@
 <template>
   <article>
-    <h1 class="mb-3 text-3xl lg:text-4xl">{{ street.name || 'Unnamed segment' }}</h1>
+    <h1 class="mb-3 text-3xl lg:text-4xl">{{ street.name.trim() || 'Unnamed segment' }}</h1>
     <p class="my-3 text-2xl font-thin" v-if="street.block">{{ street.block }} block</p>
     <section>
       <dl>
@@ -13,9 +13,9 @@
           :key="index"
           class="my-3 xl:grid xl:grid-cols-2 xl:gap-3"
         >
-          <dt class="font-semibold">
-            {{ classification.charAt(0).toUpperCase() + classification.slice(1) }} classification:
-          </dt>
+          <dt
+            class="font-semibold"
+          >{{ classification.charAt(0).toUpperCase() + classification.slice(1) }} classification:</dt>
           <dd>
             <router-link
               v-if="
@@ -30,9 +30,10 @@
                   .join('-')}`
               }"
               class="border-current border-b-2"
-              >{{ classificationLabel(classification, street.classifications[classification]) }}</router-link
-            >
-            <span v-else>{{ classificationLabel(classification, street.classifications[classification]) }}</span>
+            >{{ classificationLabel(classification, street.classifications[classification]) }}</router-link>
+            <span
+              v-else
+            >{{ classificationLabel(classification, street.classifications[classification]) }}</span>
           </dd>
         </div>
       </dl>
