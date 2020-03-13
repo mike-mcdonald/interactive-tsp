@@ -1,5 +1,6 @@
 <template>
   <main class="flex flex-col-reverse md:flex-row">
+    <h1 class="sr-only">Street listings</h1>
     <section
       class="w-full md:w-1/3 h-full md:h-(screen-16) overflow-y-auto border-t md:border-t-0 md:border-r border-black"
     >
@@ -60,19 +61,14 @@
                   <div v-if="street.block" class="text-base font-thin">{{ street.block }} block</div>
                   <div class="flex flex-row flex-wrap -mx-1 text-sm text-gray-600">
                     <span
-                      v-for="c in filteredClassifications(
-                        street.classifications
-                      )"
+                      v-for="c in filteredClassifications(street.classifications)"
                       :key="`${c.group}-${c.value}`"
                       class="flex flex-row flex-wrap items-center mx-1"
                     >
                       <span
                         class="h-2 w-2 p-1 mr-1 border border-gray-900"
                         :style="{
-                          'background-color': classificationColor(
-                            c.group,
-                            c.value
-                          ).formatRgb()
+                          'background-color': classificationColor(c.group, c.value).formatRgb()
                         }"
                       ></span>
                       <span>{{ classificationLabel(c.group, c.value) }}</span>
@@ -130,11 +126,7 @@ import Messages from '@/components/Messages.vue';
 import StreetComponent from '@/components/Street.vue';
 
 import { Street, StreetState, ViewModel } from '../store/streets/types';
-import {
-  AddressCandidate,
-  Location,
-  CandidateState
-} from '../store/portlandmaps/types';
+import { AddressCandidate, Location, CandidateState } from '../store/portlandmaps/types';
 import { MapState } from '../store/map/types';
 
 // ESRI maps use this wkid
@@ -170,18 +162,9 @@ proj4.defs('102100', proj4.defs('EPSG:3857'));
   },
   methods: {
     ...mapActions('map', ['setLocation', 'setLayerVisibility']),
-    ...mapActions('streets', [
-      'findStreets',
-      'selectStreet',
-      'selectStreetById',
-      'highlightStreet'
-    ])
+    ...mapActions('streets', ['findStreets', 'selectStreet', 'selectStreetById', 'highlightStreet'])
   },
-  beforeRouteEnter(
-    to: Route,
-    from: Route,
-    next: (to?: RawLocation | false | ((vm: Vue) => void)) => void
-  ) {
+  beforeRouteEnter(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => void)) => void) {
     next((vm: Vue) => {
       // access to component instance via `vm`
       if (to.params.id) {
@@ -192,11 +175,7 @@ proj4.defs('102100', proj4.defs('EPSG:3857'));
       }
     });
   },
-  beforeRouteUpdate(
-    to: Route,
-    from: Route,
-    next: (to?: RawLocation | false | ((vm: Vue) => void)) => void
-  ) {
+  beforeRouteUpdate(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => void)) => void) {
     if (to.params.id) {
       this.$store.dispatch('streets/selectStreet', { id: to.params.id });
     } else {

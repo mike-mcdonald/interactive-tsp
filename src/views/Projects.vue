@@ -1,5 +1,6 @@
 <template>
   <main class="flex flex-col-reverse md:flex-row">
+    <h1 class="sr-only">Project listings</h1>
     <section
       class="w-full md:w-1/3 h-full md:h-(screen-16) overflow-y-auto border-t md:border-t-0 md:border-r border-black"
     >
@@ -188,11 +189,7 @@ import { AddressCandidate } from '../store/portlandmaps/types';
     ...mapMutations('projects', ['setModels']),
     ...mapActions('projects', ['findProjects', 'highlightProject'])
   },
-  beforeRouteEnter(
-    to: Route,
-    from: Route,
-    next: (to?: RawLocation | false | ((vm: Vue) => void)) => void
-  ) {
+  beforeRouteEnter(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => void)) => void) {
     next(vm => {
       // select the projects layer
       vm.$store.dispatch('map/setLayerVisibility', {
@@ -247,15 +244,12 @@ export default class Projects extends Vue {
   }
 
   get filteredProjects() {
-    const enabledTimeframes = this.models.reduce(
-      (prev: Map<string, boolean>, curr: ViewModel) => {
-        if (curr.enabled) {
-          prev.set(curr.value, curr.enabled);
-        }
-        return prev;
-      },
-      new Map<string, boolean>()
-    );
+    const enabledTimeframes = this.models.reduce((prev: Map<string, boolean>, curr: ViewModel) => {
+      if (curr.enabled) {
+        prev.set(curr.value, curr.enabled);
+      }
+      return prev;
+    }, new Map<string, boolean>());
 
     let projects = this.projects;
 
@@ -270,10 +264,7 @@ export default class Projects extends Vue {
     }
 
     return projects.reduce((prev: Array<Project>, curr: Project) => {
-      if (
-        curr.estimatedTimeframe &&
-        enabledTimeframes.has(curr.estimatedTimeframe)
-      ) {
+      if (curr.estimatedTimeframe && enabledTimeframes.has(curr.estimatedTimeframe)) {
         prev.push(curr);
       }
       return prev;
@@ -291,15 +282,12 @@ export default class Projects extends Vue {
 
   get dataset() {
     return this.models.map((model: ViewModel) => {
-      model.count = this.filteredProjects.reduce(
-        (prev: number, curr: Project) => {
-          if (curr.estimatedTimeframe == model.value) {
-            prev = prev + 1;
-          }
-          return prev;
-        },
-        0
-      );
+      model.count = this.filteredProjects.reduce((prev: number, curr: Project) => {
+        if (curr.estimatedTimeframe == model.value) {
+          prev = prev + 1;
+        }
+        return prev;
+      }, 0);
       return model;
     });
   }
@@ -356,9 +344,7 @@ export default class Projects extends Vue {
 
           if (!graphic.attributes) return prev;
 
-          if (
-            Object.keys(graphic.attributes).find(key => key === 'TranPlanID')
-          ) {
+          if (Object.keys(graphic.attributes).find(key => key === 'TranPlanID')) {
             prev.add(curr.graphic.attributes.TranPlanID);
           }
 
