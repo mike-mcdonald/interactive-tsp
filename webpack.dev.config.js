@@ -7,6 +7,9 @@ const base = require('./webpack.common.config');
 module.exports = merge(base, {
   mode: 'development',
   devtool: 'cheap-module-eval-source-map',
+  devServer: {
+    host: '0.0.0.0'
+  },
   output: {
     filename: '[name].js'
   },

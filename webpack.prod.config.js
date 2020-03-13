@@ -85,7 +85,7 @@ module.exports = merge(base, {
   },
   plugins: [
     new DefinePlugin({
-      GRAPHQL_URL: JSON.stringify('http://localhost:4000/graphql')
+      GRAPHQL_URL: JSON.stringify('graphql')
     }),
     new MiniCssExtractPlugin({
       filename: 'css/[name].[contenthash:8].css',
