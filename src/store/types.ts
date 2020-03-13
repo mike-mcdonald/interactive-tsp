@@ -9,5 +9,4 @@ export interface Message {
 export interface RootState {
   messages?: Array<Message>;
   graphqlUrl: string;
-  map?: MapState;
 }
