@@ -167,8 +167,7 @@ import AppMap from '@/components/Map.vue';
 import Messages from '@/components/Messages.vue';
 import ProjectComponent from '@/components/Project.vue';
 import Pager from '@/components/Pager.vue';
-
-import Search from 'portland-pattern-lab/source/_patterns/01-atoms/04-images/Search.vue';
+import Search from '@/components/icons/Search.vue';
 
 import { ProjectState, Project, ViewModel } from '../store/projects/types';
 import { AddressCandidate } from '../store/portlandmaps/types';

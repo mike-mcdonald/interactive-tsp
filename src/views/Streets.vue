@@ -24,10 +24,7 @@
             class="px-2 py-1 focus:outline-none focus:shadow-outline"
             @click="showFilters = !showFilters"
           >
-            <i
-              v-if="!showFilters"
-              v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })"
-            />
+            <i v-if="!showFilters" v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
             <i v-if="showFilters" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
           </button>
         </header>

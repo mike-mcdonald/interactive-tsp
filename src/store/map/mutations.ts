@@ -10,7 +10,7 @@ export const mutations: MutationTree<MapState> = {
     state.view = view;
     view.map = state.map;
   },
-  setLayers: debounce(function (state: MapState, layers: Array<Layer>) {
+  setLayers: debounce(function(state: MapState, layers: Array<Layer>) {
     state.layers = layers;
     state.map.layers.removeAll();
     state.map.layers.addMany(layers);

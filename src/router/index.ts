@@ -37,7 +37,7 @@ export default new Router({
       return new Promise(resolve => {
         setTimeout(() => {
           resolve({ selector: to.hash });
-        }, 100);
+        }, 500);
       });
     } else if (savedPosition) {
       return savedPosition;

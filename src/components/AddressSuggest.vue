@@ -54,7 +54,8 @@
           <span
             v-if="candidate.type"
             class="mx-2 px-2 rounded-full bg-blue-500 text-white text-xs font-bold uppercase"
-          >{{ candidate.type }}</span>
+            >{{ candidate.type }}</span
+          >
           <div class="mx-2 text-sm">{{ candidate.name }}</div>
           <div class="flex flex-1 items-center mx-2 text-xs font-bold uppercase">
             <span v-if="candidate.city" class>{{ candidate.city }},</span>

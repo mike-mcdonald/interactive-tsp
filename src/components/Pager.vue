@@ -1,7 +1,5 @@
 <template>
-  <nav
-    class="p-2 border border-gray-900 rounded bg-gray-100 flex items-center justify-between text-gray-900"
-  >
+  <nav class="p-2 border border-gray-900 rounded bg-gray-100 flex items-center justify-between text-gray-900">
     <button
       title="Go to previous page"
       rel="prev"

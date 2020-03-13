@@ -8,13 +8,15 @@
             <router-link
               to="/streets"
               class="block w-full px-2 py-3 bg-blue-500 border border-blue-900 rounded text-center"
-            >Browse your streets</router-link>
+              >Browse your streets</router-link
+            >
           </div>
           <div class="w-full md:w-1/2 p-2">
             <router-link
               to="/text"
               class="block w-full px-2 py-3 bg-blue-500 border border-blue-900 rounded text-center"
-            >Read about our plans</router-link>
+              >Read about our plans</router-link
+            >
           </div>
         </section>
       </div>
@@ -64,10 +66,9 @@
           Master Street Plans, and Area Plans. This is by no means a full version of the document, so visit this site to
           view the document in its entirety:
         </span>
-        <a
-          href="https://www.portlandoregon.gov/transportation/67263"
-          class="border-b-2 border-black"
-        >https://www.portlandoregon.gov/transportation/67263</a>
+        <a href="https://www.portlandoregon.gov/transportation/67263" class="border-b-2 border-black"
+          >https://www.portlandoregon.gov/transportation/67263</a
+        >
       </p>
     </section>
   </main>

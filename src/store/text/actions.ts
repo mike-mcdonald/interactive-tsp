@@ -41,7 +41,7 @@ export const actions: ActionTree<TextState, RootState> = {
         if (res.data.data.document) {
           commit('setText', res.data.data.document);
 
-          const idx = lunr(function () {
+          const idx = lunr(function() {
             this.ref('id');
             this.field('name');
             this.field('content');
