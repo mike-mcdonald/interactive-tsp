@@ -16,19 +16,49 @@ const namespaced: boolean = true;
 const models = new Array<ViewModel>();
 
 const districts = new Map([
-  ['pedestrian', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/16'],
-  ['bicycle', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/13'],
-  ['freight', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/20']
+  [
+    'pedestrian',
+    'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/16'
+  ],
+  [
+    'bicycle',
+    'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/13'
+  ],
+  [
+    'freight',
+    'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/20'
+  ]
 ]);
 
 const classifications = new Map([
-  ['pedestrian', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/15'],
-  ['bicycle', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/12'],
-  ['transit', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/3'],
-  ['freight', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/19'],
-  ['design', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/10'],
-  ['emergency', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/7'],
-  ['traffic', 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/4']
+  [
+    'pedestrian',
+    'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/15'
+  ],
+  [
+    'bicycle',
+    'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/12'
+  ],
+  [
+    'transit',
+    'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/3'
+  ],
+  [
+    'freight',
+    'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/19'
+  ],
+  [
+    'design',
+    'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/10'
+  ],
+  [
+    'emergency',
+    'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/7'
+  ],
+  [
+    'traffic',
+    'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/4'
+  ]
 ]);
 
 Promise.all(
@@ -76,7 +106,9 @@ Promise.all(
               layer: new FeatureLayer({
                 url: value[1],
                 outFields: ['*'],
-                definitionExpression: `${value[0]} = '${info.value.toString()}'`,
+                definitionExpression: `${
+                  value[0]
+                  } = '${info.value.toString()}'`,
                 visible: false
               })
             };
