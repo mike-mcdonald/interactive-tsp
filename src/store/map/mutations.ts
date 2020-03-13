@@ -10,7 +10,7 @@ export const mutations: MutationTree<MapState> = {
     state.view = view;
     view.map = state.map;
   },
-  setLayers: debounce(function(state: MapState, layers: Array<Layer>) {
+  setLayers: debounce(function (state: MapState, layers: Array<Layer>) {
     state.layers = layers;
     state.map.layers.removeAll();
     state.map.layers.addMany(layers);
@@ -22,6 +22,9 @@ export const mutations: MutationTree<MapState> = {
     state.zoom.current = zoom;
   },
   goTo(state, target) {
+    if (target.zoom && state.zoom.current && target.zoom < state.zoom.current) {
+      target.zoom = state.zoom.current;
+    }
     state.view?.goTo(target, {
       animate: true,
       duration: 800,
@@ -29,7 +32,7 @@ export const mutations: MutationTree<MapState> = {
     });
   },
   layerVisibilityChanged(state, { layerId, visible }) {
-    const layer = state.layers.find(l => {
+    const layer = state.layers?.find(l => {
       return l.id === layerId;
     });
 
