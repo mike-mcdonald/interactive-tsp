@@ -19,7 +19,11 @@
           }"
         >
           <h2>Display settings</h2>
-          <button class="px-2 py-1 text-sm" @click="showFilters = !showFilters">
+          <button
+            :title="`${showFilters ? 'Hide' : 'Show'} display settings`"
+            class="px-2 py-1 focus:outline-none focus:shadow-outline"
+            @click="showFilters = !showFilters"
+          >
             <i
               v-if="!showFilters"
               v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })"
@@ -27,7 +31,7 @@
             <i v-if="showFilters" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
           </button>
         </header>
-        <main v-show="showFilters" class="p-2">
+        <main v-show="showFilters" :aria-expanded="showFilters" class="p-2">
           <div v-for="(group, index) in controllableModelGroups" :key="index">
             <classification
               :group="group"

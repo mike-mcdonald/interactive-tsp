@@ -31,7 +31,7 @@
                 role="searchbox"
                 placeholder="Search the plan..."
                 required="required"
-                class="appearance-none placeholder-gray-900 w-full px-3 py-2 bg-gray-100 border border-gray-500 rounded shadow focus:outline-none focus:shadow-outline"
+                class="appearance-none placeholder-gray-600 w-full px-3 py-2 bg-gray-100 border border-gray-500 rounded shadow focus:outline-none focus:shadow-outline"
                 v-model="searchQuery"
                 @input="handleSearchChange($event.target.value)"
               />

@@ -11,14 +11,14 @@
         <div class="flex flex-col">
           <button
             title="Zoom in"
-            class="p-2 bg-white border border-fog-900"
+            class="p-2 bg-white border border-fog-900 focus:outline-none focus:shadow-outline"
             v-on:click="incrementZoom"
           >
             <i v-html="feather.icons['plus'].toSvg({ class: 'w-5 h-5' })" />
           </button>
           <button
             title="Zoom out"
-            class="p-2 bg-white border border-fog-900"
+            class="p-2 bg-white border border-fog-900 focus:outline-none focus:shadow-outline"
             v-on:click="decrementZoom"
           >
             <i v-html="feather.icons['minus'].toSvg({ class: 'w-5 h-5' })" />

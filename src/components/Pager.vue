@@ -5,7 +5,7 @@
     <button
       title="Go to previous page"
       rel="prev"
-      class="py-2 px-3 border border-gray-900 rounded hover:bg-gray-200 focus:bg-gray-200"
+      class="py-2 px-3 border border-gray-900 rounded hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline"
       :class="{
         invisible: value == 0
       }"
@@ -22,7 +22,7 @@
     <button
       title="Go to next page"
       rel="prev"
-      class="py-2 px-3 border border-gray-900 rounded hover:bg-gray-200 focus:bg-gray-200"
+      class="py-2 px-3 border border-gray-900 rounded hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline"
       :class="{
         invisible: list.length == value + 1
       }"

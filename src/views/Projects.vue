@@ -14,7 +14,10 @@
       >
         <header class="p-2 flex items-center justify-between" :class="{ 'border-b': showFilters }">
           <h2>Display settings</h2>
-          <button class="px-2 py-1 text-sm" @click="showFilters = !showFilters">
+          <button
+            class="px-2 py-1 text-sm focus:outline-none focus:shadow-outline"
+            @click="showFilters = !showFilters"
+          >
             <i
               v-if="!showFilters"
               v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })"
@@ -22,7 +25,7 @@
             <i v-if="showFilters" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
           </button>
         </header>
-        <main v-show="showFilters" class="p-2">
+        <main v-show="showFilters" :aria-expanded="`${showFilters}`" class="p-2">
           <form @submit.prevent>
             <div v-for="model in dataset" :key="model.key">
               <label class="flex items-center" :for="model.key">
@@ -50,17 +53,22 @@
           <header>
             <form class="text-base" @submit.prevent>
               <label for="searchInput" class="sr-only">Search</label>
-              <input
-                id="searchInput"
-                name="searchInput"
-                type="search"
-                role="searchbox"
-                placeholder="Search projects..."
-                required="required"
-                class="appearance-none placeholder-gray-900 w-full px-3 py-2 bg-gray-100 border border-gray-500 rounded shadow focus:outline-none focus:shadow-outline"
-                :value="searchText"
-                @input="handleSearchChange($event.target.value)"
-              />
+              <div class="mt-1 relative rounded">
+                <div class="absolute inset-y-0 left-0 px-2 flex items-center pointer-events-none">
+                  <Search />
+                </div>
+                <input
+                  id="searchInput"
+                  name="searchInput"
+                  type="search"
+                  role="searchbox"
+                  placeholder="Search projects..."
+                  required="required"
+                  class="appearance-none placeholder-gray-600 w-full px-3 pl-8 py-2 bg-gray-100 border border-gray-500 rounded shadow focus:outline-none focus:shadow-outline"
+                  :value="searchText"
+                  @input="handleSearchChange($event.target.value)"
+                />
+              </div>
             </form>
           </header>
           <transition name="fade">
@@ -160,6 +168,8 @@ import Messages from '@/components/Messages.vue';
 import ProjectComponent from '@/components/Project.vue';
 import Pager from '@/components/Pager.vue';
 
+import Search from 'portland-pattern-lab/source/_patterns/01-atoms/04-images/Search.vue';
+
 import { ProjectState, Project, ViewModel } from '../store/projects/types';
 import { AddressCandidate } from '../store/portlandmaps/types';
 
@@ -169,7 +179,8 @@ import { AddressCandidate } from '../store/portlandmaps/types';
     AppMap,
     Messages,
     ProjectComponent,
-    Pager
+    Pager,
+    Search
   },
   data() {
     return { feather };
