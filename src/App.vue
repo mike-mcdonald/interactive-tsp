@@ -9,7 +9,7 @@
               title="Portland Bureaur of Transportation logo"
               alt="Portland Bureaur of Transportation logo"
             />
-            <span class="text-lg sm:text-xl ">Transportation System Plan</span>
+            <span class="text-lg sm:text-xl">Transportation System Plan</span>
           </router-link>
           <button class="p-2 sm:hidden" v-on:click="showMenu = !showMenu">
             <i v-html="feather.icons['menu'].toSvg({ class: 'w-5 h-5' })" />
@@ -23,13 +23,25 @@
           flex: showMenu
         }"
       >
-        <router-link to="/streets" class="py-2 px-2 sm:py-4 hover:bg-fog-500" active-class="sm:bg-fog-500">
+        <router-link
+          to="/streets"
+          class="py-2 px-2 sm:py-4 hover:bg-fog-500"
+          active-class="sm:bg-fog-500"
+        >
           <span class="border-b-2 border-black">Streets</span>
         </router-link>
-        <router-link to="/projects" class="py-2 px-2 sm:py-4 hover:bg-fog-500" active-class="sm:bg-fog-500">
+        <router-link
+          to="/projects"
+          class="py-2 px-2 sm:py-4 hover:bg-fog-500"
+          active-class="sm:bg-fog-500"
+        >
           <span class="border-b-2 border-black">Projects</span>
         </router-link>
-        <router-link to="/text" class="py-2 px-2 sm:py-4 hover:bg-fog-500" active-class="sm:bg-fog-500">
+        <router-link
+          to="/text"
+          class="py-2 px-2 sm:py-4 hover:bg-fog-500"
+          active-class="sm:bg-fog-500"
+        >
           <span class="border-b-2 border-black">Text</span>
         </router-link>
       </nav>
@@ -37,7 +49,11 @@
     <router-view />
     <Footer>
       <template v-slot:logos>
-        <img title="PBOT Technology services logo" src="/img/PBOT-VerticalApps-Logo-Dark.png" class="w-48" />
+        <img
+          title="PBOT Technology services logo"
+          src="/img/PBOT-VerticalApps-Logo-Dark.png"
+          class="w-48"
+        />
       </template>
     </Footer>
   </div>
@@ -81,23 +97,5 @@ export default Vue.extend({
   #app {
     @apply text-lg;
   }
-}
-
-*:focus {
-  @apply shadow-outline;
-}
-
-* {
-  scrollbar-width: thin;
-}
-
-*::-webkit-scrollbar {
-  @apply w-3 bg-fog-200 rounded-sm;
-}
-*::-webkit-scrollbar-thumb {
-  @apply bg-fog-600 rounded-sm;
-}
-*::-webkit-scrollbar-track {
-  @apply bg-fog-200 rounded-sm;
 }
 </style>
