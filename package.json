@@ -17,6 +17,7 @@
     "@turf/buffer": "^5.1.5",
     "@turf/centroid": "^6.0.2",
     "@turf/helpers": "^6.1.4",
+    "@turf/length": "^6.0.2",
     "@turf/nearest-point-on-line": "^6.0.2",
     "apollo-cache-inmemory": "^1.6.3",
     "apollo-client": "^2.6.4",
