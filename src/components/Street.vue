@@ -5,7 +5,7 @@
     <section>
       <dl>
         <div class="my-3 xl:grid xl:grid-cols-2 xl:gap-3">
-          <dt class="font-semibold">Transportation plan ID:</dt>
+          <dt class="font-semibold">Transportation plan ID</dt>
           <dd>{{ street.id }}</dd>
         </div>
         <div
@@ -14,7 +14,7 @@
           class="my-3 xl:grid xl:grid-cols-2 xl:gap-3"
         >
           <dt class="font-semibold">
-            {{ classification.charAt(0).toUpperCase() + classification.slice(1) }} classification:
+            {{ classification.charAt(0).toUpperCase() + classification.slice(1) }} classification
           </dt>
           <dd>
             <router-link
