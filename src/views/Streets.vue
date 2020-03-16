@@ -18,6 +18,11 @@
         v-if="!$route.params.id"
         id="filters"
         class="m-2 border border-gray-500 rounded shadow bg-gray-100 text-gray-900"
+        :class="[
+          enabledModels.size > 0 ? 'border-gray-500' : 'border-red-500',
+          enabledModels.size > 0 ? 'bg-gray-100' : 'bg-red-100',
+          enabledModels.size > 0 ? 'text-gray-900' : 'text-red-900'
+        ]"
       >
         <header
           class="p-2 border-gray-500 flex items-center justify-between"
@@ -55,15 +60,15 @@
           <header>
             <address-suggest v-on:candidate-select="goToAddress" />
           </header>
-          <div v-if="streets.length > 0">
+          <div v-if="filteredStreets.length > 0">
             <ul class="list-none">
-              <li v-for="street in streets" :key="street.id" class="my-2">
+              <li v-for="street in filteredStreets" :key="street.id" class="my-2">
                 <router-link
                   :to="street.id"
                   append
-                  class="flex-shrink flex flex-col h-full px-2 py-3 shadow border rounded bg-white hover:bg-blue-100 focus:bg-blue-100"
                   @mouseover.native="highlightStreet({ street, move: false })"
                   @focus.native="highlightStreet({ street, move: false })"
+                  class="flex-shrink flex flex-col h-full px-2 py-3 shadow border rounded bg-white hover:bg-blue-100 focus:bg-blue-100"
                 >
                   <div>{{ street.name.trim() || 'Unnamed segment' }}</div>
                   <div v-if="street.block" class="text-base font-thin">{{ street.block }} block</div>
