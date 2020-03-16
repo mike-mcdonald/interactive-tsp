@@ -18,7 +18,7 @@
           placeholder="Search for an address..."
           required="required"
           aria-controls="address-suggest-results"
-          class="appearance-none placeholder-gray-900 w-full px-3 py-2 md:border-b lg:border-0 rounded-l md:rounded-l-0 lg:rounded-l bg-gray-100 focus:outline-none focus:shadow-outline"
+          class="appearance-none placeholder-gray-600 w-full px-3 py-2 md:border-b lg:border-0 rounded-l md:rounded-l-0 lg:rounded-l bg-gray-100 focus:outline-none focus:shadow-outline"
         />
         <section class="flex flex-row-reverse ml-auto">
           <button aria-label="Search" class="my-1 px-3 py-2 border-l">
@@ -54,7 +54,8 @@
           <span
             v-if="candidate.type"
             class="mx-2 px-2 rounded-full bg-blue-500 text-white text-xs font-bold uppercase"
-          >{{ candidate.type }}</span>
+            >{{ candidate.type }}</span
+          >
           <div class="mx-2 text-sm">{{ candidate.name }}</div>
           <div class="flex flex-1 items-center mx-2 text-xs font-bold uppercase">
             <span v-if="candidate.city" class>{{ candidate.city }},</span>

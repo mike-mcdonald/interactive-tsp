@@ -7,14 +7,16 @@
           <div class="w-full md:w-1/2 p-2">
             <router-link
               to="/streets"
-              class="block w-full px-2 py-3 bg-blue-500 border border-blue-900 rounded text-center"
-            >Browse your streets</router-link>
+              class="block w-full px-2 py-3 bg-orange-500 border border-orange-900 rounded text-center text-orange-900 hover:bg-orange-400 focus:outline-none focus:shadow-outline focus:bg-orange-400"
+              >Browse your streets</router-link
+            >
           </div>
           <div class="w-full md:w-1/2 p-2">
             <router-link
               to="/text"
-              class="block w-full px-2 py-3 bg-blue-500 border border-blue-900 rounded text-center"
-            >Read about our plans</router-link>
+              class="block w-full px-2 py-3 bg-gray-200 border border-gray-900 rounded text-center text-gray-900 hover:bg-gray-400 focus:outline-none focus:shadow-outline focus:bg-gray-400"
+              >Read about our plans</router-link
+            >
           </div>
         </section>
       </div>
@@ -64,10 +66,9 @@
           Master Street Plans, and Area Plans. This is by no means a full version of the document, so visit this site to
           view the document in its entirety:
         </span>
-        <a
-          href="https://www.portlandoregon.gov/transportation/67263"
-          class="border-b-2 border-black"
-        >https://www.portlandoregon.gov/transportation/67263</a>
+        <a href="https://www.portlandoregon.gov/transportation/67263" class="border-b-2 border-black"
+          >https://www.portlandoregon.gov/transportation/67263</a
+        >
       </p>
     </section>
   </main>

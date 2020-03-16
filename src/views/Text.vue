@@ -31,7 +31,7 @@
                 role="searchbox"
                 placeholder="Search the plan..."
                 required="required"
-                class="appearance-none placeholder-gray-900 w-full px-3 py-2 bg-gray-100 border border-gray-500 rounded shadow focus:outline-none focus:shadow-outline"
+                class="appearance-none placeholder-gray-600 w-full px-3 py-2 bg-gray-100 border border-gray-500 rounded shadow focus:outline-none focus:shadow-outline"
                 v-model="searchQuery"
                 @input="handleSearchChange($event.target.value)"
               />
@@ -78,7 +78,7 @@ import { mapState, mapActions, mapGetters } from 'vuex';
 
 import debounce from 'lodash-es/debounce';
 
-import Messages from '@/components/Messages.vue';
+import Messages from '@/components/message/List.vue';
 import TextSection from '@/components/text/Section.vue';
 import TextListing from '@/components/text/Listing.vue';
 import { CombinedVueInstance } from 'vue/types/vue';

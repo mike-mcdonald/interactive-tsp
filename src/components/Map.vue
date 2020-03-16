@@ -8,11 +8,19 @@
     </div>
     <div ref="top-left">
       <slot name="top-left">
-        <div class="flex flex-col">
-          <button class="p-2 bg-white border border-fog-900" v-on:click="incrementZoom">
+        <div class="flex flex-col shadow-lg">
+          <button
+            title="Zoom in"
+            class="p-2 bg-white border-2 border-b rounded-t border-fog-900 focus:outline-none focus:shadow-outline"
+            v-on:click="incrementZoom"
+          >
             <i v-html="feather.icons['plus'].toSvg({ class: 'w-5 h-5' })" />
           </button>
-          <button class="p-2 bg-white border border-fog-900" v-on:click="decrementZoom">
+          <button
+            title="Zoom out"
+            class="p-2 bg-white border-2 border-t rounded-b border-fog-900 focus:outline-none focus:shadow-outline"
+            v-on:click="decrementZoom"
+          >
             <i v-html="feather.icons['minus'].toSvg({ class: 'w-5 h-5' })" />
           </button>
         </div>
@@ -40,8 +48,7 @@ import debounce from 'lodash-es/debounce';
 
 import { whenTrue } from 'esri/core/watchUtils';
 import Map from 'esri/Map';
-import Extent from 'esri/geometry/Extent';
-import { Point, Polyline } from 'esri/geometry';
+import { Extent, Point, Polyline } from 'esri/geometry';
 import Graphic from 'esri/Graphic';
 import GraphicsLayer from 'esri/layers/GraphicsLayer';
 import Layer from 'esri/layers/Layer';
@@ -168,7 +175,7 @@ export default Vue.extend({
   @apply text-base;
   .esri-ui-corner {
     .esri-component {
-      @apply m-0;
+      @apply m-0 shadow-none;
       .esri-widget--panel {
         @apply w-full;
       }

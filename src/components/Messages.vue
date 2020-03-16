@@ -3,7 +3,7 @@
     <div
       v-for="(message, index) in messages"
       :key="index"
-      class="mb-2 px-2 py-3 w-full border-l-8 rounded"
+      class="mb-2 px-2 py-3 w-full border border-l-8 rounded"
       :class="classes(message)"
     >
       {{ message.text }}

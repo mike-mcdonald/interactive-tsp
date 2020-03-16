@@ -1,6 +1,6 @@
 <template>
-  <li tabindex="0" role="button" class="transition-fast hover:translate-t-2px hover:text-blue-900">
-    <router-link :to="`#${this.id}`" :class="classes" append>{{ name }}</router-link>
+  <li role="button" class="hover:text-blue-900">
+    <router-link tabindex="0" :to="`#${this.id}`" :class="classes" append>{{ name }}</router-link>
     <ol v-if="depth < maxDepth">
       <text-listing
         v-for="section in sections"

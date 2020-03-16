@@ -67,7 +67,7 @@ module.exports = {
       transparent: 'transparent',
       inherit: 'inherit',
       current: 'currentColor',
-      black: mix('#22292f', mix('#FF6666', '#005CB9', 0.5).hex(), 0.2).hex(),
+      black: mix('#000000', mix('#FF6666', '#005CB9', 0.5).hex(), 0.2).hex(),
       white: '#ffffff',
       gray: {
         '100': '#f5f5f5',

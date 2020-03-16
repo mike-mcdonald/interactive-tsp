@@ -1,59 +1,82 @@
 <template>
   <div id="app">
-    <Header name="Transportation System Plan" class="h-full sm:h-16">
-      <template v-slot:brand>
-        <div class="flex-1 sm:flex-none flex items-center justify-between">
-          <router-link to="/" class="flex items-center">
-            <logo
-              class="w-24 mr-3"
-              title="Portland Bureaur of Transportation logo"
-              alt="Portland Bureaur of Transportation logo"
-            />
-            <span class="text-lg sm:text-xl">Transportation System Plan</span>
-          </router-link>
-          <button class="p-2 sm:hidden" v-on:click="showMenu = !showMenu">
-            <i v-html="feather.icons['menu'].toSvg({ class: 'w-5 h-5' })" />
-          </button>
-        </div>
-      </template>
-      <nav
-        class="-mx-2 sm:mx-2 sm:flex flex-row flex-wrap"
-        :class="{
-          hidden: !showMenu,
-          flex: showMenu
-        }"
-      >
+    <header
+      class="px-2 py-2 md:py-0 md:h-16 border-b border-cyan-900 bg-cyan-500 text-cyan-100 flex items-center justify-between flex-wrap"
+    >
+      <div class="flex items-center flex-shrink-0 md:mr-4">
+        <router-link to="/" class="flex items-center">
+          <logo
+            class="w-16 md:w-24 mr-2"
+            title="Portland Bureau of Transportation logo"
+            alt="Portland Bureau of Transportation logo"
+          />
+          <span class="font-semibold tracking-tight text-lg md:text-xl">Transportation System Plan</span>
+        </router-link>
+      </div>
+      <div class="block md:hidden">
+        <button
+          class="flex items-center px-3 py-2 rounded hover:bg-cyan-700 focus:outline-none focus:bg-cyan-700"
+          @click="showMenu = !showMenu"
+        >
+          <i v-if="!showMenu" v-html="feather.icons['menu'].toSvg({ class: 'w-5 h-5' })" />
+          <i v-if="showMenu" v-html="feather.icons['x'].toSvg({ class: 'w-5 h-5' })" />
+        </button>
+      </div>
+      <nav class="-mx-1 w-auto flex-grow items-center hidden md:flex">
         <router-link
           to="/streets"
-          class="py-2 px-2 sm:py-4 hover:bg-fog-500"
-          active-class="sm:bg-fog-500"
+          class="mx-1 p-2 rounded-md hover:bg-cyan-700 focus:outline-none focus:bg-cyan-700"
+          active-class="bg-cyan-700"
         >
-          <span class="border-b-2 border-black">Streets</span>
+          <span>Streets</span>
         </router-link>
         <router-link
           to="/projects"
-          class="py-2 px-2 sm:py-4 hover:bg-fog-500"
-          active-class="sm:bg-fog-500"
+          class="mx-1 p-2 rounded-md hover:bg-cyan-700 focus:outline-none focus:bg-cyan-700"
+          active-class="bg-cyan-700"
         >
-          <span class="border-b-2 border-black">Projects</span>
+          <span>Projects</span>
         </router-link>
         <router-link
           to="/text"
-          class="py-2 px-2 sm:py-4 hover:bg-fog-500"
-          active-class="sm:bg-fog-500"
+          class="mx-1 p-2 rounded-md hover:bg-cyan-700 focus:outline-none focus:bg-cyan-700"
+          active-class="bg-cyan-700"
         >
-          <span class="border-b-2 border-black">Text</span>
+          <span>Text</span>
         </router-link>
       </nav>
-    </Header>
+      <nav
+        class="pt-2 w-full flex-grow flex-col items-start md:hidden"
+        :class="!showMenu ? 'hidden' : 'flex'"
+        :aria-expanded="`${showMenu}`"
+      >
+        <router-link
+          to="/streets"
+          class="my-1 p-2 w-full rounded hover:bg-cyan-700 focus:outline-none focus:bg-cyan-700"
+          active-class="bg-cyan-700"
+        >
+          <span>Streets</span>
+        </router-link>
+        <router-link
+          to="/projects"
+          class="my-1 p-2 w-full rounded hover:bg-cyan-700 focus:outline-none focus:bg-cyan-700"
+          active-class="bg-cyan-700"
+        >
+          <span>Projects</span>
+        </router-link>
+        <router-link
+          to="/text"
+          class="my-1 p-2 w-full rounded hover:bg-cyan-700 focus:outline-none focus:bg-cyan-700"
+          active-class="bg-cyan-700"
+        >
+          <span>Text</span>
+        </router-link>
+      </nav>
+    </header>
     <router-view />
     <Footer>
       <template v-slot:logos>
-        <img
-          title="PBOT Technology services logo"
-          src="/img/PBOT-VerticalApps-Logo-Dark.png"
-          class="w-48"
-        />
+        <img title="PBOT Technology services logo" src="/img/PBOT-VerticalApps-Logo-Dark.png" class="w-48" />
       </template>
     </Footer>
   </div>
@@ -64,14 +87,12 @@ import Vue from 'vue';
 import feather from 'feather-icons';
 
 import Footer from 'portland-pattern-lab/source/_patterns/03-cells/footer/Footer.vue';
-import Header from 'portland-pattern-lab/source/_patterns/03-cells/header/Header.vue';
 import Logo from 'portland-pattern-lab/source/_patterns/01-atoms/04-images/Logo.vue';
 
 export default Vue.extend({
   name: 'App',
   components: {
     Footer,
-    Header,
     Logo
   },
   data() {

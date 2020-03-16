@@ -1,5 +1,6 @@
 <template>
   <main class="flex flex-col-reverse md:flex-row">
+    <h1 class="sr-only">Project listings</h1>
     <section
       class="w-full md:w-1/3 h-full md:h-(screen-16) overflow-y-auto border-t md:border-t-0 md:border-r border-black"
     >
@@ -13,15 +14,12 @@
       >
         <header class="p-2 flex items-center justify-between" :class="{ 'border-b': showFilters }">
           <h2>Display settings</h2>
-          <button class="px-2 py-1 text-sm" @click="showFilters = !showFilters">
-            <i
-              v-if="!showFilters"
-              v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })"
-            />
+          <button class="px-2 py-1 text-sm focus:outline-none focus:shadow-outline" @click="showFilters = !showFilters">
+            <i v-if="!showFilters" v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
             <i v-if="showFilters" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
           </button>
         </header>
-        <main v-show="showFilters" class="p-2">
+        <main v-show="showFilters" :aria-expanded="`${showFilters}`" class="p-2">
           <form @submit.prevent>
             <div v-for="model in dataset" :key="model.key">
               <label class="flex items-center" :for="model.key">
@@ -49,17 +47,22 @@
           <header>
             <form class="text-base" @submit.prevent>
               <label for="searchInput" class="sr-only">Search</label>
-              <input
-                id="searchInput"
-                name="searchInput"
-                type="search"
-                role="searchbox"
-                placeholder="Search projects..."
-                required="required"
-                class="appearance-none placeholder-gray-900 w-full px-3 py-2 bg-gray-100 border border-gray-500 rounded shadow focus:outline-none focus:shadow-outline"
-                :value="searchText"
-                @input="handleSearchChange($event.target.value)"
-              />
+              <div class="mt-1 relative rounded">
+                <div class="absolute inset-y-0 left-0 px-2 flex items-center pointer-events-none">
+                  <Search />
+                </div>
+                <input
+                  id="searchInput"
+                  name="searchInput"
+                  type="search"
+                  role="searchbox"
+                  placeholder="Search projects..."
+                  required="required"
+                  class="appearance-none placeholder-gray-600 w-full px-3 pl-8 py-2 bg-gray-100 border border-gray-500 rounded shadow focus:outline-none focus:shadow-outline"
+                  :value="searchText"
+                  @input="handleSearchChange($event.target.value)"
+                />
+              </div>
             </form>
           </header>
           <transition name="fade">
@@ -155,9 +158,10 @@ import { Extent } from 'esri/geometry';
 import MapView from 'esri/views/MapView';
 
 import AppMap from '@/components/Map.vue';
-import Messages from '@/components/Messages.vue';
+import Messages from '@/components/message/List.vue';
 import ProjectComponent from '@/components/Project.vue';
 import Pager from '@/components/Pager.vue';
+import Search from '@/components/icons/Search.vue';
 
 import { ProjectState, Project, ViewModel } from '../store/projects/types';
 import { AddressCandidate } from '../store/portlandmaps/types';
@@ -168,7 +172,8 @@ import { AddressCandidate } from '../store/portlandmaps/types';
     AppMap,
     Messages,
     ProjectComponent,
-    Pager
+    Pager,
+    Search
   },
   data() {
     return { feather };
@@ -188,11 +193,7 @@ import { AddressCandidate } from '../store/portlandmaps/types';
     ...mapMutations('projects', ['setModels']),
     ...mapActions('projects', ['findProjects', 'highlightProject'])
   },
-  beforeRouteEnter(
-    to: Route,
-    from: Route,
-    next: (to?: RawLocation | false | ((vm: Vue) => void)) => void
-  ) {
+  beforeRouteEnter(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => void)) => void) {
     next(vm => {
       // select the projects layer
       vm.$store.dispatch('map/setLayerVisibility', {
@@ -247,15 +248,12 @@ export default class Projects extends Vue {
   }
 
   get filteredProjects() {
-    const enabledTimeframes = this.models.reduce(
-      (prev: Map<string, boolean>, curr: ViewModel) => {
-        if (curr.enabled) {
-          prev.set(curr.value, curr.enabled);
-        }
-        return prev;
-      },
-      new Map<string, boolean>()
-    );
+    const enabledTimeframes = this.models.reduce((prev: Map<string, boolean>, curr: ViewModel) => {
+      if (curr.enabled) {
+        prev.set(curr.value, curr.enabled);
+      }
+      return prev;
+    }, new Map<string, boolean>());
 
     let projects = this.projects;
 
@@ -270,10 +268,7 @@ export default class Projects extends Vue {
     }
 
     return projects.reduce((prev: Array<Project>, curr: Project) => {
-      if (
-        curr.estimatedTimeframe &&
-        enabledTimeframes.has(curr.estimatedTimeframe)
-      ) {
+      if (curr.estimatedTimeframe && enabledTimeframes.has(curr.estimatedTimeframe)) {
         prev.push(curr);
       }
       return prev;
@@ -291,15 +286,12 @@ export default class Projects extends Vue {
 
   get dataset() {
     return this.models.map((model: ViewModel) => {
-      model.count = this.filteredProjects.reduce(
-        (prev: number, curr: Project) => {
-          if (curr.estimatedTimeframe == model.value) {
-            prev = prev + 1;
-          }
-          return prev;
-        },
-        0
-      );
+      model.count = this.filteredProjects.reduce((prev: number, curr: Project) => {
+        if (curr.estimatedTimeframe == model.value) {
+          prev = prev + 1;
+        }
+        return prev;
+      }, 0);
       return model;
     });
   }
@@ -356,9 +348,7 @@ export default class Projects extends Vue {
 
           if (!graphic.attributes) return prev;
 
-          if (
-            Object.keys(graphic.attributes).find(key => key === 'TranPlanID')
-          ) {
+          if (Object.keys(graphic.attributes).find(key => key === 'TranPlanID')) {
             prev.add(curr.graphic.attributes.TranPlanID);
           }
 

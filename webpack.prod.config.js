@@ -137,10 +137,6 @@ module.exports = merge(base, {
         headless: true,
         renderAfterDocumentEvent: 'render-event'
       })
-    }),
-    new BundleAnalyzerPlugin({
-      analyzerMode: 'disabled',
-      generateStatsFile: true
     })
   ],
   module: {

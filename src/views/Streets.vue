@@ -1,15 +1,28 @@
 <template>
   <main class="flex flex-col-reverse md:flex-row">
+    <h1 class="sr-only">Street listings</h1>
     <section
       class="w-full md:w-1/3 h-full md:h-(screen-16) overflow-y-auto border-t md:border-t-0 md:border-r border-black"
     >
       <section class="m-2">
         <messages />
+        <message
+          v-if="!$route.params.id && streets.length > 0 && enabledModels.size == 0"
+          :item="{
+            type: 'warning',
+            text: 'Enable one or more classifications below to display streets...'
+          }"
+        />
       </section>
       <section
         v-if="!$route.params.id"
         id="filters"
         class="m-2 border border-gray-500 rounded shadow bg-gray-100 text-gray-900"
+        :class="[
+          enabledModels.size > 0 ? 'border-gray-500' : 'border-red-500',
+          enabledModels.size > 0 ? 'bg-gray-100' : 'bg-red-100',
+          enabledModels.size > 0 ? 'text-gray-900' : 'text-red-900'
+        ]"
       >
         <header
           class="p-2 border-gray-500 flex items-center justify-between"
@@ -18,15 +31,16 @@
           }"
         >
           <h2>Display settings</h2>
-          <button class="px-2 py-1 text-sm" @click="showFilters = !showFilters">
-            <i
-              v-if="!showFilters"
-              v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })"
-            />
+          <button
+            :title="`${showFilters ? 'Hide' : 'Show'} display settings`"
+            class="px-2 py-1 focus:outline-none focus:shadow-outline"
+            @click="showFilters = !showFilters"
+          >
+            <i v-if="!showFilters" v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
             <i v-if="showFilters" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
           </button>
         </header>
-        <main v-show="showFilters" class="p-2">
+        <main v-show="showFilters" :aria-expanded="showFilters" class="p-2">
           <div v-for="(group, index) in controllableModelGroups" :key="index">
             <classification
               :group="group"
@@ -46,33 +60,28 @@
           <header>
             <address-suggest v-on:candidate-select="goToAddress" />
           </header>
-          <div v-if="streets.length > 0">
+          <div v-if="filteredStreets.length > 0">
             <ul class="list-none">
-              <li v-for="street in streets" :key="street.id" class="my-2">
+              <li v-for="street in filteredStreets" :key="street.id" class="my-2">
                 <router-link
                   :to="street.id"
                   append
-                  class="flex-shrink flex flex-col h-full px-2 py-3 shadow border rounded bg-white hover:bg-blue-100 focus:bg-blue-100"
                   @mouseover.native="highlightStreet({ street, move: false })"
                   @focus.native="highlightStreet({ street, move: false })"
+                  class="flex-shrink flex flex-col h-full px-2 py-3 shadow border rounded bg-white hover:bg-blue-100 focus:bg-blue-100"
                 >
-                  <div>{{ street.name || 'Unnamed segment' }}</div>
+                  <div>{{ street.name.trim() || 'Unnamed segment' }}</div>
                   <div v-if="street.block" class="text-base font-thin">{{ street.block }} block</div>
                   <div class="flex flex-row flex-wrap -mx-1 text-sm text-gray-600">
                     <span
-                      v-for="c in filteredClassifications(
-                        street.classifications
-                      )"
+                      v-for="c in filteredClassifications(street.classifications)"
                       :key="`${c.group}-${c.value}`"
                       class="flex flex-row flex-wrap items-center mx-1"
                     >
                       <span
                         class="h-2 w-2 p-1 mr-1 border border-gray-900"
                         :style="{
-                          'background-color': classificationColor(
-                            c.group,
-                            c.value
-                          ).formatRgb()
+                          'background-color': classificationColor(c.group, c.value).formatRgb()
                         }"
                       ></span>
                       <span>{{ classificationLabel(c.group, c.value) }}</span>
@@ -126,15 +135,12 @@ import Checkbox from 'portland-pattern-lab/source/_patterns/02-molecules/form/Ch
 import AddressSuggest from '@/components/AddressSuggest.vue';
 import AppMap from '@/components/Map.vue';
 import Classification from '@/components/streets/Classification.vue';
-import Messages from '@/components/Messages.vue';
+import Message from '@/components/message/Item.vue';
+import Messages from '@/components/message/List.vue';
 import StreetComponent from '@/components/Street.vue';
 
 import { Street, StreetState, ViewModel } from '../store/streets/types';
-import {
-  AddressCandidate,
-  Location,
-  CandidateState
-} from '../store/portlandmaps/types';
+import { AddressCandidate, Location, CandidateState } from '../store/portlandmaps/types';
 import { MapState } from '../store/map/types';
 
 // ESRI maps use this wkid
@@ -147,6 +153,7 @@ proj4.defs('102100', proj4.defs('EPSG:3857'));
     AppMap,
     Checkbox,
     Classification,
+    Message,
     Messages,
     StreetComponent
   },
@@ -170,18 +177,9 @@ proj4.defs('102100', proj4.defs('EPSG:3857'));
   },
   methods: {
     ...mapActions('map', ['setLocation', 'setLayerVisibility']),
-    ...mapActions('streets', [
-      'findStreets',
-      'selectStreet',
-      'selectStreetById',
-      'highlightStreet'
-    ])
+    ...mapActions('streets', ['findStreets', 'selectStreet', 'selectStreetById', 'highlightStreet'])
   },
-  beforeRouteEnter(
-    to: Route,
-    from: Route,
-    next: (to?: RawLocation | false | ((vm: Vue) => void)) => void
-  ) {
+  beforeRouteEnter(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => void)) => void) {
     next((vm: Vue) => {
       // access to component instance via `vm`
       if (to.params.id) {
@@ -192,11 +190,7 @@ proj4.defs('102100', proj4.defs('EPSG:3857'));
       }
     });
   },
-  beforeRouteUpdate(
-    to: Route,
-    from: Route,
-    next: (to?: RawLocation | false | ((vm: Vue) => void)) => void
-  ) {
+  beforeRouteUpdate(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => void)) => void) {
     if (to.params.id) {
       this.$store.dispatch('streets/selectStreet', { id: to.params.id });
     } else {

@@ -16,23 +16,14 @@
     class="h-5 w-5"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <circle
-      cx="11"
-      cy="11"
-      r="6"
-    />
-    <line
-      x1="21"
-      y1="21"
-      x2="16.05"
-      y2="16.05"
-    />
+    <circle cx="11" cy="11" r="6" />
+    <line x1="21" y1="21" x2="16.05" y2="16.05" />
   </svg>
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import Vue from 'vue';
 export default Vue.extend({
   name: 'Search'
-})
+});
 </script>

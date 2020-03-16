@@ -23,12 +23,7 @@
     </main>
     <transition name="bounce">
       <footer v-if="show" class="my-2 p-2 bg-fog-100 text-fog-900 border border-fog-900 rounded">
-        <label
-          v-for="entry in dataset"
-          :key="entry.value"
-          :for="entry.key"
-          class="flex items-center"
-        >
+        <label v-for="entry in dataset" :key="entry.value" :for="entry.key" class="flex items-center">
           <input
             type="checkbox"
             :id="entry.key"
@@ -52,7 +47,8 @@
                   .join('-')}`
               }"
               class="border-current border-b-2"
-            >{{ entry.label }}</router-link>
+              >{{ entry.label }}</router-link
+            >
           </span>
         </label>
       </footer>
