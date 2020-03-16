@@ -164,7 +164,7 @@ import { Extent } from 'esri/geometry';
 import MapView from 'esri/views/MapView';
 
 import AppMap from '@/components/Map.vue';
-import Messages from '@/components/Messages.vue';
+import Messages from '@/components/message/List.vue';
 import ProjectComponent from '@/components/Project.vue';
 import Pager from '@/components/Pager.vue';
 import Search from '@/components/icons/Search.vue';

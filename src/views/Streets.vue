@@ -6,6 +6,13 @@
     >
       <section class="m-2">
         <messages />
+        <message
+          v-if="!$route.params.id && streets.length > 0 && enabledModels.size == 0"
+          :item="{
+            type: 'warning',
+            text: 'Enable one or more classifications below to display streets...'
+          }"
+        />
       </section>
       <section
         v-if="!$route.params.id"
@@ -123,7 +130,8 @@ import Checkbox from 'portland-pattern-lab/source/_patterns/02-molecules/form/Ch
 import AddressSuggest from '@/components/AddressSuggest.vue';
 import AppMap from '@/components/Map.vue';
 import Classification from '@/components/streets/Classification.vue';
-import Messages from '@/components/Messages.vue';
+import Message from '@/components/message/Item.vue';
+import Messages from '@/components/message/List.vue';
 import StreetComponent from '@/components/Street.vue';
 
 import { Street, StreetState, ViewModel } from '../store/streets/types';
@@ -140,6 +148,7 @@ proj4.defs('102100', proj4.defs('EPSG:3857'));
     AppMap,
     Checkbox,
     Classification,
+    Message,
     Messages,
     StreetComponent
   },
