@@ -1,4 +1,4 @@
-FROM nginx:alpine
+FROM nginx
 COPY ./dist/ /usr/share/nginx/html
 RUN echo "\
 server {\n\

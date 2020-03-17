@@ -45,7 +45,7 @@ RUN npm install
 ADD . .
 RUN npm run build
 
-FROM nginx:alpine
+FROM nginx
 COPY --from=0 /dist /usr/share/nginx/html
 RUN echo "\
 server {\n\
