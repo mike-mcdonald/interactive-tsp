@@ -1,6 +1,6 @@
 {
   "name": "interactive-tsp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "scripts": {
     "start": "webpack-dev-server --config webpack.dev.config.js --history-api-fallback --mode development --open",
