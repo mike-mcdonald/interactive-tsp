@@ -43,7 +43,7 @@ module.exports = merge(base, {
         sourceMap: true,
         cache: true,
         cacheKeys: defaultCacheKeys => defaultCacheKeys,
-        parallel: true,
+        parallel: false,
         include: undefined,
         exclude: undefined,
         minify: undefined,
