@@ -133,6 +133,7 @@ jobs:
   deploy_image:
     <<: *azure_container_config
     steps:
+      - checkout
       - *azure_login
       - run:
           name: Login to Kubernetes cluster
