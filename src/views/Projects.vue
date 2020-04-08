@@ -12,11 +12,13 @@
         id="filters"
         class="m-2 border border-gray-500 rounded shadow bg-gray-100 text-gray-900"
       >
-        <header class="p-2 flex items-center justify-between" :class="{ 'border-b': showFilters }">
-          <h2>Display settings</h2>
-          <button class="px-2 py-1 text-sm focus:outline-none focus:shadow-outline" @click="showFilters = !showFilters">
-            <i v-if="!showFilters" v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
-            <i v-if="showFilters" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
+        <header :class="{ 'border-b': showFilters }">
+          <button class="p-2 w-full flex items-center justify-between" @click="showFilters = !showFilters">
+            <h2>Display settings</h2>
+            <span class="px-2 py-1 text-sm focus:outline-none focus:shadow-outline">
+              <i v-if="!showFilters" v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
+              <i v-if="showFilters" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
+            </span>
           </button>
         </header>
         <main v-show="showFilters" :aria-expanded="`${showFilters}`" class="p-2">
@@ -76,8 +78,8 @@
                   @focus.native="highlightProject({ project })"
                   @click.native="selectProject(project)"
                 >
-                  <h3 class="mb-1">{{ project.name }}</h3>
-                  <p class="text-xs">{{ project.description }}</p>
+                  <h3>{{ project.name }}</h3>
+                  <p class="my-2 text-sm">{{ project.description }}</p>
                   <div class="flex flex-row flex-wrap -mx-2 text-xs text-gray-600">
                     <span class="mx-2 flex flex-row items-center">
                       <i
@@ -107,7 +109,11 @@
         </div>
         <div v-else>
           <div>
-            <router-link to="/projects" class="border-b-2 border-black">Back to results</router-link>
+            <router-link
+              to="/projects"
+              class="border-current border-b-2 transition ease-in-out duration-150 hover:text-blue-600 focus:text-blue-600"
+              >Back to results</router-link
+            >
           </div>
           <pager
             class="my-3"
@@ -236,7 +242,7 @@ export default class Projects extends Vue {
   selectionIndex = 0;
   show = {};
   showProjects = true;
-  showFilters = true;
+  showFilters = false;
   // this represents a list of projects that someone got to through clicking on the map
   //    it functions as a list of routes to traverse
   projectList = new Array<string>();
@@ -365,13 +371,3 @@ export default class Projects extends Vue {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.25s;
-}
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  opacity: 0;
-}
-</style>

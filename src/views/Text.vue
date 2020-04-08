@@ -156,7 +156,10 @@ export default Vue.extend({
   }
 
   a {
-    @apply border-current border-b-2;
+    @apply border-current border-b-2 transition ease-in-out duration-150;
+    &:hover {
+      @apply text-blue-600;
+    }
   }
 
   ul {

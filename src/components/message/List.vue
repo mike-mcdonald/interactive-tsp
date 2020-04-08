@@ -1,6 +1,6 @@
 <template>
   <ul class="list-none">
-    <transition name="fade">
+    <transition name="pop" mode="out-in">
       <message-item v-for="(message, index) in messages" :key="index" :item="message" />
     </transition>
   </ul>

@@ -21,7 +21,7 @@
         </button>
       </section>
     </main>
-    <transition name="bounce">
+    <transition name="pop">
       <footer v-if="show" class="my-2 p-2 bg-fog-100 text-fog-900 border border-fog-900 rounded">
         <label v-for="entry in dataset" :key="entry.value" :for="entry.key" class="flex items-center">
           <input
@@ -46,7 +46,7 @@
                   .split(' ')
                   .join('-')}`
               }"
-              class="border-current border-b-2"
+              class="border-current border-b-2 hover:text-blue-600 focus:text-blue-600"
               >{{ entry.label }}</router-link
             >
           </span>
@@ -126,13 +126,13 @@ export default class Classification extends ClassificationProps {
 </script>
 
 <style lang="scss" scoped>
-.bounce-enter-active {
-  animation: bounce-in 0.25s;
+.pop-enter-active {
+  animation: pop-in 0.25s;
 }
-.bounce-leave-active {
-  animation: bounce-in 0.25s reverse;
+.pop-leave-active {
+  animation: pop-in 0.25s reverse;
 }
-@keyframes bounce-in {
+@keyframes pop-in {
   0% {
     transform: scale(0.5);
   }
