@@ -74,22 +74,16 @@
       </nav>
     </header>
     <router-view />
-    <Footer>
-      <template v-slot:logos>
-        <img title="PBOT Technology services logo" src="/img/PBOT-VerticalApps-Logo-Dark.png" class="w-48" />
-      </template>
-    </Footer>
+    <Footer />
   </div>
 </template>
-<script lang="ts">
-import Vue from 'vue';
-
+<script>
 import feather from 'feather-icons';
 
-import Footer from 'portland-pattern-lab/source/_patterns/03-cells/footer/Footer.vue';
-import Logo from 'portland-pattern-lab/source/_patterns/01-atoms/04-images/Logo.vue';
+import Footer from '@/components/Footer.vue';
+import Logo from '@/components/icons/Logo.vue';
 
-export default Vue.extend({
+export default {
   name: 'App',
   components: {
     Footer,
@@ -101,7 +95,7 @@ export default Vue.extend({
       showMenu: false
     };
   }
-});
+};
 </script>
 <style lang="scss">
 @tailwind base;
@@ -117,6 +111,34 @@ export default Vue.extend({
 @screen md {
   #app {
     @apply text-lg;
+  }
+}
+
+.fade {
+  &-enter {
+    opacity: 0;
+  }
+  &-leave-to {
+    opacity: 0;
+  }
+  &-enter-active,
+  &-leave-active {
+    transition: opacity 0.5s ease;
+  }
+}
+
+.pop-enter-active {
+  animation: pop-in 0.33s ease;
+}
+.pop-leave-active {
+  animation: pop-in 0.33s ease reverse;
+}
+@keyframes pop-in {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
   }
 }
 </style>
