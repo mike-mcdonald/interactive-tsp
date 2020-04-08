@@ -9,7 +9,6 @@ import { Point } from 'esri/geometry';
 
 export const actions: ActionTree<MapState, RootState> = {
   setExtent({ commit, dispatch }, extent: __esri.Extent): any {
-    commit('setMessages', undefined, { root: true });
     commit('extentChanged', extent);
   },
   setLayerVisibility({ commit }, { layerId, visible }) {

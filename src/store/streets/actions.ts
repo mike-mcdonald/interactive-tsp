@@ -107,8 +107,8 @@ export const actions: ActionTree<StreetState, RootState> = {
       });
   },
   selectStreet({ commit, dispatch, rootState }, street: Street) {
-    commit('setMessages', undefined, { root: true });
-    dispatch('highlightStreet', { street, move: false });
+    commit('setMessages', [{ type: 'info', text: `Retrieving street ${street.id}...` }], { root: true });
+    commit('setSelectedStreet', undefined);
     axios
       .get<{ errors?: any[]; data: { street?: Street } }>(rootState.graphqlUrl, {
         params: {
@@ -149,14 +149,15 @@ export const actions: ActionTree<StreetState, RootState> = {
         }
       })
       .then(res => {
+        commit('setMessages', undefined, { root: true });
         if (res.data.errors) {
           commit('setMessages', [{ type: 'warning', text: 'Some data may contain errors...' }], { root: true });
         }
         let data = res.data.data;
         if (data.street) {
           data.street = Object.assign(data.street, street);
-          commit('setSelectedStreet', data.street);
           dispatch('highlightStreet', { street: data.street, move: true });
+          commit('setSelectedStreet', data.street);
         }
       })
       .catch(() => {

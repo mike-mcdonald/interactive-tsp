@@ -44,10 +44,10 @@ const state: MapState = {
   }),
   extent: new Extent({
     spatialReference: { wkid: 102100 },
-    xmin: -13678470.214582363,
-    ymin: 5685553.212194719,
-    xmax: -13629932.70162134,
-    ymax: 5723122.011596833
+    xmin: -13674088.5469,
+    ymin: 5689892.284199998,
+    xmax: -13633591.503800001,
+    ymax: 5724489.626800001
   }),
   basemaps: basemaps,
   zoom: {
