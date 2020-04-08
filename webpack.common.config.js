@@ -9,7 +9,7 @@ var CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: {
-    main: [path.resolve(__dirname, 'src', 'main.ts')]
+    main: [path.resolve(__dirname, 'src', 'main.js')]
   },
   devtool: 'cheap-eval-modules-source-map',
   mode: process.env.NODE_ENV,
