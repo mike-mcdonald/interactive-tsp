@@ -221,10 +221,16 @@ import { AddressCandidate } from '../store/portlandmaps/types';
           move: true
         });
       } else {
-        // side effect of the above is finding all projects...
+        vm.$store.dispatch('map/resetExtent');
         vm.$store.dispatch('projects/findProjects');
       }
     });
+  },
+  beforeRouteUpdate(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => void)) => void) {
+    if (!to.params.id) {
+      this.$store.dispatch('map/resetExtent');
+    }
+    next();
   }
 })
 export default class Projects extends Vue {
