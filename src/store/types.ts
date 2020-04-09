@@ -7,6 +7,6 @@ export interface Message {
 }
 
 export interface RootState {
-  messages?: Array<Message>;
+  messages: Array<Message>;
   graphqlUrl: string;
 }

@@ -1,5 +1,5 @@
 import { ActionTree } from 'vuex';
-import { StreetState, Street, ViewModel } from './types';
+import { StreetState, Street } from './types';
 import { RootState } from '../types';
 
 import area from '@turf/area';
@@ -8,9 +8,9 @@ import length from '@turf/length';
 import axios from 'axios';
 import proj4 from 'proj4';
 import { Extent } from 'esri/geometry';
+import { v4 as uuidv4 } from 'uuid';
 
 import { esriGraphics } from '../utils';
-import bbox from '@turf/bbox';
 import { feature } from '@turf/helpers';
 
 // ESRI maps use this wkid
@@ -26,14 +26,13 @@ export const actions: ActionTree<StreetState, RootState> = {
     }
 
     if (area(bboxPolygon([xmin, ymin, xmax, ymax])) > 1250000) {
-      commit(
-        'setMessages',
-        [
-          {
-            type: 'info',
-            text: 'Zoom in or search for an address to see available streets...'
-          }
-        ],
+      dispatch(
+        'addMessage',
+        {
+          id: 'streets-zoom-in',
+          type: 'info',
+          text: 'Zoom in or search for an address to see available streets...'
+        },
         {
           root: true
         }
@@ -41,9 +40,13 @@ export const actions: ActionTree<StreetState, RootState> = {
       return;
     }
 
-    commit('setMessages', [{ type: 'info', text: 'Retrieving streets...' }], {
-      root: true
-    });
+    dispatch(
+      'addMessage',
+      { id: 'streets-retrieving', type: 'info', text: 'Retrieving streets...' },
+      {
+        root: true
+      }
+    );
 
     axios
       .get<{ errors?: any[]; data: { streets?: Street[] } }>(rootState.graphqlUrl, {
@@ -72,10 +75,14 @@ export const actions: ActionTree<StreetState, RootState> = {
         }
       })
       .then(res => {
-        commit('setMessages', undefined, { root: true });
+        dispatch('clearMessages', undefined, { root: true });
 
         if (res.data.errors) {
-          commit('setMessages', [{ type: 'warning', text: 'Some data may contain errors...' }], { root: true });
+          dispatch(
+            'addMessage',
+            { id: 'streets-graphql-error', type: 'warning', text: 'Some data may contain errors...' },
+            { root: true }
+          );
         }
 
         if (res.data.data.streets) {
@@ -99,18 +106,30 @@ export const actions: ActionTree<StreetState, RootState> = {
             return (a.block || Number.MAX_SAFE_INTEGER) - (b.block || Number.MIN_SAFE_INTEGER);
           });
 
+          streets.forEach(street => {
+            street.uuid = uuidv4();
+          });
+
           commit('setList', streets);
         }
       })
       .catch(() => {
-        commit('setMessages', [{ type: 'error', text: 'Error retrieving streets!' }], { root: true });
+        dispatch(
+          'addMessage',
+          { id: 'streets-error-retrieving', type: 'error', text: 'Error retrieving streets!' },
+          { root: true }
+        );
       });
   },
   selectStreet({ commit, dispatch, rootState }, street: Street) {
-    commit('setMessages', undefined, { root: true });
-    dispatch('highlightStreet', { street, move: false });
+    dispatch(
+      'addMessage',
+      { id: 'streets-retrieving-street', type: 'info', text: `Retrieving street ${street.id}...` },
+      { root: true }
+    );
+    commit('setSelectedStreet', undefined);
     axios
-      .get<{ errors?: any[]; data: { street?: Street } }>(rootState.graphqlUrl, {
+      .get<{ errors?: any[]; data: { street?: Array<Street> } }>(rootState.graphqlUrl, {
         params: {
           query: `{
           street(id:"${street ? street.id : ''}"){
@@ -149,18 +168,27 @@ export const actions: ActionTree<StreetState, RootState> = {
         }
       })
       .then(res => {
+        dispatch('clearMessages', undefined, { root: true });
         if (res.data.errors) {
-          commit('setMessages', [{ type: 'warning', text: 'Some data may contain errors...' }], { root: true });
+          dispatch(
+            'addMessage',
+            { id: 'streets-graphql-error', type: 'warning', text: 'Some data may contain errors...' },
+            { root: true }
+          );
         }
         let data = res.data.data;
+
         if (data.street) {
-          data.street = Object.assign(data.street, street);
+          dispatch('highlightStreet', { street: data.street[0], move: true });
           commit('setSelectedStreet', data.street);
-          dispatch('highlightStreet', { street: data.street, move: true });
         }
       })
       .catch(() => {
-        commit('setMessages', [{ type: 'error', text: 'Error retrieving the selected street!' }], { root: true });
+        dispatch(
+          'addMessage',
+          { id: 'streets-error-retrieving', type: 'error', text: 'Error retrieving the selected street!' },
+          { root: true }
+        );
       });
   },
   highlightStreet({ commit }, { street, move }: { street: Street; move: boolean }) {

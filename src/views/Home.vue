@@ -7,7 +7,7 @@
           <div class="w-full md:w-1/2 p-2">
             <router-link
               to="/streets"
-              class="block w-full px-2 py-3 bg-orange-500 border border-orange-900 rounded text-center text-orange-900 hover:bg-orange-400 focus:outline-none focus:shadow-outline focus:bg-orange-400"
+              class="block w-full px-2 py-3 bg-orange-500 border border-orange-900 rounded text-center text-orange-900 hover:bg-orange-600 focus:outline-none focus:shadow-outline focus:bg-orange-600"
               >Browse your streets</router-link
             >
           </div>
@@ -74,12 +74,17 @@
   </main>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue';
 
-export default Vue.extend({
-  name: 'home'
-});
+export default {
+  name: 'home',
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.$store.dispatch('clearMessages');
+    });
+  }
+};
 </script>
 
 <style lang="scss" scoped>

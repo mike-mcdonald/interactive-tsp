@@ -5,44 +5,6 @@
       class="w-full md:w-1/3 h-full md:h-(screen-16) overflow-y-auto border-t md:border-t-0 md:border-r border-black"
     >
       <section class="m-2">
-        <messages />
-      </section>
-      <section
-        v-if="!$route.params.id"
-        id="filters"
-        class="m-2 border border-gray-500 rounded shadow bg-gray-100 text-gray-900"
-      >
-        <header class="p-2 flex items-center justify-between" :class="{ 'border-b': showFilters }">
-          <h2>Display settings</h2>
-          <button class="px-2 py-1 text-sm focus:outline-none focus:shadow-outline" @click="showFilters = !showFilters">
-            <i v-if="!showFilters" v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
-            <i v-if="showFilters" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
-          </button>
-        </header>
-        <main v-show="showFilters" :aria-expanded="`${showFilters}`" class="p-2">
-          <form @submit.prevent>
-            <div v-for="model in dataset" :key="model.key">
-              <label class="flex items-center" :for="model.key">
-                <input
-                  type="checkbox"
-                  :id="model.key"
-                  :checked="model.enabled"
-                  @change="toggleTimeFrameFilter(model, $event.target.checked)"
-                />
-                <div
-                  v-if="model.color"
-                  class="h-4 w-4 px-2 mx-2 border border-gray-900"
-                  :style="{
-                    'background-color': model.color.formatRgb()
-                  }"
-                ></div>
-                <span>{{ model.label }}</span>
-              </label>
-            </div>
-          </form>
-        </main>
-      </section>
-      <section class="m-2">
         <div v-if="!$route.params.id">
           <header>
             <form class="text-base" @submit.prevent>
@@ -65,6 +27,37 @@
               </div>
             </form>
           </header>
+          <section id="filters" class="my-2 border border-gray-500 rounded shadow bg-gray-100 text-gray-900">
+            <header :class="{ 'border-b': showFilters }">
+              <button class="p-2 w-full flex items-center justify-between" @click="showFilters = !showFilters">
+                <h2>Display settings</h2>
+                <i v-if="!showFilters" v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
+                <i v-if="showFilters" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
+              </button>
+            </header>
+            <main v-show="showFilters" :aria-expanded="`${showFilters}`" class="p-2">
+              <form @submit.prevent>
+                <div v-for="model in dataset" :key="model.key">
+                  <label class="flex items-center" :for="model.key">
+                    <input
+                      type="checkbox"
+                      :id="model.key"
+                      :checked="model.enabled"
+                      @change="toggleTimeFrameFilter(model, $event.target.checked)"
+                    />
+                    <div
+                      v-if="model.color"
+                      class="h-4 w-4 px-2 mx-2 border border-gray-900"
+                      :style="{
+                        'background-color': model.color.formatRgb()
+                      }"
+                    ></div>
+                    <span>{{ model.label }}</span>
+                  </label>
+                </div>
+              </form>
+            </main>
+          </section>
           <transition name="fade">
             <ul v-show="showProjects" class="list-none">
               <li v-for="project in filteredProjects" :key="`${project.id}-${project.number}`">
@@ -76,8 +69,8 @@
                   @focus.native="highlightProject({ project })"
                   @click.native="selectProject(project)"
                 >
-                  <h3 class="mb-1">{{ project.name }}</h3>
-                  <p class="text-xs">{{ project.description }}</p>
+                  <h3>{{ project.name }}</h3>
+                  <p class="my-2 text-sm">{{ project.description }}</p>
                   <div class="flex flex-row flex-wrap -mx-2 text-xs text-gray-600">
                     <span class="mx-2 flex flex-row items-center">
                       <i
@@ -107,7 +100,11 @@
         </div>
         <div v-else>
           <div>
-            <router-link to="/projects" class="border-b-2 border-black">Back to results</router-link>
+            <router-link
+              to="/projects"
+              class="border-current border-b-2 transition ease-in-out duration-150 hover:text-blue-600 focus:text-blue-600"
+              >Back to results</router-link
+            >
           </div>
           <pager
             class="my-3"
@@ -195,6 +192,8 @@ import { AddressCandidate } from '../store/portlandmaps/types';
   },
   beforeRouteEnter(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => void)) => void) {
     next(vm => {
+      vm.$store.dispatch('clearMessages');
+
       // select the projects layer
       vm.$store.dispatch('map/setLayerVisibility', {
         layerId: 'projects-10',
@@ -215,10 +214,16 @@ import { AddressCandidate } from '../store/portlandmaps/types';
           move: true
         });
       } else {
-        // side effect of the above is finding all projects...
+        vm.$store.dispatch('map/resetExtent');
         vm.$store.dispatch('projects/findProjects');
       }
     });
+  },
+  beforeRouteUpdate(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => void)) => void) {
+    if (!to.params.id) {
+      this.$store.dispatch('map/resetExtent');
+    }
+    next();
   }
 })
 export default class Projects extends Vue {
@@ -236,7 +241,7 @@ export default class Projects extends Vue {
   selectionIndex = 0;
   show = {};
   showProjects = true;
-  showFilters = true;
+  showFilters = false;
   // this represents a list of projects that someone got to through clicking on the map
   //    it functions as a list of routes to traverse
   projectList = new Array<string>();
@@ -365,13 +370,3 @@ export default class Projects extends Vue {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.25s;
-}
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  opacity: 0;
-}
-</style>

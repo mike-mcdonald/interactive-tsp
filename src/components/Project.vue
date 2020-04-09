@@ -1,7 +1,7 @@
 <template>
   <article>
     <h1 class="mb-3 text-3xl lg:text-4xl">{{ project.name }}</h1>
-    <p class="my-3 text-xl font-thin">{{ project.description }}</p>
+    <p class="my-3 text-xl text-gray-700">{{ project.description }}</p>
     <dl>
       <div class="my-3 xl:grid xl:grid-cols-2 xl:gap-3">
         <dt class="font-semibold">Project number</dt>

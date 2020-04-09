@@ -1,5 +1,7 @@
 const Color = require('color');
 
+const defaultTheme = require('tailwindcss/defaultTheme');
+
 const TINTS = {
   100: 0.9,
   200: 0.75,
@@ -60,9 +62,6 @@ function generateColors(colorHex) {
 
 module.exports = {
   theme: {
-    fontFamily: {
-      sans: ['Open Sans', 'sans-serif']
-    },
     colors: {
       transparent: 'transparent',
       inherit: 'inherit',
@@ -91,6 +90,9 @@ module.exports = {
       purple: generateColors(mix('#FF6666', '#005CB9', 0.5).hex())
     },
     extend: {
+      fontFamily: {
+        sans: ['Open Sans', ...defaultTheme.fontFamily.sans]
+      },
       height: {
         'screen-50': '50vh',
         'screen-66': '66vh',

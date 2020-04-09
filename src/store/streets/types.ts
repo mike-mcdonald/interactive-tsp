@@ -18,6 +18,7 @@ export interface Project {
 }
 
 export interface Street {
+  uuid: string;
   id: string;
   name?: string;
   block?: number;
@@ -41,6 +42,6 @@ export interface ViewModel {
 
 export interface StreetState {
   list?: Street[];
-  selected?: Street;
+  selected?: Array<Street>;
   models?: Array<ViewModel>;
 }

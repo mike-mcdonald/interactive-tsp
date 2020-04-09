@@ -13,9 +13,9 @@ import { esriGraphics, customStemming, esriGeometry } from '../utils';
 
 export const actions: ActionTree<ProjectState, RootState> = {
   async findProjects({ state, commit, dispatch, rootState }) {
-    commit('setMessages', [{ type: 'info', text: 'Retrieving projects...' }], { root: true });
-
     if (state.list.length > 0) return;
+
+    dispatch('addMessage', { id: 'projects-retrieving', type: 'info', text: 'Retrieving projects...' }, { root: true });
 
     const extent = new Extent({
       spatialReference: { wkid: 102100 },
@@ -52,12 +52,20 @@ export const actions: ActionTree<ProjectState, RootState> = {
         }
       })
       .catch(err => {
-        commit('setMessages', [{ type: 'error', text: 'Error retrieving projects...' }], { root: true });
+        dispatch(
+          'addMessage',
+          { id: 'projects-find-error', type: 'error', text: 'Error retrieving projects...' },
+          { root: true }
+        );
         throw err;
       });
 
     if (res.data.errors) {
-      commit('setMessages', [{ type: 'warning', text: 'Some projects may contain errors...' }], { root: true });
+      dispatch(
+        'addMessage',
+        { id: 'project-graphql-error', type: 'warning', text: 'Some projects may contain errors...' },
+        { root: true }
+      );
     }
 
     if (res.data.data.projects) {
@@ -85,7 +93,7 @@ export const actions: ActionTree<ProjectState, RootState> = {
 
       dispatch('analyzeProjects');
 
-      commit('setMessages', undefined, { root: true });
+      dispatch('clearMessages', undefined, { root: true });
     }
 
     const idx = lunr(function() {

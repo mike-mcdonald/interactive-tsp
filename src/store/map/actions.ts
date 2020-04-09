@@ -2,15 +2,21 @@ import { ActionTree } from 'vuex';
 
 import Graphic from 'esri/Graphic';
 
+import { defaultExtent } from './index';
 import { MapState } from './types';
 import { RootState } from '../types';
 import { Location } from '../portlandmaps/types';
 import { Point } from 'esri/geometry';
 
 export const actions: ActionTree<MapState, RootState> = {
+  resetExtent({ commit }) {
+    commit('goTo', {
+      target: defaultExtent
+    });
+    commit('setExtent', defaultExtent);
+  },
   setExtent({ commit, dispatch }, extent: __esri.Extent): any {
-    commit('setMessages', undefined, { root: true });
-    commit('extentChanged', extent);
+    commit('setExtent', extent);
   },
   setLayerVisibility({ commit }, { layerId, visible }) {
     commit('layerVisibilityChanged', { layerId, visible });

@@ -17,9 +17,6 @@
     </aside>
     <div class="flex flex-col md:w-2/3 px-2">
       <header>
-        <section>
-          <messages />
-        </section>
         <nav class="relative my-2">
           <form title="Search" role="search" action="/" class="flex flex-col" @submit.prevent>
             <div>
@@ -78,7 +75,6 @@ import { mapState, mapActions, mapGetters } from 'vuex';
 
 import debounce from 'lodash-es/debounce';
 
-import Messages from '@/components/message/List.vue';
 import TextSection from '@/components/text/Section.vue';
 import TextListing from '@/components/text/Listing.vue';
 import { CombinedVueInstance } from 'vue/types/vue';
@@ -86,7 +82,6 @@ import { CombinedVueInstance } from 'vue/types/vue';
 export default Vue.extend({
   name: 'TextView',
   components: {
-    Messages,
     TextSection,
     TextListing
   },
@@ -101,7 +96,7 @@ export default Vue.extend({
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      vm.$store.commit('setMessages', undefined);
+      vm.$store.dispatch('clearMessages');
       vm.$store.dispatch('text/findText');
     });
   },
@@ -156,7 +151,10 @@ export default Vue.extend({
   }
 
   a {
-    @apply border-current border-b-2;
+    @apply border-current border-b-2 transition ease-in-out duration-150;
+    &:hover {
+      @apply text-blue-600;
+    }
   }
 
   ul {

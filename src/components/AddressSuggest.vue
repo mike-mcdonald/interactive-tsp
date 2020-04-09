@@ -5,8 +5,8 @@
         title="Search"
         role="search"
         action="/"
-        class="flex flex-no-wrap md:flex-wrap lg:flex-no-wrap items-center border border-gray-500 shadow rounded"
-        @submit.prevent="findCandidates(search)"
+        class="flex flex-wrap items-center border border-gray-500 shadow rounded"
+        @submit.prevent="findCandidates({ search, searchType })"
       >
         <label for="addressInput" class="sr-only">Address</label>
         <input
@@ -15,29 +15,40 @@
           name="addressInput"
           type="search"
           role="searchbox"
-          placeholder="Search for an address..."
+          placeholder="Search..."
           required="required"
           aria-controls="address-suggest-results"
-          class="appearance-none placeholder-gray-600 w-full px-3 py-2 md:border-b lg:border-0 rounded-l md:rounded-l-0 lg:rounded-l bg-gray-100 focus:outline-none focus:shadow-outline"
+          class="flex-1 appearance-none placeholder-gray-600 p-2 rounded bg-transparent focus:outline-none focus:shadow-outline"
         />
-        <section class="flex flex-row-reverse ml-auto">
-          <button aria-label="Search" class="my-1 px-3 py-2 border-l">
-            <Search />
+        <transition name="fade">
+          <button
+            v-if="search"
+            aria-label="Clear"
+            class="p-2 rounded"
+            @click.stop.prevent="
+              search = undefined;
+              clearCandidates();
+            "
+          >
+            <i v-html="feather.icons['x'].toSvg({ class: 'w-5 h-5' })" />
           </button>
-          <transition name="fade">
-            <button
-              v-if="search"
-              aria-label="Clear"
-              class="p-3"
-              @click.stop.prevent="
-                search = undefined;
-                clearCandidates();
-              "
-            >
-              <X />
-            </button>
-          </transition>
-        </section>
+        </transition>
+        <div class="relative flex items-center">
+          <select
+            aria-label="Currency"
+            class="appearance-none h-full pl-2 pr-5 py-2 border-transparent rounded bg-transparent focus:outline-none focus:shadow-outline"
+            v-model="searchType"
+          >
+            <option value="address">Address</option>
+            <option value="taxLot">Tax lot</option>
+          </select>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center">
+            <i v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
+          </div>
+        </div>
+        <button aria-label="Search" class="p-2 rounded focus:outline-none focus:shadow-outline">
+          <Search />
+        </button>
       </form>
       <ul id="address-suggest-results" role="listbox" class="list-none m-0 p-0 -mt-1 pt-1">
         <li
@@ -46,7 +57,7 @@
           :id="`address-suggest-result-${index}`"
           role="option"
           tabindex="0"
-          class="p-2 w-full border-b border-l border-r hover:bg-blue-100 cursor-pointer"
+          class="p-2 w-full border-b border-r hover:bg-blue-100 cursor-pointer"
           @click="selectCandidate(candidate)"
           @keyup.enter="selectCandidate(candidate)"
           @keyup.space="selectCandidate(candidate)"
@@ -66,22 +77,24 @@
     </div>
   </section>
 </template>
-<script lang="ts">
+<script>
 import Vue from 'vue';
 import { mapState, mapActions } from 'vuex';
 
-import Search from '@/components/icons/Search.vue';
-import X from '@/components/icons/X.vue';
+import feather from 'feather-icons';
 
-export default Vue.extend({
+import Search from '@/components/icons/Search.vue';
+
+export default {
   name: 'AddressSuggest',
   components: {
-    Search,
-    X
+    Search
   },
   data() {
     return {
-      search: undefined
+      search: undefined,
+      searchType: 'address',
+      feather
     };
   },
   computed: {
@@ -89,19 +102,10 @@ export default Vue.extend({
   },
   methods: {
     ...mapActions('portlandmaps', ['clearCandidates', 'findCandidates']),
-    selectCandidate(candidate: any) {
+    selectCandidate(candidate) {
       this.$emit('candidate-select', candidate);
       this.clearCandidates();
     }
   }
-});
+};
 </script>
-
-<style lang="scss" scoped>
-.fade-enter-active {
-  transition: opacity 0.25s;
-}
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  opacity: 0;
-}
-</style>

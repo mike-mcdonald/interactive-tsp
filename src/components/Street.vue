@@ -1,7 +1,7 @@
 <template>
-  <article>
+  <article class="my-3">
     <h1 class="mb-3 text-3xl lg:text-4xl">{{ street.name.trim() || 'Unnamed segment' }}</h1>
-    <p class="my-3 text-2xl font-thin" v-if="street.block">{{ street.block }} block</p>
+    <p class="my-3 text-2xl text-gray-700" v-if="street.block">{{ street.block }} block</p>
     <section>
       <dl>
         <div class="my-3 xl:grid xl:grid-cols-2 xl:gap-3">
@@ -29,7 +29,7 @@
                   .split(' ')
                   .join('-')}`
               }"
-              class="border-current border-b-2"
+              class="border-current border-b-2 transition ease-in-out duration-150 hover:text-blue-600 focus:text-blue-600"
               >{{ classificationLabel(classification, street.classifications[classification]) }}</router-link
             >
             <span v-else>{{ classificationLabel(classification, street.classifications[classification]) }}</span>
@@ -46,8 +46,8 @@
               :to="`/projects/${project.id}`"
               class="flex flex-col my-2 px-2 py-3 shadow border rounded bg-white hover:bg-blue-100 focus:bg-blue-100"
             >
-              <h3 class="mb-1">{{ project.name }}</h3>
-              <p class="text-sm">{{ project.description }}</p>
+              <h3>{{ project.name }}</h3>
+              <p class="my-2 text-sm">{{ project.description }}</p>
               <div class="flex flex-row flex-wrap -mx-2 text-sm text-gray-600">
                 <span class="mx-2 flex flex-row items-center">
                   <svg
