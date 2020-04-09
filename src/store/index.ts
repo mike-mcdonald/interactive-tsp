@@ -7,6 +7,7 @@ import portlandmaps from './portlandmaps/index';
 import projects from './projects/index';
 import text from './text/index';
 
+import { actions } from './actions';
 import { mutations } from './mutations';
 
 Vue.use(Vuex);
@@ -16,9 +17,10 @@ declare var GRAPHQL_URL: string;
 
 const store: StoreOptions<RootState> = {
   state: {
-    messages: undefined,
+    messages: [],
     graphqlUrl: GRAPHQL_URL
   },
+  actions,
   mutations,
   modules: {
     map,

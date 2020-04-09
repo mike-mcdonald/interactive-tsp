@@ -1,5 +1,5 @@
 <template>
-  <article>
+  <article class="my-3">
     <h1 class="mb-3 text-3xl lg:text-4xl">{{ street.name.trim() || 'Unnamed segment' }}</h1>
     <p class="my-3 text-2xl text-gray-700" v-if="street.block">{{ street.block }} block</p>
     <section>

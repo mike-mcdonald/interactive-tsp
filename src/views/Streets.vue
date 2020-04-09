@@ -5,7 +5,6 @@
       class="w-full md:w-1/3 h-full md:h-(screen-16) overflow-y-auto border-t md:border-t-0 md:border-r border-black"
     >
       <section class="m-2">
-        <messages />
         <message
           v-if="streets.length > 0 && enabledModels.size == 0"
           :item="{
@@ -32,12 +31,13 @@
               'border-b': showFilters
             }"
           >
-            <button class="p-2 w-full flex items-center justify-between" @click="showFilters = !showFilters">
+            <button
+              class="p-2 w-full flex items-center justify-between focus:outline-none focus:shadow-outline"
+              @click="showFilters = !showFilters"
+            >
               <h2>Display settings</h2>
-              <span class="px-2 py-1 focus:outline-none focus:shadow-outline">
-                <i v-if="!showFilters" v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
-                <i v-if="showFilters" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
-              </span>
+              <i v-if="!showFilters" v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
+              <i v-if="showFilters" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
             </button>
           </header>
           <main v-show="showFilters" :aria-expanded="showFilters" class="p-2">
@@ -57,7 +57,7 @@
         </section>
         <div v-if="filteredStreets.length > 0">
           <ul class="list-none">
-            <li v-for="street in filteredStreets" :key="street.id" class="my-2">
+            <li v-for="street in filteredStreets" :key="street.uuid" class="my-2">
               <router-link
                 :to="street.id"
                 append
@@ -88,15 +88,28 @@
         </div>
       </section>
       <transition name="fade">
-        <div class="relative" v-if="$route.params.id && selectedStreet">
-          <header class="m-2">
+        <div class="m-2" v-if="$route.params.id && selectedStreets">
+          <header>
             <router-link
               to="/streets"
               class="border-current border-b-2 transition ease-in-out duration-150 hover:text-blue-600 focus:text-blue-600"
               >Back to results</router-link
             >
           </header>
-          <street-component class="p-2" :street="selectedStreet" />
+          <pager
+            class="my-3"
+            v-if="selectedStreets && selectedStreets.length > 1"
+            v-model="selectionIndex"
+            :list="
+              selectedStreets.reduce((prev, curr) => {
+                prev.push(curr.id);
+                return prev;
+              }, [])
+            "
+            @next="handleSelectionChange(selectionIndex + 1)"
+            @prev="handleSelectionChange(selectionIndex - 1)"
+          />
+          <street-component v-if="selectedStreet" :street="selectedStreet" />
         </div>
       </transition>
     </section>
@@ -123,7 +136,7 @@ import AddressSuggest from '@/components/AddressSuggest.vue';
 import AppMap from '@/components/Map.vue';
 import Classification from '@/components/streets/Classification.vue';
 import Message from '@/components/message/Item.vue';
-import Messages from '@/components/message/List.vue';
+import Pager from '@/components/Pager.vue';
 import StreetComponent from '@/components/Street.vue';
 
 export default {
@@ -133,11 +146,17 @@ export default {
     AppMap,
     Classification,
     Message,
-    Messages,
+    Pager,
     StreetComponent
   },
   data() {
-    return { showInfo: {}, feather, showStreets: true, showFilters: false };
+    return {
+      showInfo: {},
+      feather,
+      showStreets: true,
+      showFilters: false,
+      selectionIndex: 0
+    };
   },
   computed: {
     ...mapState(['message']),
@@ -145,7 +164,7 @@ export default {
     ...mapState('portlandmaps', ['candidates']),
     ...mapState('streets', {
       streets: state => state.list,
-      selectedStreet: state => state.selected,
+      selectedStreets: state => state.selected,
       models: state => state.models
     }),
     ...mapGetters('streets', ['classificationLabel', 'classificationColor']),
@@ -173,6 +192,9 @@ export default {
         }
         return prev;
       }, new Array());
+    },
+    selectedStreet() {
+      return this.selectedStreets[this.selectionIndex];
     }
   },
   methods: {
@@ -204,6 +226,10 @@ export default {
         this.findStreets(extent);
       }
     },
+    handleSelectionChange(index) {
+      this.selectionIndex = index;
+      this.highlightStreet({ street: this.selectedStreets[this.selectionIndex], move: true });
+    },
     filteredClassifications(classifications) {
       return Array.from(
         Array.from(this.enabledModels).reduce((prev, curr) => {
@@ -231,6 +257,7 @@ export default {
   },
   beforeRouteUpdate(to, from, next) {
     if (to.params.id) {
+      this.selectionIndex = 0;
       this.$store.dispatch('streets/selectStreet', { id: to.params.id });
     } else {
       this.$store.dispatch('streets/findStreets', this.$store.state.map.extent);
