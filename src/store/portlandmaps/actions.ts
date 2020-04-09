@@ -8,14 +8,13 @@ export const actions: ActionTree<CandidateState, RootState> = {
   clearCandidates({ commit }) {
     commit('setCandidates', undefined);
   },
-  findCandidates({ commit, rootState }, search) {
-    commit('setMessages', undefined, { root: true });
+  findCandidates({ commit, dispatch, rootState }, { search, searchType }) {
     axios
       .get(rootState.graphqlUrl, {
         params: {
           query: `
           {
-            address(search:"${search}", city:"portland") {
+            ${searchType}(search:"${search}", city:"portland") {
               id
               type
               name
@@ -41,11 +40,12 @@ export const actions: ActionTree<CandidateState, RootState> = {
             { root: true }
           );
         }
-        if (res.data.data.address) {
-          if (res.data.data.address.length > 0) {
+        if (res.data.data[searchType]) {
+          const data = res.data.data[searchType];
+          if (data.length > 0) {
             commit(
               'setCandidates',
-              res.data.data.address.map((address: AddressCandidate) => {
+              data.map((address: AddressCandidate) => {
                 return address;
               })
             );
