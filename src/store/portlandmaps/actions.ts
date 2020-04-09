@@ -8,6 +8,7 @@ export const actions: ActionTree<CandidateState, RootState> = {
   clearCandidates({ commit }) {
     commit('setCandidates', undefined);
   },
+  findCandidates({ commit, dispatch, rootState }, { search, searchType }) {
     dispatch('clearMessage', { root: true });
     axios
       .get(rootState.graphqlUrl, {
@@ -51,10 +52,10 @@ export const actions: ActionTree<CandidateState, RootState> = {
           } else {
             dispatch(
               'addMessge',
-                {
+              {
                 id: 'address-not-found',
-                  type: 'warning',
-                  text: 'Could not find a match for that address.  Try entering a different or more specific address.'
+                type: 'warning',
+                text: 'Could not find a match for that address.  Try entering a different or more specific address.'
               },
               { root: true }
             );
