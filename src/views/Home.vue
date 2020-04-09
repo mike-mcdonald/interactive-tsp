@@ -74,12 +74,17 @@
   </main>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue';
 
-export default Vue.extend({
-  name: 'home'
-});
+export default {
+  name: 'home',
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.$store.dispatch('clearMessages');
+    });
+  }
+};
 </script>
 
 <style lang="scss" scoped>

@@ -192,6 +192,8 @@ import { AddressCandidate } from '../store/portlandmaps/types';
   },
   beforeRouteEnter(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => void)) => void) {
     next(vm => {
+      vm.$store.dispatch('clearMessages');
+
       // select the projects layer
       vm.$store.dispatch('map/setLayerVisibility', {
         layerId: 'projects-10',

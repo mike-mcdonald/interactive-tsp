@@ -246,6 +246,7 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
+      vm.$store.dispatch('clearMessages');
       // access to component instance via `vm`
       if (to.params.id) {
         vm.$store.dispatch('text/findText');
