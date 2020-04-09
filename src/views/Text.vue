@@ -75,7 +75,6 @@ import { mapState, mapActions, mapGetters } from 'vuex';
 
 import debounce from 'lodash-es/debounce';
 
-import Messages from '@/components/message/List.vue';
 import TextSection from '@/components/text/Section.vue';
 import TextListing from '@/components/text/Listing.vue';
 import { CombinedVueInstance } from 'vue/types/vue';
@@ -83,7 +82,6 @@ import { CombinedVueInstance } from 'vue/types/vue';
 export default Vue.extend({
   name: 'TextView',
   components: {
-    Messages,
     TextSection,
     TextListing
   },

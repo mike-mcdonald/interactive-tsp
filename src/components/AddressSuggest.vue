@@ -84,13 +84,11 @@ import { mapState, mapActions } from 'vuex';
 import feather from 'feather-icons';
 
 import Search from '@/components/icons/Search.vue';
-import X from '@/components/icons/X.vue';
 
 export default {
   name: 'AddressSuggest',
   components: {
-    Search,
-    X
+    Search
   },
   data() {
     return {
