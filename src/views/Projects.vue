@@ -5,9 +5,6 @@
       class="w-full md:w-1/3 h-full md:h-(screen-16) overflow-y-auto border-t md:border-t-0 md:border-r border-black"
     >
       <section class="m-2">
-        <messages />
-      </section>
-      <section class="m-2">
         <div v-if="!$route.params.id">
           <header>
             <form class="text-base" @submit.prevent>
@@ -34,10 +31,8 @@
             <header :class="{ 'border-b': showFilters }">
               <button class="p-2 w-full flex items-center justify-between" @click="showFilters = !showFilters">
                 <h2>Display settings</h2>
-                <span class="px-2 py-1 text-sm focus:outline-none focus:shadow-outline">
-                  <i v-if="!showFilters" v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
-                  <i v-if="showFilters" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
-                </span>
+                <i v-if="!showFilters" v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
+                <i v-if="showFilters" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
               </button>
             </header>
             <main v-show="showFilters" :aria-expanded="`${showFilters}`" class="p-2">

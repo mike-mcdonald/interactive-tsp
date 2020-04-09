@@ -12,12 +12,12 @@ function strip(html: string) {
 }
 
 export const actions: ActionTree<TextState, RootState> = {
-  findText({ commit, state, rootState }) {
+  findText({ commit, dispatch, state, rootState }) {
     if (state.sections) {
       return;
     }
 
-    commit('setMessages', [{ type: 'info', text: 'Retrieving text...' }], { root: true });
+    dispatch('addMessage', { id: 'text-retrieving', type: 'info', text: 'Retrieving text...' }, { root: true });
 
     axios
       .get(rootState.graphqlUrl, {
@@ -36,7 +36,11 @@ export const actions: ActionTree<TextState, RootState> = {
       })
       .then(res => {
         if (res.data.errors) {
-          commit('setMessages', [{ type: 'warning', text: 'The text may contain errors...' }], { root: true });
+          dispatch(
+            'addMessage',
+            { id: 'text-graphql-errors', type: 'warning', text: 'The text may contain errors...' },
+            { root: true }
+          );
         }
         if (res.data.data.document) {
           commit('setText', res.data.data.document);
@@ -57,7 +61,7 @@ export const actions: ActionTree<TextState, RootState> = {
 
           commit('setIndex', idx);
 
-          commit('setMessages', undefined, { root: true });
+          dispatch('clearMessages', undefined, { root: true });
         }
       })
       .catch(() => {

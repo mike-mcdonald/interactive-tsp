@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" class="relative">
     <header
       class="px-2 py-2 md:py-0 md:h-16 border-b border-cyan-900 bg-cyan-500 text-cyan-100 flex items-center justify-between flex-wrap"
     >
@@ -73,6 +73,7 @@
         </router-link>
       </nav>
     </header>
+    <Messages role="notifications" class="z-100 max-w-6xl mx-auto px-2 pb-4 fixed inset-x-0 bottom-0" />
     <router-view />
     <Footer />
   </div>
@@ -82,12 +83,14 @@ import feather from 'feather-icons';
 
 import Footer from '@/components/Footer.vue';
 import Logo from '@/components/icons/Logo.vue';
+import Messages from '@/components/message/List.vue';
 
 export default {
   name: 'App',
   components: {
     Footer,
-    Logo
+    Logo,
+    Messages
   },
   data() {
     return {

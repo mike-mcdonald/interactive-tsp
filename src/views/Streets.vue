@@ -5,7 +5,6 @@
       class="w-full md:w-1/3 h-full md:h-(screen-16) overflow-y-auto border-t md:border-t-0 md:border-r border-black"
     >
       <section class="m-2">
-        <messages />
         <message
           v-if="streets.length > 0 && enabledModels.size == 0"
           :item="{

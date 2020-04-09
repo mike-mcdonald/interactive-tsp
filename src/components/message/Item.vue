@@ -1,16 +1,29 @@
 <template>
-  <li class="mb-2 px-2 py-3 w-full border border-l-8 rounded" :class="colors">
+  <li class="mb-2 p-4 w-full border border-l-8 rounded flex items-center justify-between" :class="colors">
     {{ item.text }}
+    <button @click="removeMessage(item.id)">
+      <i v-html="feather.icons['x'].toSvg({ class: 'w-5 h-5' })" />
+    </button>
   </li>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
+import { mapActions } from 'vuex';
+
+import feather from 'feather-icons';
+
 import { Message } from '@/store/types';
+
 export default Vue.extend({
   name: 'MessageItem',
   props: {
     item: Object
+  },
+  data() {
+    return {
+      feather
+    };
   },
   computed: {
     colors() {
@@ -25,6 +38,9 @@ export default Vue.extend({
           return [];
       }
     }
+  },
+  methods: {
+    ...mapActions(['removeMessage'])
   }
 });
 </script>
