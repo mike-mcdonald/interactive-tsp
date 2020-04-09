@@ -15,7 +15,7 @@ export const mutations: MutationTree<MapState> = {
     state.map.layers.removeAll();
     state.map.layers.addMany(layers);
   }, 10),
-  extentChanged(state, extent) {
+  setExtent(state, extent) {
     state.extent = extent;
   },
   changeZoom(state, zoom) {
