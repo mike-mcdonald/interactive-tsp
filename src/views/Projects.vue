@@ -7,43 +7,6 @@
       <section class="m-2">
         <messages />
       </section>
-      <section
-        v-if="!$route.params.id"
-        id="filters"
-        class="m-2 border border-gray-500 rounded shadow bg-gray-100 text-gray-900"
-      >
-        <header :class="{ 'border-b': showFilters }">
-          <button class="p-2 w-full flex items-center justify-between" @click="showFilters = !showFilters">
-            <h2>Display settings</h2>
-            <span class="px-2 py-1 text-sm focus:outline-none focus:shadow-outline">
-              <i v-if="!showFilters" v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
-              <i v-if="showFilters" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
-            </span>
-          </button>
-        </header>
-        <main v-show="showFilters" :aria-expanded="`${showFilters}`" class="p-2">
-          <form @submit.prevent>
-            <div v-for="model in dataset" :key="model.key">
-              <label class="flex items-center" :for="model.key">
-                <input
-                  type="checkbox"
-                  :id="model.key"
-                  :checked="model.enabled"
-                  @change="toggleTimeFrameFilter(model, $event.target.checked)"
-                />
-                <div
-                  v-if="model.color"
-                  class="h-4 w-4 px-2 mx-2 border border-gray-900"
-                  :style="{
-                    'background-color': model.color.formatRgb()
-                  }"
-                ></div>
-                <span>{{ model.label }}</span>
-              </label>
-            </div>
-          </form>
-        </main>
-      </section>
       <section class="m-2">
         <div v-if="!$route.params.id">
           <header>
@@ -67,6 +30,39 @@
               </div>
             </form>
           </header>
+          <section id="filters" class="my-2 border border-gray-500 rounded shadow bg-gray-100 text-gray-900">
+            <header :class="{ 'border-b': showFilters }">
+              <button class="p-2 w-full flex items-center justify-between" @click="showFilters = !showFilters">
+                <h2>Display settings</h2>
+                <span class="px-2 py-1 text-sm focus:outline-none focus:shadow-outline">
+                  <i v-if="!showFilters" v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
+                  <i v-if="showFilters" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
+                </span>
+              </button>
+            </header>
+            <main v-show="showFilters" :aria-expanded="`${showFilters}`" class="p-2">
+              <form @submit.prevent>
+                <div v-for="model in dataset" :key="model.key">
+                  <label class="flex items-center" :for="model.key">
+                    <input
+                      type="checkbox"
+                      :id="model.key"
+                      :checked="model.enabled"
+                      @change="toggleTimeFrameFilter(model, $event.target.checked)"
+                    />
+                    <div
+                      v-if="model.color"
+                      class="h-4 w-4 px-2 mx-2 border border-gray-900"
+                      :style="{
+                        'background-color': model.color.formatRgb()
+                      }"
+                    ></div>
+                    <span>{{ model.label }}</span>
+                  </label>
+                </div>
+              </form>
+            </main>
+          </section>
           <transition name="fade">
             <ul v-show="showProjects" class="list-none">
               <li v-for="project in filteredProjects" :key="`${project.id}-${project.number}`">
