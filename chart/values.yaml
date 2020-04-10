@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: pbotapps.azurecr.io/interactive-tsp
+  repository: pudlapps.azurecr.io/interactive-tsp
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
