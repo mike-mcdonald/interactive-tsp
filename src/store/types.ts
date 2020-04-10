@@ -4,6 +4,7 @@ export interface Message {
   id: string;
   type: 'error' | 'warning' | 'info';
   text: string;
+  dismissible: boolean;
 }
 
 export interface RootState {

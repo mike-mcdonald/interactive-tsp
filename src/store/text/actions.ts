@@ -38,7 +38,7 @@ export const actions: ActionTree<TextState, RootState> = {
         if (res.data.errors) {
           dispatch(
             'addMessage',
-            { id: 'text-graphql-errors', type: 'warning', text: 'The text may contain errors...' },
+            { id: 'text-graphql-errors', type: 'warning', text: 'The text may contain errors...', dismissible: true },
             { root: true }
           );
         }
