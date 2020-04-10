@@ -40,6 +40,10 @@ export const actions: ActionTree<StreetState, RootState> = {
       return;
     }
 
+    dispatch('removeMessage', 'streets-zoom-in', {
+      root: true
+    });
+
     dispatch(
       'addMessage',
       { id: 'streets-retrieving', type: 'info', text: 'Retrieving streets...' },
@@ -80,7 +84,12 @@ export const actions: ActionTree<StreetState, RootState> = {
         if (res.data.errors) {
           dispatch(
             'addMessage',
-            { id: 'streets-graphql-error', type: 'warning', text: 'Some data may contain errors...' },
+            {
+              id: 'streets-graphql-error',
+              type: 'warning',
+              text: 'Some data may contain errors...',
+              dismissible: true
+            },
             { root: true }
           );
         }
@@ -116,7 +125,7 @@ export const actions: ActionTree<StreetState, RootState> = {
       .catch(() => {
         dispatch(
           'addMessage',
-          { id: 'streets-error-retrieving', type: 'error', text: 'Error retrieving streets!' },
+          { id: 'streets-error-retrieving', type: 'error', text: 'Error retrieving streets!', dismissible: true },
           { root: true }
         );
       });
@@ -172,7 +181,12 @@ export const actions: ActionTree<StreetState, RootState> = {
         if (res.data.errors) {
           dispatch(
             'addMessage',
-            { id: 'streets-graphql-error', type: 'warning', text: 'Some data may contain errors...' },
+            {
+              id: 'streets-graphql-error',
+              type: 'warning',
+              text: 'Some data may contain errors...',
+              dismissible: true
+            },
             { root: true }
           );
         }
@@ -186,7 +200,12 @@ export const actions: ActionTree<StreetState, RootState> = {
       .catch(() => {
         dispatch(
           'addMessage',
-          { id: 'streets-error-retrieving', type: 'error', text: 'Error retrieving the selected street!' },
+          {
+            id: 'streets-error-retrieving',
+            type: 'error',
+            text: 'Error retrieving the selected street!',
+            dismissible: true
+          },
           { root: true }
         );
       });

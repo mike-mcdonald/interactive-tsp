@@ -1,7 +1,7 @@
 <template>
   <li class="mb-2 p-4 w-full border border-l-8 rounded flex items-center justify-between" :class="colors">
     {{ item.text }}
-    <button @click="removeMessage(item.id)">
+    <button v-if="item.dismissible" @click="removeMessage(item.id)">
       <i v-html="feather.icons['x'].toSvg({ class: 'w-5 h-5' })" />
     </button>
   </li>

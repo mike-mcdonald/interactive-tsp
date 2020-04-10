@@ -54,7 +54,7 @@ export const actions: ActionTree<ProjectState, RootState> = {
       .catch(err => {
         dispatch(
           'addMessage',
-          { id: 'projects-find-error', type: 'error', text: 'Error retrieving projects...' },
+          { id: 'projects-find-error', type: 'error', text: 'Error retrieving projects...', dismissible: true },
           { root: true }
         );
         throw err;
@@ -63,7 +63,12 @@ export const actions: ActionTree<ProjectState, RootState> = {
     if (res.data.errors) {
       dispatch(
         'addMessage',
-        { id: 'project-graphql-error', type: 'warning', text: 'Some projects may contain errors...' },
+        {
+          id: 'project-graphql-error',
+          type: 'warning',
+          text: 'Some projects may contain errors...',
+          dismissible: true
+        },
         { root: true }
       );
     }
