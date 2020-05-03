@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="relative">
     <header
-      class="px-2 py-2 md:py-0 md:h-16 border-b border-cyan-900 bg-cyan-500 text-cyan-100 flex items-center justify-between flex-wrap"
+      class="px-2 py-2 md:py-0 md:h-16 border-b border-cyan-900 bg-cyan-500 text-cyan-100 flex items-center justify-between flex-wrap sticky top-0 z-100"
     >
       <div class="flex items-center flex-shrink-0 md:mr-4">
         <router-link to="/" class="flex items-center">
@@ -109,12 +109,6 @@ export default {
 
 #app {
   @apply font-sans text-base text-black;
-}
-
-@screen md {
-  #app {
-    @apply text-lg;
-  }
 }
 
 .fade {
