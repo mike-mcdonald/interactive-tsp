@@ -4,16 +4,16 @@
     <p class="my-3 text-2xl text-gray-700" v-if="street.block">{{ street.block }} block</p>
     <section>
       <dl>
-        <div class="my-3 xl:grid xl:grid-cols-2 xl:gap-3">
-          <dt class="font-semibold">Transportation plan ID</dt>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 my-3">
+          <dt class="text-gray-700">Transportation plan ID</dt>
           <dd>{{ street.id }}</dd>
         </div>
         <div
           v-for="(classification, index) in classificationKeys()"
           :key="index"
-          class="my-3 xl:grid xl:grid-cols-2 xl:gap-3"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 my-3"
         >
-          <dt class="font-semibold">
+          <dt class="text-gray-700">
             {{ classification.charAt(0).toUpperCase() + classification.slice(1) }} classification
           </dt>
           <dd>
