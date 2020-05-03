@@ -7,6 +7,7 @@ import Map from 'esri/Map';
 
 import { RootState } from '../types';
 import { actions } from './actions';
+import { getters } from './getters';
 import { mutations } from './mutations';
 import { MapState } from './types';
 
@@ -48,10 +49,9 @@ const state: MapState = {
     basemap
   }),
   extent: defaultExtent,
-  basemaps: basemaps,
   zoom: {
     current: 6,
-    focus: 11,
+    focus: 13,
     max: 14,
     min: 4
   }
@@ -63,5 +63,6 @@ export const map: Module<MapState, RootState> = {
   namespaced,
   state,
   actions,
+  getters,
   mutations
 };
