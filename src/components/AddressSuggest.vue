@@ -22,7 +22,7 @@
         />
         <div class="relative flex items-center">
           <select
-            aria-label="Currency"
+            aria-label="Search type"
             class="appearance-none h-full pl-2 pr-5 py-2 border-transparent rounded bg-transparent focus:outline-none focus:shadow-outline"
             v-model="searchType"
           >
