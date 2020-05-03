@@ -17,11 +17,11 @@ declare var GRAPHQL_URL: string;
 
 var ua = window.navigator.userAgent;
 
-const messages = new Array<Message>();
+const alerts = new Array<Message>();
 
 // Detect if IE <= 11, add message if detected
 if (ua.indexOf('Trident/') > 0 || ua.indexOf('MSIE ') > 0) {
-  messages.push({
+  alerts.push({
     id: 'unsupported-browser',
     type: 'error',
     text:
@@ -32,7 +32,8 @@ if (ua.indexOf('Trident/') > 0 || ua.indexOf('MSIE ') > 0) {
 
 const store: StoreOptions<RootState> = {
   state: {
-    messages,
+    alerts,
+    messages: [],
     graphqlUrl: GRAPHQL_URL
   },
   actions,
