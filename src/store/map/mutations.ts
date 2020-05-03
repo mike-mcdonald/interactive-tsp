@@ -4,6 +4,7 @@ import MapView from 'esri/views/MapView';
 
 import { MutationTree } from 'vuex';
 import { MapState } from './types';
+import TileLayer from 'esri/layers/TileLayer';
 
 export const mutations: MutationTree<MapState> = {
   setView(state, view: MapView) {
@@ -14,6 +15,11 @@ export const mutations: MutationTree<MapState> = {
     state.layers = layers;
     state.map.layers.removeAll();
     state.map.layers.addMany(layers);
+    state.map.layers.push(
+      new TileLayer({
+        url: 'https://www.portlandmaps.com/arcgis/rest/services/Public/Basemap_Color_Labels/MapServer'
+      })
+    );
   }, 10),
   setExtent(state, extent) {
     state.extent = extent;

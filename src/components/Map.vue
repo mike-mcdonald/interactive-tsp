@@ -84,7 +84,6 @@ export default Vue.extend({
     ...mapState('map', {
       map: (state: MapState) => state.map,
       extent: (state: MapState) => state.extent,
-      basemaps: (state: MapState) => state.basemaps,
       zoom: (state: MapState) => state.zoom.current
     })
   },
