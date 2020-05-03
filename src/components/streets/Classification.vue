@@ -15,7 +15,7 @@
             classifications
           </span>
         </label>
-        <button @click="show = !show">
+        <button class="flex-1 flex flex-col items-end" @click="show = !show">
           <i v-if="!show" v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
           <i v-if="show" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
         </button>
