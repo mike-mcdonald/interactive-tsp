@@ -55,6 +55,22 @@
                     <span>{{ model.label }}</span>
                   </label>
                 </div>
+                <div>
+                  <label class="flex items-center">
+                    <input type="checkbox" id="filterExtent" v-model="filterExtent" />
+
+                    <span class="px-2">Filter projects by extent</span>
+                  </label>
+                </div>
+                <div class="self-center mt-2">
+                  <button
+                    class="px-2 py-1 border border-blue-900 rounded-md bg-blue-500 text-blue-100 flex items-center"
+                    @click="resetExtent"
+                  >
+                    <i v-html="feather.icons['maximize-2'].toSvg({ class: 'w-5 h-5' })" />
+                    <span class="pl-2">Reset extent</span>
+                  </button>
+                </div>
               </form>
             </main>
           </section>
@@ -148,7 +164,8 @@ import Component from 'vue-class-component';
 import { RawLocation, Route } from 'vue-router';
 import { mapState, mapActions, mapGetters, mapMutations } from 'vuex';
 
-import { BBox } from '@turf/helpers';
+import intersects from '@turf/boolean-intersects';
+import { BBox, Feature, Polygon, feature } from '@turf/helpers';
 import feather from 'feather-icons';
 
 import { Extent } from 'esri/geometry';
@@ -162,6 +179,8 @@ import Search from '@/components/icons/Search.vue';
 
 import { ProjectState, Project, ViewModel } from '../store/projects/types';
 import { AddressCandidate } from '../store/portlandmaps/types';
+import bboxPolygon from '@turf/bbox-polygon';
+import proj4 from 'proj4';
 
 @Component({
   name: 'Projects',
@@ -177,7 +196,7 @@ import { AddressCandidate } from '../store/portlandmaps/types';
   },
   computed: {
     ...mapState(['message']),
-    ...mapState('map', ['view']),
+    ...mapState('map', ['view', 'extent']),
     ...mapState('projects', {
       models: (state: ProjectState) => state.models,
       projects: (state: ProjectState) => state.list,
@@ -186,7 +205,7 @@ import { AddressCandidate } from '../store/portlandmaps/types';
     ...mapGetters('projects', ['mapLayers'])
   },
   methods: {
-    ...mapActions('map', ['setLayerVisibility']),
+    ...mapActions('map', ['setLayerVisibility', 'resetExtent']),
     ...mapMutations('projects', ['setModels']),
     ...mapActions('projects', ['findProjects', 'highlightProject'])
   },
@@ -214,20 +233,17 @@ import { AddressCandidate } from '../store/portlandmaps/types';
           move: true
         });
       } else {
-        vm.$store.dispatch('map/resetExtent');
         vm.$store.dispatch('projects/findProjects');
       }
     });
   },
   beforeRouteUpdate(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => void)) => void) {
-    if (!to.params.id) {
-      this.$store.dispatch('map/resetExtent');
-    }
     next();
   }
 })
 export default class Projects extends Vue {
   view!: MapView;
+  extent!: Extent;
   models!: Array<ViewModel>;
   projects!: Array<Project>;
   index!: lunr.Index;
@@ -241,7 +257,7 @@ export default class Projects extends Vue {
   selectionIndex = 0;
   show = {};
   showProjects = true;
-  showFilters = false;
+  filterExtent = false;
   // this represents a list of projects that someone got to through clicking on the map
   //    it functions as a list of routes to traverse
   projectList = new Array<string>();
@@ -270,6 +286,20 @@ export default class Projects extends Vue {
           }) || { id: val.ref }
         );
       });
+    }
+
+    if (this.filterExtent) {
+      let { xmin, ymin, xmax, ymax } = this.extent;
+      [xmin, ymin] = proj4(this.extent.spatialReference.wkid.toString(), 'EPSG:4326', [xmin, ymin]);
+      [xmax, ymax] = proj4(this.extent.spatialReference.wkid.toString(), 'EPSG:4326', [xmax, ymax]);
+      const bbox: BBox = [xmin, ymin, xmax, ymax];
+      const polygon = bboxPolygon(bbox);
+      projects = projects.reduce((prev: Array<Project>, curr: Project) => {
+        if (intersects(polygon, feature(curr.geometry))) {
+          prev.push(curr);
+        }
+        return prev;
+      }, new Array<Project>());
     }
 
     return projects.reduce((prev: Array<Project>, curr: Project) => {
