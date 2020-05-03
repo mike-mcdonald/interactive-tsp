@@ -31,12 +31,22 @@ export interface Street {
   maxY?: number;
 }
 
+export interface Symbol {
+  type: 'color' | 'image';
+  value: RGBColor | HSLColor | string | null;
+}
+
+export interface ImageSymbol extends Symbol {
+  mime: string;
+  value: string;
+}
+
 export interface ViewModel {
   value: string;
   group: string;
   enabled: boolean;
   label: string;
-  color?: RGBColor | HSLColor | null;
+  symbol?: Symbol | ImageSymbol;
   layer?: Layer;
 }
 

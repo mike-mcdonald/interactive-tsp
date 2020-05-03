@@ -17,7 +17,7 @@ export const getters: GetterTree<StreetState, RootState> = {
     const info = state.models?.find(val => {
       return val.group === type && val.value === value;
     });
-    return info?.color || rgb(255, 255, 255, 0);
+    return info?.symbol?.value || rgb(255, 255, 255, 0);
   },
   filteredStreets: state => {
     let streets = state.list;
