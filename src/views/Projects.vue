@@ -40,6 +40,7 @@
             </header>
             <main v-show="showFilters" :aria-expanded="`${showFilters}`" class="p-2">
               <form class="grid grid-cols-1 gap-1" @submit.prevent>
+                <h3 class="my-2 text-gray-800 font-semibold">Project settings</h3>
                 <div v-for="model in dataset" :key="model.key">
                   <label class="flex items-center" :for="model.key">
                     <input
@@ -58,20 +59,21 @@
                     <span>{{ model.label }}</span>
                   </label>
                 </div>
+                <h3 class="my-2 text-gray-800 font-semibold">Map extent settings</h3>
                 <div>
                   <label class="flex items-center">
                     <input type="checkbox" id="filterExtent" v-model="filterExtent" />
 
-                    <span class="px-2">Filter projects by extent</span>
+                    <span class="px-2">Filter projects by map extent</span>
                   </label>
                 </div>
-                <div class="self-center mt-2">
+                <div class="my-2">
                   <button
                     class="px-2 py-1 border border-blue-900 rounded-md bg-blue-500 text-blue-100 flex items-center"
                     @click="resetExtent"
                   >
                     <i v-html="feather.icons['maximize-2'].toSvg({ class: 'w-5 h-5' })" />
-                    <span class="pl-2">Reset extent</span>
+                    <span class="pl-2">Reset map extent</span>
                   </button>
                 </div>
               </form>
