@@ -11,30 +11,13 @@ import { getters } from './getters';
 import { mutations } from './mutations';
 import { MapState } from './types';
 
-const basemap: Basemap = [
-  'https://www.portlandmaps.com/arcgis/rest/services/Public/Basemap_Color/MapServer',
-  'https://www.portlandmaps.com/arcgis/rest/services/Public/Basemap_Color_Buildings/MapServer',
-  'https://www.portlandmaps.com/arcgis/rest/services/Public/Basemap_Color_Taxlot_Labels/MapServer'
-].reduce((prev: Basemap, url: string) => {
-  if (prev.baseLayers.length == 0) {
-    prev = new Basemap({
-      baseLayers: [
-        new TileLayer({
-          url
-        })
-      ]
-    });
-  } else {
-    prev.baseLayers.push(
-      new TileLayer({
-        url,
-        minScale: 4513.988705
-      })
-    );
-  }
-
-  return prev;
-}, new Basemap());
+const basemap: Basemap = new Basemap({
+  baseLayers: [
+    new TileLayer({
+      url: 'https://www.portlandmaps.com/arcgis/rest/services/Public/Basemap_Color/MapServer'
+    })
+  ]
+});
 
 export const defaultExtent = new Extent({
   spatialReference: { wkid: 102100 },
