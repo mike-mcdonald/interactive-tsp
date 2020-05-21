@@ -10,10 +10,10 @@ export function esriGeometry(geometry: Geometry): ArcGISParser.Geometry {
   return ArcGISParser.convert(geometry);
 }
 
-export function esriGraphics(geometry: Geometry): Graphic[] {
-  const fillColor = [191, 231, 235];
-  const outlineColor = [69, 92, 92];
+export const fillColor = [191, 231, 235];
+export const outlineColor = [69, 92, 92];
 
+export function esriGraphics(geometry: Geometry): Graphic[] {
   switch (geometry.type) {
     case 'Point':
       return [
@@ -68,7 +68,7 @@ export function esriGraphics(geometry: Geometry): Graphic[] {
             color: [...fillColor, 0.5],
             outline: {
               color: outlineColor,
-              width: 4
+              width: 2
             }
           })
         })
