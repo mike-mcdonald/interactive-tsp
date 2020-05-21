@@ -40,7 +40,7 @@
             </header>
             <main v-show="showFilters" :aria-expanded="`${showFilters}`" class="p-2">
               <form class="grid grid-cols-1 gap-1" @submit.prevent>
-                <h3 class="my-2 text-gray-800 font-semibold">Project settings</h3>
+                <h3 class="my-2 text-gray-800 text-lg">Project settings</h3>
                 <div v-for="model in dataset" :key="model.key">
                   <label class="flex items-center" :for="model.key">
                     <input
@@ -59,7 +59,7 @@
                     <span>{{ model.label }}</span>
                   </label>
                 </div>
-                <h3 class="my-2 text-gray-800 font-semibold">Map extent settings</h3>
+                <h3 class="my-2 text-gray-800 text-lg">Map extent settings</h3>
                 <div>
                   <label class="flex items-center">
                     <input type="checkbox" id="filterExtent" v-model="filterExtent" />
