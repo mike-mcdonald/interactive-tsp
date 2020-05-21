@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import Home from '@/views/Home.vue';
 // writing these as functions lets you chunk output, thus smaller downloads?
+const MasterStreetPlans = () => import('@/views/MasterStreetPlans.vue');
 const Streets = () => import('@/views/Streets.vue');
 const Projects = () => import('@/views/Projects.vue');
 const Text = () => import('@/views/Text.vue');
@@ -29,6 +30,11 @@ export default new Router({
       path: '/text',
       name: 'text',
       component: Text
+    },
+    {
+      path: '/master_street_plans/:id?',
+      name: 'master-street-plans',
+      component: MasterStreetPlans
     }
   ],
   scrollBehavior(to, from, savedPosition) {

@@ -35,6 +35,18 @@
             <span v-else>{{ classificationLabel(classification, street.classifications[classification]) }}</span>
           </dd>
         </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 my-3">
+          <dt class="text-gray-700">Master Street Plans</dt>
+          <dd>
+            <ul class="list-none">
+              <li v-for="plan in street.masterStreetPlans" :key="plan.id">
+                <router-link :to="`/master_street_plans/${plan.id}`" class="border-b-2 border-current">
+                  {{ plan.label }}
+                </router-link>
+              </li>
+            </ul>
+          </dd>
+        </div>
       </dl>
     </section>
     <transition name="fade">
