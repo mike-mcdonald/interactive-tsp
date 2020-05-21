@@ -1,14 +1,15 @@
 import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
-import { RootState, Message } from './types';
-import { map } from './map/index';
-import streets from './streets/index';
-import portlandmaps from './portlandmaps/index';
-import projects from './projects/index';
-import text from './text/index';
 
 import { actions } from './actions';
+import { map } from './map/index';
+import masterStreetPlans from './master_street_plans/index';
 import { mutations } from './mutations';
+import portlandmaps from './portlandmaps/index';
+import projects from './projects/index';
+import streets from './streets/index';
+import text from './text/index';
+import { Message, RootState } from './types';
 
 Vue.use(Vuex);
 
@@ -40,6 +41,7 @@ const store: StoreOptions<RootState> = {
   mutations,
   modules: {
     map,
+    masterStreetPlans,
     portlandmaps,
     projects,
     streets,
