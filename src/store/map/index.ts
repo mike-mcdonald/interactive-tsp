@@ -7,35 +7,16 @@ import Map from 'esri/Map';
 
 import { RootState } from '../types';
 import { actions } from './actions';
+import { getters } from './getters';
 import { mutations } from './mutations';
 import { MapState } from './types';
 
-const basemaps: Basemap[] = [
-  'https://www.portlandmaps.com/arcgis/rest/services/Public/Basemap_Color_Complete/MapServer',
-  'https://www.portlandmaps.com/arcgis/rest/services/Public/Basemap_Gray_Complete/MapServer',
-  'https://www.portlandmaps.com/arcgis/rest/services/Public/Basemap_Color_Complete_Aerial/MapServer'
-].map(url => {
-  const regexMatch = /Basemap_([a-zA-Z_]+)\//i.exec(url);
-  let title = 'Unknown title';
-  let id = 'uknown-id';
-
-  if (regexMatch) {
-    title = regexMatch[1].replace('_', ' ').replace('_', ' ');
-    id = regexMatch[1]
-      .replace('_', '-')
-      .replace('_', '-')
-      .toLowerCase();
-  }
-
-  return new Basemap({
-    id,
-    baseLayers: [
-      new TileLayer({
-        url
-      })
-    ],
-    title
-  });
+const basemap: Basemap = new Basemap({
+  baseLayers: [
+    new TileLayer({
+      url: 'https://www.portlandmaps.com/arcgis/rest/services/Public/Basemap_Color/MapServer'
+    })
+  ]
 });
 
 export const defaultExtent = new Extent({
@@ -48,13 +29,12 @@ export const defaultExtent = new Extent({
 
 const state: MapState = {
   map: new Map({
-    basemap: basemaps[1]
+    basemap
   }),
   extent: defaultExtent,
-  basemaps: basemaps,
   zoom: {
     current: 6,
-    focus: 11,
+    focus: 13,
     max: 14,
     min: 4
   }
@@ -66,5 +46,6 @@ export const map: Module<MapState, RootState> = {
   namespaced,
   state,
   actions,
+  getters,
   mutations
 };

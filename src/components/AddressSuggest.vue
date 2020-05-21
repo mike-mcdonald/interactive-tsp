@@ -20,22 +20,9 @@
           aria-controls="address-suggest-results"
           class="flex-1 appearance-none placeholder-gray-600 p-2 rounded bg-transparent focus:outline-none focus:shadow-outline"
         />
-        <transition name="fade">
-          <button
-            v-if="search"
-            aria-label="Clear"
-            class="p-2 rounded"
-            @click.stop.prevent="
-              search = undefined;
-              clearCandidates();
-            "
-          >
-            <i v-html="feather.icons['x'].toSvg({ class: 'w-5 h-5' })" />
-          </button>
-        </transition>
         <div class="relative flex items-center">
           <select
-            aria-label="Currency"
+            aria-label="Search type"
             class="appearance-none h-full pl-2 pr-5 py-2 border-transparent rounded bg-transparent focus:outline-none focus:shadow-outline"
             v-model="searchType"
           >

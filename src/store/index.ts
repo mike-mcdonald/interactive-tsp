@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
-import { RootState } from './types';
+import { RootState, Message } from './types';
 import { map } from './map/index';
 import streets from './streets/index';
 import portlandmaps from './portlandmaps/index';
@@ -15,8 +15,24 @@ Vue.use(Vuex);
 // following variable comes from webpack DefinePlugin
 declare var GRAPHQL_URL: string;
 
+var ua = window.navigator.userAgent;
+
+const alerts = new Array<Message>();
+
+// Detect if IE <= 11, add message if detected
+if (ua.indexOf('Trident/') > 0 || ua.indexOf('MSIE ') > 0) {
+  alerts.push({
+    id: 'unsupported-browser',
+    type: 'error',
+    text:
+      'You are using an unsupported browser. Features of this application will not function. Please use a different browser.',
+    dismissible: false
+  });
+}
+
 const store: StoreOptions<RootState> = {
   state: {
+    alerts,
     messages: [],
     graphqlUrl: GRAPHQL_URL
   },

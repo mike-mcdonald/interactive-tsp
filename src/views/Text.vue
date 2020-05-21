@@ -1,7 +1,7 @@
 <template>
-  <main class="container mx-auto my-4 flex flex-col md:flex-row-reverse justify-between">
+  <main class="container mx-auto flex flex-col md:flex-row justify-between">
     <aside class="md:w-1/3 px-2">
-      <nav class="md:sticky md:top-10 md:overflow-y-auto md:max-h-(screen-16) text-sm md:text-base">
+      <nav class="md:sticky top-0 md:top-16 md:overflow-y-auto md:max-h-(screen-16) text-sm md:text-base">
         <ol class="p-2 list-none">
           <text-listing
             v-for="section in sectionTree"
@@ -15,7 +15,7 @@
         </ol>
       </nav>
     </aside>
-    <div class="flex flex-col md:w-2/3 px-2">
+    <section class="my-4 flex flex-col md:w-2/3 px-2">
       <header>
         <nav class="relative my-2">
           <form title="Search" role="search" action="/" class="flex flex-col" @submit.prevent>
@@ -65,7 +65,7 @@
           :sections="section.sections"
         />
       </article>
-    </div>
+    </section>
   </main>
 </template>
 
@@ -78,6 +78,16 @@ import debounce from 'lodash-es/debounce';
 import TextSection from '@/components/text/Section.vue';
 import TextListing from '@/components/text/Listing.vue';
 import { CombinedVueInstance } from 'vue/types/vue';
+
+function waitForScroll(check: Function, callback: Function) {
+  if (check()) {
+    callback();
+  } else {
+    setTimeout(function() {
+      waitForScroll(check, callback);
+    }, 500);
+  }
+}
 
 export default Vue.extend({
   name: 'TextView',
@@ -98,11 +108,44 @@ export default Vue.extend({
     next(vm => {
       vm.$store.dispatch('clearMessages');
       vm.$store.dispatch('text/findText');
+      if (to.hash) {
+        waitForScroll(
+          function() {
+            return document.querySelector(to.hash) != null;
+          },
+          function() {
+            setTimeout(function() {
+              const el = document.querySelector(to.hash);
+              if (el) {
+                el.scrollIntoView();
+                // now account for fixed header
+                var scrolledY = window.scrollY;
+
+                if (scrolledY) {
+                  window.scroll(0, scrolledY - 64);
+                }
+              }
+            }, 500);
+          }
+        );
+      }
     });
   },
   beforeRouteUpdate(to, from, next) {
     next();
     this.searchQuery = '';
+    if (to.hash) {
+      const el = document.querySelector(to.hash);
+      if (el) {
+        el.scrollIntoView();
+        // now account for fixed header
+        var scrolledY = window.scrollY;
+
+        if (scrolledY) {
+          window.scroll(0, scrolledY - 64);
+        }
+      }
+    }
   },
   methods: {
     ...mapActions('text', ['searchIndex']),
@@ -142,12 +185,16 @@ export default Vue.extend({
     @apply text-sm my-1;
   }
 
+  section {
+    @apply my-4;
+  }
+
   p {
     @apply my-3;
   }
 
   blockquote {
-    @apply px-4 py-2 border border-l-4 border-gray-900 rounded;
+    @apply px-4 py-2 border border-l-4 border-current rounded;
   }
 
   a {

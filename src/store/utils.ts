@@ -11,8 +11,8 @@ export function esriGeometry(geometry: Geometry): ArcGISParser.Geometry {
 }
 
 export function esriGraphics(geometry: Geometry): Graphic[] {
-  const fillColor = '#bfe7eb';
-  const outlineColor = '#00484e';
+  const fillColor = [191, 231, 235];
+  const outlineColor = [69, 92, 92];
 
   switch (geometry.type) {
     case 'Point':
@@ -20,7 +20,7 @@ export function esriGraphics(geometry: Geometry): Graphic[] {
         new Graphic({
           geometry: new Point(esriGeometry(geometry)),
           symbol: new SimpleMarkerSymbol({
-            color: fillColor,
+            color: [...fillColor, 0.5],
             outline: {
               color: outlineColor,
               width: 2
@@ -33,7 +33,7 @@ export function esriGraphics(geometry: Geometry): Graphic[] {
         new Graphic({
           geometry: new Multipoint(esriGeometry(geometry)),
           symbol: new SimpleMarkerSymbol({
-            color: fillColor,
+            color: [...fillColor, 0.5],
             outline: {
               color: outlineColor,
               width: 2
@@ -47,14 +47,14 @@ export function esriGraphics(geometry: Geometry): Graphic[] {
         new Graphic({
           geometry: new Polyline(esriGeometry(geometry)),
           symbol: new SimpleLineSymbol({
-            color: outlineColor,
+            color: [...outlineColor, 0.5],
             width: 10
           })
         }),
         new Graphic({
           geometry: new Polyline(esriGeometry(geometry)),
           symbol: new SimpleLineSymbol({
-            color: fillColor,
+            color: [...fillColor, 0.5],
             width: 8
           })
         })
@@ -65,10 +65,10 @@ export function esriGraphics(geometry: Geometry): Graphic[] {
         new Graphic({
           geometry: new Polygon(esriGeometry(geometry)),
           symbol: new SimpleFillSymbol({
-            color: fillColor,
+            color: [...fillColor, 0.5],
             outline: {
               color: outlineColor,
-              width: 2
+              width: 4
             }
           })
         })

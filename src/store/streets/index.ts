@@ -46,6 +46,11 @@ Promise.all(
         value: 'undefined',
         enabled: false,
         label: layer.name,
+        symbol: {
+          type: 'image',
+          mime: layer.drawingInfo.renderer.symbol.contentType,
+          value: layer.drawingInfo.renderer.symbol.imageData
+        },
         layer: new FeatureLayer({
           url: value[1],
           visible: false
@@ -72,7 +77,7 @@ Promise.all(
               value: info.value.toString(),
               enabled: false,
               label: info.label,
-              color: rgb(r, g, b, a),
+              symbol: { type: 'color', value: rgb(r, g, b, a) },
               layer: new FeatureLayer({
                 url: value[1],
                 outFields: ['*'],

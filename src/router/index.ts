@@ -34,11 +34,7 @@ export default new Router({
   scrollBehavior(to, from, savedPosition) {
     //https://router.vuejs.org/guide/advanced/scroll-behavior.html
     if (to.hash) {
-      return new Promise(resolve => {
-        setTimeout(() => {
-          resolve({ selector: to.hash });
-        }, 500);
-      });
+      return;
     } else if (savedPosition) {
       return savedPosition;
     } else {

@@ -1,6 +1,5 @@
 <template>
-  <section>
-    <a ref="anchor" :id="id" :class="['float-left']"></a>
+  <section :id="id">
     <span v-html="content"></span>
     <text-section
       v-for="section in sections"
@@ -27,13 +26,6 @@ export default Vue.extend({
     },
     sections: {
       type: Array
-    }
-  },
-  mounted() {
-    if (this.$route.hash == `#${this.id}`) {
-      setTimeout(() => {
-        (this.$refs['anchor'] as Element).scrollIntoView();
-      }, 100);
     }
   }
 });

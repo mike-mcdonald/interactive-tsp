@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="relative">
     <header
-      class="px-2 py-2 md:py-0 md:h-16 border-b border-cyan-900 bg-cyan-500 text-cyan-100 flex items-center justify-between flex-wrap"
+      class="px-2 py-2 md:py-0 md:h-16 border-b border-cyan-900 bg-cyan-500 text-cyan-100 flex items-center justify-between flex-wrap sticky top-0 z-100"
     >
       <div class="flex items-center flex-shrink-0 md:mr-4">
         <router-link to="/" class="flex items-center">
@@ -73,16 +73,24 @@
         </router-link>
       </nav>
     </header>
+    <section role="alert">
+      <ul class="list-none">
+        <message v-for="alert in alerts" :key="alert.id" :item="alert" />
+      </ul>
+    </section>
     <Messages role="notifications" class="z-100 max-w-6xl mx-auto px-2 pb-4 fixed inset-x-0 bottom-0" />
     <router-view />
     <Footer />
   </div>
 </template>
 <script>
+import { mapState } from 'vuex';
+
 import feather from 'feather-icons';
 
 import Footer from '@/components/Footer.vue';
 import Logo from '@/components/icons/Logo.vue';
+import Message from '@/components/message/Item.vue';
 import Messages from '@/components/message/List.vue';
 
 export default {
@@ -90,6 +98,7 @@ export default {
   components: {
     Footer,
     Logo,
+    Message,
     Messages
   },
   data() {
@@ -97,6 +106,9 @@ export default {
       feather,
       showMenu: false
     };
+  },
+  computed: {
+    ...mapState(['alerts'])
   }
 };
 </script>
@@ -109,12 +121,6 @@ export default {
 
 #app {
   @apply font-sans text-base text-black;
-}
-
-@screen md {
-  #app {
-    @apply text-lg;
-  }
 }
 
 .fade {
