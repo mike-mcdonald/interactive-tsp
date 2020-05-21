@@ -83,6 +83,7 @@ export default Vue.extend({
   computed: {
     ...mapState('map', {
       map: (state: MapState) => state.map,
+      view: (state: MapState) => state.view,
       extent: (state: MapState) => state.extent,
       zoom: (state: MapState) => state.zoom.current
     })
@@ -95,6 +96,17 @@ export default Vue.extend({
   methods: {
     ...mapActions('map', ['setExtent', 'setZoom', 'setLayerVisibility']),
     ...mapMutations('map', ['setView', 'setLayers']),
+    initHandlers(view: MapView) {
+      view.on('click', (event: __esri.MapViewClickEvent) => {
+        this.$emit('click', event);
+      });
+
+      view.on('pointer-move', (event: __esri.MapViewPointerMoveEvent) => {
+        view.hitTest(event).then((response: __esri.HitTestResult) => {
+          this.$emit('pointer-hit', response.results);
+        });
+      });
+    },
     toggleLayerVisibility(id: string, value: Boolean) {
       this.setLayerVisibility({ layerId: id, visible: value });
     },
@@ -106,63 +118,66 @@ export default Vue.extend({
     }
   },
   mounted: function() {
-    const view = new MapView({
-      container: this.$refs.map as HTMLDivElement,
-      map: this.map,
-      extent: this.extent
-    });
-
-    this.setLayers(this.layers);
-
-    view.ui.remove('zoom');
-
-    view.ui.add(this.$refs['top-left'] as HTMLDivElement, {
-      position: 'top-left',
-      index: 2
-    });
-    view.ui.add(this.$refs['top-right'] as HTMLDivElement, {
-      position: 'top-right',
-      index: 2
-    });
-    view.ui.add(this.$refs['bottom-left'] as HTMLDivElement, {
-      position: 'bottom-left',
-      index: 2
-    });
-    view.ui.add(this.$refs['bottom-right'] as HTMLDivElement, {
-      position: 'bottom-right',
-      index: 2
-    });
-    view.ui.add(this.$refs['manual'] as HTMLDivElement, {
-      position: 'manual',
-      index: 2
-    });
-
-    if (this.legend) {
-      new Legend({
-        view,
-        container: this.$refs['legend'] as HTMLDivElement
+    if (!this.view) {
+      const view = new MapView({
+        container: this.$refs.map as HTMLDivElement,
+        map: this.map,
+        extent: this.extent
       });
+
+      view.ui.remove('zoom');
+
+      view.ui.add(this.$refs['top-left'] as HTMLDivElement, {
+        position: 'top-left',
+        index: 2
+      });
+      view.ui.add(this.$refs['top-right'] as HTMLDivElement, {
+        position: 'top-right',
+        index: 2
+      });
+      view.ui.add(this.$refs['bottom-left'] as HTMLDivElement, {
+        position: 'bottom-left',
+        index: 2
+      });
+      view.ui.add(this.$refs['bottom-right'] as HTMLDivElement, {
+        position: 'bottom-right',
+        index: 2
+      });
+      view.ui.add(this.$refs['manual'] as HTMLDivElement, {
+        position: 'manual',
+        index: 2
+      });
+
+      if (this.legend) {
+        new Legend({
+          view,
+          container: this.$refs['legend'] as HTMLDivElement
+        });
+      }
+
+      view.watch(
+        'extent',
+        debounce((newValue: Extent) => {
+          this.setExtent(newValue);
+          this.$emit('extent-change', newValue);
+        }, 500)
+      );
+
+      whenTrue(view, 'stationary', () => {
+        if (view.zoom) {
+          this.setZoom({ value: view.zoom, move: false });
+        }
+      });
+
+      this.setView(view);
+
+      this.initHandlers(view);
+    } else {
+      this.view.container = this.$refs.map as HTMLDivElement;
+      this.initHandlers(this.view);
     }
 
-    view.watch(
-      'extent',
-      debounce((newValue: Extent) => {
-        this.setExtent(newValue);
-        this.$emit('extent-change', newValue);
-      }, 500)
-    );
-
-    view.on('click', (event: __esri.MapViewClickEvent) => {
-      this.$emit('click', event);
-    });
-
-    whenTrue(view, 'stationary', () => {
-      if (view.zoom) {
-        this.setZoom({ value: view.zoom, move: false });
-      }
-    });
-
-    this.setView(view);
+    this.setLayers(this.layers);
   }
 });
 </script>
