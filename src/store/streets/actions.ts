@@ -172,6 +172,7 @@ export const actions: ActionTree<StreetState, RootState> = {
               estimatedTimeframe
             }`
             }
+            ${street.masterStreetPlans ? '' : `masterStreetPlans { id label }`}
           }
         }`.replace(/\s+/g, ' ')
         }
