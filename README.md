@@ -1,4 +1,5 @@
 # Interactive Transportation System Plan
+[![mike-mcdonald](https://circleci.com/gh/mike-mcdonald/interactive-tsp.svg?style=svg)](https://circleci.com/gh/mike-mcdonald/interactive-tsp)
 
 ## Project setup
 ```
