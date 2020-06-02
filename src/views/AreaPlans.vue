@@ -1,10 +1,10 @@
 <template>
   <main class="flex flex-col-reverse sm:flex-row md:flex-col-reverse lg:flex-row">
-    <h1 class="sr-only">Master street plans</h1>
+    <h1 class="sr-only">Area plans</h1>
     <section
       class="w-full sm:w-1/3 md:w-full lg:w-1/3 xl:w-1/4 h-full sm:h-screen md:h-full lg:h-(screen-16) overflow-y-auto border-t sm:border-t-0 md:border-t lg:border-t-0 sm:border-r md:border-r-0 lg:border-r border-black"
     >
-      <section v-if="!$route.params.id" class="m-2">
+      <section v-if="!$route.params.slug" class="m-2">
         <header>
           <address-suggest v-on:candidate-select="goToAddress" />
         </header>
@@ -41,37 +41,34 @@
           </main>
         </section>
         <ul class="list-none">
-          <li v-for="plan in filteredPlans" :key="plan.id">
-            <plan-listing :plan="plan">
-              <template v-slot>
-                <h3 class="text-lg">{{ plan.label }}</h3>
-                <span>{{ plan.features.length }} features</span>
-              </template>
-            </plan-listing>
+          <li v-for="plan in filteredPlans" :key="plan.slug">
+            <plan-listing :plan="plan" />
           </li>
         </ul>
       </section>
       <section v-else class="m-2">
         <div>
           <router-link
-            to="/master_street_plans"
+            to="/area_plans"
             class="border-current border-b-2 transition ease-in-out duration-150 hover:text-blue-600 focus:text-blue-600"
             >Back to results</router-link
           >
         </div>
+        <pager
+          class="my-3"
+          v-if="plansList && plansList.length > 1"
+          v-model="selectionIndex"
+          :list="plansList"
+          @next="handlePlanChange(selectionIndex + 1)"
+          @prev="handlePlanChange(selectionIndex - 1)"
+        />
         <main v-if="selectedPlan">
           <plan-full :plan="selectedPlan" />
         </main>
       </section>
     </section>
-    <section class="w-full h-screen-50 lg:h-(screen-16)">
-      <app-map :layers="layers" v-on:click="handleClick" @pointer-hit="handlePointerHit">
-        <template v-slot:top-right>
-          <section v-if="selectedFeature" class="w-48 md:w-80 p-4 border-2 border-black rounded shadow bg-white">
-            <span>{{ selectedFeature.label }}</span>
-          </section>
-        </template>
-      </app-map>
+    <section class="w-full h-screen lg:h-(screen-16)">
+      <app-map :layers="layers" v-on:click="handleClick" />
     </section>
   </main>
 </template>
@@ -87,15 +84,17 @@ import proj4 from 'proj4';
 
 import AddressSuggest from '@/components/AddressSuggest.vue';
 import AppMap from '@/components/Map.vue';
-import PlanFull from '@/components/master_street_plans/Full.vue';
-import PlanListing from '@/components/master_street_plans/List.vue';
-import { FEATURE_LAYER_REGEX } from '@/store/master_street_plans/actions';
+import Pager from '@/components/Pager.vue';
+import PlanFull from '@/components/area_plans/Full.vue';
+import PlanListing from '@/components/area_plans/List.vue';
+import { hash } from '@/store/utils';
 
 export default {
-  name: 'MasterStreetPlans',
+  name: 'AreaPlans',
   components: {
     AddressSuggest,
     AppMap,
+    Pager,
     PlanFull,
     PlanListing
   },
@@ -106,18 +105,19 @@ export default {
       showStreets: true,
       showFilters: true,
       filterExtent: true,
-      selectedFeature: undefined
+      plansList: [],
+      selectionIndex: 0
     };
   },
   computed: {
     ...mapState(['message']),
     ...mapState('map', ['extent', 'view']),
     ...mapState('portlandmaps', ['candidates']),
-    ...mapState('masterStreetPlans', {
+    ...mapState('areaPlans', {
+      layers: state => state.layers,
       plans: state => state.list,
       selectedPlan: state => state.selected
     }),
-    ...mapGetters('masterStreetPlans', ['layers']),
     filteredPlans() {
       let plans = this.plans;
 
@@ -142,44 +142,36 @@ export default {
     ...mapMutations('masterStreetPlans', ['setSelected']),
     ...mapActions('map', ['setLocation', 'resetExtent']),
     ...mapActions('masterStreetPlans', ['findPlans', 'selectPlan', 'highlightPlan']),
-    handleClick(event) {
-      this.view.hitTest(event).then(response => {
-        Array.from(response.results).som;
-        response.results.some(result => {
-          const graphic = result.graphic;
+    handlePlanChange(index) {
+      this.selectionIndex = index;
 
-          if (
-            graphic.layer.id == 'plan-areas' &&
-            graphic.attributes &&
-            graphic.attributes.OBJECTID != this.$route.params.id
-          ) {
-            this.$router.push({
-              name: 'master-street-plans',
-              params: { id: graphic.attributes.OBJECTID }
-            });
-            return true;
-          }
-
-          return false;
-        });
+      this.$router.push({
+        name: 'area-plans',
+        params: { slug: this.plansList[this.selectionIndex] }
       });
     },
-    handlePointerHit(results) {
-      if (this.selectedPlan) {
-        const features = results.reduce((acc, curr) => {
-          if (curr && curr.graphic && curr.graphic.attributes) {
-            const feature = this.selectedPlan.features.find(
-              feature => feature.name === curr.graphic.attributes.MasterStreetPlan
-            );
-            if (feature) {
-              acc.push(feature);
-            }
-          }
-          return acc;
-        }, new Array());
+    handleClick(event) {
+      this.view.hitTest(event).then(response => {
+        const plans = response.results.reduce((prev, curr) => {
+          // push each id to the pagination component
+          const graphic = curr.graphic;
 
-        this.selectedFeature = features.shift();
-      }
+          if (!graphic.attributes) return prev;
+
+          prev.add(`${graphic.attributes.OBJECTID}-${hash(graphic.attributes.Project_Name)}`);
+
+          return prev;
+        }, new Set());
+
+        this.plansList = Array.from(plans);
+
+        this.selectionIndex = 0;
+
+        this.$router.push({
+          name: 'area-plans',
+          params: { slug: this.plansList[0] }
+        });
+      });
     },
     goToAddress(address) {
       this.setLocation(address.location);
@@ -187,22 +179,22 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      vm.$store.dispatch('masterStreetPlans/findPlans');
+      vm.$store.dispatch('areaPlans/findPlans');
 
-      if (to.params.id) {
-        vm.$store.dispatch('masterStreetPlans/selectPlan', { id: to.params.id });
-        vm.$store.dispatch('masterStreetPlans/highlightPlan', { plan: { id: to.params.id }, move: true });
+      if (to.params.slug) {
+        vm.$store.dispatch('areaPlans/selectPlan', { slug: to.params.slug });
+        vm.$store.dispatch('areaPlans/highlightPlan', { plan: { slug: to.params.slug }, move: true });
       } else {
-        vm.$store.dispatch('masterStreetPlans/unselectPlan');
+        vm.$store.dispatch('areaPlans/unselectPlan');
       }
     });
   },
   beforeRouteUpdate(to, from, next) {
-    if (to.params.id) {
-      this.$store.dispatch('masterStreetPlans/selectPlan', { id: to.params.id });
-      this.$store.dispatch('masterStreetPlans/highlightPlan', { plan: { id: to.params.id }, move: true });
+    if (to.params.slug) {
+      this.$store.dispatch('areaPlans/selectPlan', { slug: to.params.slug });
+      this.$store.dispatch('areaPlans/highlightPlan', { plan: { slug: to.params.slug }, move: true });
     } else {
-      this.$store.dispatch('masterStreetPlans/unselectPlan');
+      this.$store.dispatch('areaPlans/unselectPlan');
     }
     next();
   }

@@ -104,3 +104,15 @@ export function customStemming(builder: Builder) {
   builder.pipeline.before(lunr.stemmer, pipelineFunction);
   builder.searchPipeline.before(lunr.stemmer, pipelineFunction);
 }
+
+export function hash(title: string) {
+  let hash = 0,
+    i,
+    chr;
+  for (i = 0; i < title.length; i++) {
+    chr = title.charCodeAt(i);
+    hash = (hash << 5) - hash + chr;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return Math.abs(hash);
+}

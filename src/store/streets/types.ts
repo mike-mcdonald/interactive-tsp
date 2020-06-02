@@ -2,6 +2,7 @@ import * as turf from '@turf/helpers';
 import { RGBColor, HSLColor } from 'd3-color';
 import Layer from 'esri/layers/Layer';
 
+import { AreaPlan } from '../area_plans/types';
 import { MasterStreetPlan } from '../master_street_plans/types';
 import { Project } from '../projects/types';
 
@@ -12,6 +13,7 @@ export interface Street {
   block?: number;
   classifications?: { [key: string]: string };
   projects?: Array<Project>;
+  areaPlans?: Array<AreaPlan>;
   masterStreetPlans?: Array<MasterStreetPlan>;
   geometry?: turf.LineString;
   minX?: number;

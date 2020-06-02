@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
 
 import { actions } from './actions';
+import areaPlans from './area_plans/index';
 import { map } from './map/index';
 import masterStreetPlans from './master_street_plans/index';
 import { mutations } from './mutations';
@@ -40,6 +41,7 @@ const store: StoreOptions<RootState> = {
   actions,
   mutations,
   modules: {
+    areaPlans,
     map,
     masterStreetPlans,
     portlandmaps,

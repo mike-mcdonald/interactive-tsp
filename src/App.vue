@@ -45,6 +45,13 @@
           <span>Master Street Plans</span>
         </router-link>
         <router-link
+          to="/area_plans"
+          class="mx-1 p-2 rounded-md hover:bg-cyan-700 focus:outline-none focus:bg-cyan-700"
+          active-class="bg-cyan-700"
+        >
+          <span>Area Plans</span>
+        </router-link>
+        <router-link
           to="/text"
           class="mx-1 p-2 rounded-md hover:bg-cyan-700 focus:outline-none focus:bg-cyan-700"
           active-class="bg-cyan-700"
@@ -77,6 +84,13 @@
           active-class="bg-cyan-700"
         >
           <span>Master Street Plans</span>
+        </router-link>
+        <router-link
+          to="/area_plans"
+          class="my-1 p-2 w-full rounded hover:bg-cyan-700 focus:outline-none focus:bg-cyan-700"
+          active-class="bg-cyan-700"
+        >
+          <span>Area Plans</span>
         </router-link>
         <router-link
           to="/text"
