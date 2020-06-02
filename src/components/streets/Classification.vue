@@ -15,7 +15,7 @@
             classifications
           </span>
         </label>
-        <button @click="show = !show">
+        <button class="flex-1 flex flex-col items-end" @click="show = !show">
           <i v-if="!show" v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
           <i v-if="show" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
         </button>
@@ -31,12 +31,15 @@
             @change="setVisibility(entry, $event.target.checked)"
           />
           <div
-            v-if="entry.color"
+            v-if="entry.symbol.type == 'color'"
             class="h-4 w-4 px-2 mx-2 border border-gray-900"
             :style="{
-              'background-color': entry.color.formatRgb()
+              'background-color': entry.symbol.value.formatRgb()
             }"
           ></div>
+          <div v-if="entry.symbol.type == 'image'" class="mx-2 border border-gray-900">
+            <img class="h-4 w-4" :src="`data:${entry.symbol.mime};base64,${entry.symbol.value}`" />
+          </div>
           <span class="px-2">
             <router-link
               :to="{

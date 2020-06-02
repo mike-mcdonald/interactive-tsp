@@ -41,7 +41,6 @@ export default Vue.extend({
   computed: {
     classes() {
       return [
-        `ml-${+this.depth * 2}`,
         'px-2',
         'py-1',
         'flex',

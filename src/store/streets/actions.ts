@@ -10,7 +10,7 @@ import proj4 from 'proj4';
 import { Extent } from 'esri/geometry';
 import { v4 as uuidv4 } from 'uuid';
 
-import { esriGraphics } from '../utils';
+import { esriGraphics, hash } from '../utils';
 import { feature } from '@turf/helpers';
 
 // ESRI maps use this wkid
@@ -172,6 +172,8 @@ export const actions: ActionTree<StreetState, RootState> = {
               estimatedTimeframe
             }`
             }
+            ${street.masterStreetPlans ? '' : `masterStreetPlans { id label }`}
+            ${street.areaPlans ? '' : `areaPlans { id name }`}
           }
         }`.replace(/\s+/g, ' ')
         }
@@ -190,11 +192,18 @@ export const actions: ActionTree<StreetState, RootState> = {
             { root: true }
           );
         }
-        let data = res.data.data;
+        let street = res.data.data.street?.map(street => {
+          if (street.areaPlans) {
+            street.areaPlans = street.areaPlans.map(plan => {
+              return Object.assign({ slug: `${plan.id}-${hash(plan.name)}` }, plan);
+            });
+          }
+          return street;
+        });
 
-        if (data.street) {
-          dispatch('highlightStreet', { street: data.street[0], move: true });
-          commit('setSelectedStreet', data.street);
+        if (street) {
+          dispatch('highlightStreet', { street: street[0], move: true });
+          commit('setSelectedStreet', street);
         }
       })
       .catch(() => {
@@ -210,7 +219,7 @@ export const actions: ActionTree<StreetState, RootState> = {
         );
       });
   },
-  highlightStreet({ commit }, { street, move }: { street: Street; move: boolean }) {
+  highlightStreet({ commit, rootGetters }, { street, move }: { street: Street; move: boolean }) {
     if (street.geometry) {
       let graphics = esriGraphics(street.geometry);
       commit('map/setGraphics', graphics, { root: true });
@@ -219,8 +228,8 @@ export const actions: ActionTree<StreetState, RootState> = {
           target: graphics
         };
         const l = length(feature(street.geometry), { units: 'meters' });
-        if (l < 500) {
-          target.zoom = 11;
+        if (l < 200) {
+          target.zoom = rootGetters['map/focusLevel'];
         }
         commit('map/goTo', target, { root: true });
       }

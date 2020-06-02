@@ -3,44 +3,44 @@
     <h1 class="mb-3 text-3xl lg:text-4xl">{{ project.name }}</h1>
     <p class="my-3 text-xl text-gray-700">{{ project.description }}</p>
     <dl>
-      <div class="my-3 xl:grid xl:grid-cols-2 xl:gap-3">
-        <dt class="font-semibold">Project number</dt>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 my-3">
+        <dt class="text-gray-700">Project number</dt>
         <dd>{{ project.number }}</dd>
       </div>
-      <div class="my-3 xl:grid xl:grid-cols-2 xl:gap-3">
-        <dt class="font-semibold">Transportation plan ID</dt>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 my-3">
+        <dt class="text-gray-700">Transportation plan ID</dt>
         <dd>{{ project.id }}</dd>
       </div>
-      <div class="my-3 xl:grid xl:grid-cols-2 xl:gap-3">
-        <dt class="font-semibold">Location</dt>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 my-3">
+        <dt class="text-gray-700">Location</dt>
         <dd>{{ project.location }}</dd>
       </div>
-      <div class="my-3 xl:grid xl:grid-cols-2 xl:gap-3">
-        <dt class="font-semibold">Lead agency</dt>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 my-3">
+        <dt class="text-gray-700">Lead agency</dt>
         <dd>{{ project.agency }}</dd>
       </div>
-      <div class="my-3 xl:grid xl:grid-cols-2 xl:gap-3">
-        <dt class="font-semibold">Estimated cost</dt>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 my-3">
+        <dt class="text-gray-700">Estimated cost</dt>
         <dd>{{ project.estimatedCost ? project.estimatedCost.toLocaleString() : 'N/A' }}</dd>
       </div>
-      <div class="my-3 xl:grid xl:grid-cols-2 xl:gap-3">
-        <dt class="font-semibold">Estimated time frame</dt>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 my-3">
+        <dt class="text-gray-700">Estimated time frame</dt>
         <dd>{{ project.estimatedTimeframe }}</dd>
       </div>
-      <div class="my-3 xl:grid xl:grid-cols-2 xl:gap-3">
-        <dt class="font-semibold">Project district</dt>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 my-3">
+        <dt class="text-gray-700">Project district</dt>
         <dd>{{ project.district }}</dd>
       </div>
-      <div class="my-3 xl:grid xl:grid-cols-2 xl:gap-3">
-        <dt class="font-semibold">Facility owner</dt>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 my-3">
+        <dt class="text-gray-700">Facility owner</dt>
         <dd>{{ project.facilityOwner }}</dd>
       </div>
-      <div class="my-3 xl:grid xl:grid-cols-2 xl:gap-3">
-        <dt class="font-semibold">Pattern area</dt>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 my-3">
+        <dt class="text-gray-700">Pattern area</dt>
         <dd>{{ project.patternArea }}</dd>
       </div>
-      <div class="my-3 xl:grid xl:grid-cols-2 xl:gap-3">
-        <dt class="font-semibold">Funding category</dt>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 my-3">
+        <dt class="text-gray-700">Funding category</dt>
         <dd>{{ project.fundingCategory }}</dd>
       </div>
     </dl>

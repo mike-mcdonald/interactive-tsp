@@ -8,6 +8,8 @@ export interface Message {
 }
 
 export interface RootState {
+  alerts?: Array<Message>;
   messages: Array<Message>;
   graphqlUrl: string;
+  map?: MapState;
 }

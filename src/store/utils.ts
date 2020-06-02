@@ -10,17 +10,17 @@ export function esriGeometry(geometry: Geometry): ArcGISParser.Geometry {
   return ArcGISParser.convert(geometry);
 }
 
-export function esriGraphics(geometry: Geometry): Graphic[] {
-  const fillColor = '#bfe7eb';
-  const outlineColor = '#00484e';
+export const fillColor = [191, 231, 235];
+export const outlineColor = [69, 92, 92];
 
+export function esriGraphics(geometry: Geometry): Graphic[] {
   switch (geometry.type) {
     case 'Point':
       return [
         new Graphic({
           geometry: new Point(esriGeometry(geometry)),
           symbol: new SimpleMarkerSymbol({
-            color: fillColor,
+            color: [...fillColor, 0.5],
             outline: {
               color: outlineColor,
               width: 2
@@ -33,7 +33,7 @@ export function esriGraphics(geometry: Geometry): Graphic[] {
         new Graphic({
           geometry: new Multipoint(esriGeometry(geometry)),
           symbol: new SimpleMarkerSymbol({
-            color: fillColor,
+            color: [...fillColor, 0.5],
             outline: {
               color: outlineColor,
               width: 2
@@ -47,14 +47,14 @@ export function esriGraphics(geometry: Geometry): Graphic[] {
         new Graphic({
           geometry: new Polyline(esriGeometry(geometry)),
           symbol: new SimpleLineSymbol({
-            color: outlineColor,
+            color: [...outlineColor, 0.5],
             width: 10
           })
         }),
         new Graphic({
           geometry: new Polyline(esriGeometry(geometry)),
           symbol: new SimpleLineSymbol({
-            color: fillColor,
+            color: [...fillColor, 0.5],
             width: 8
           })
         })
@@ -65,7 +65,7 @@ export function esriGraphics(geometry: Geometry): Graphic[] {
         new Graphic({
           geometry: new Polygon(esriGeometry(geometry)),
           symbol: new SimpleFillSymbol({
-            color: fillColor,
+            color: [...fillColor, 0.5],
             outline: {
               color: outlineColor,
               width: 2
@@ -103,4 +103,16 @@ export function customStemming(builder: Builder) {
   // searching pipeline
   builder.pipeline.before(lunr.stemmer, pipelineFunction);
   builder.searchPipeline.before(lunr.stemmer, pipelineFunction);
+}
+
+export function hash(title: string) {
+  let hash = 0,
+    i,
+    chr;
+  for (i = 0; i < title.length; i++) {
+    chr = title.charCodeAt(i);
+    hash = (hash << 5) - hash + chr;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return Math.abs(hash);
 }

@@ -1,8 +1,8 @@
 <template>
-  <main class="flex flex-col-reverse md:flex-row">
+  <main class="flex flex-col-reverse sm:flex-row md:flex-col-reverse lg:flex-row">
     <h1 class="sr-only">Project listings</h1>
     <section
-      class="w-full md:w-1/3 h-full md:h-(screen-16) overflow-y-auto border-t md:border-t-0 md:border-r border-black"
+      class="w-full sm:w-1/3 md:w-full lg:w-1/3 xl:w-1/4 h-full sm:h-screen md:h-full lg:h-(screen-16) overflow-y-auto border-t sm:border-t-0 md:border-t lg:border-t-0 sm:border-r md:border-r-0 lg:border-r border-black"
     >
       <section class="m-2">
         <div v-if="!$route.params.id">
@@ -30,13 +30,17 @@
           <section id="filters" class="my-2 border border-gray-500 rounded shadow bg-gray-100 text-gray-900">
             <header :class="{ 'border-b': showFilters }">
               <button class="p-2 w-full flex items-center justify-between" @click="showFilters = !showFilters">
-                <h2>Display settings</h2>
+                <h2 class="flex items-center">
+                  <i v-html="feather.icons['settings'].toSvg({ class: 'w-5 h-5' })" />
+                  <span class="px-2">Settings</span>
+                </h2>
                 <i v-if="!showFilters" v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
                 <i v-if="showFilters" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
               </button>
             </header>
             <main v-show="showFilters" :aria-expanded="`${showFilters}`" class="p-2">
-              <form @submit.prevent>
+              <form class="grid grid-cols-1 gap-1" @submit.prevent>
+                <h3 class="my-2 text-gray-800 text-lg">Project settings</h3>
                 <div v-for="model in dataset" :key="model.key">
                   <label class="flex items-center" :for="model.key">
                     <input
@@ -54,6 +58,23 @@
                     ></div>
                     <span>{{ model.label }}</span>
                   </label>
+                </div>
+                <h3 class="my-2 text-gray-800 text-lg">Map extent settings</h3>
+                <div>
+                  <label class="flex items-center">
+                    <input type="checkbox" id="filterExtent" v-model="filterExtent" />
+
+                    <span class="px-2">Filter projects by map extent</span>
+                  </label>
+                </div>
+                <div class="my-2">
+                  <button
+                    class="px-2 py-1 border border-blue-900 rounded-md bg-blue-500 text-blue-100 flex items-center"
+                    @click="resetExtent"
+                  >
+                    <i v-html="feather.icons['maximize-2'].toSvg({ class: 'w-5 h-5' })" />
+                    <span class="pl-2">Reset map extent</span>
+                  </button>
                 </div>
               </form>
             </main>
@@ -135,7 +156,9 @@
         </div>
       </section>
     </section>
-    <section class="w-full md:w-2/3 h-screen-50 md:h-(screen-16)">
+    <section
+      class="w-full sm:w-2/3 md:w-full lg:w-2/3 xl:w-3/4 h-screen-50 sm:h-screen md:h-screen-50 lg:h-(screen-16) overflow-y-auto"
+    >
       <app-map :layers="mapLayers" v-on:click="handleClick">
         <template v-slot:manual></template>
       </app-map>
@@ -148,7 +171,8 @@ import Component from 'vue-class-component';
 import { RawLocation, Route } from 'vue-router';
 import { mapState, mapActions, mapGetters, mapMutations } from 'vuex';
 
-import { BBox } from '@turf/helpers';
+import intersects from '@turf/boolean-intersects';
+import { BBox, Feature, Polygon, feature } from '@turf/helpers';
 import feather from 'feather-icons';
 
 import { Extent } from 'esri/geometry';
@@ -162,6 +186,8 @@ import Search from '@/components/icons/Search.vue';
 
 import { ProjectState, Project, ViewModel } from '../store/projects/types';
 import { AddressCandidate } from '../store/portlandmaps/types';
+import bboxPolygon from '@turf/bbox-polygon';
+import proj4 from 'proj4';
 
 @Component({
   name: 'Projects',
@@ -177,7 +203,7 @@ import { AddressCandidate } from '../store/portlandmaps/types';
   },
   computed: {
     ...mapState(['message']),
-    ...mapState('map', ['view']),
+    ...mapState('map', ['view', 'extent']),
     ...mapState('projects', {
       models: (state: ProjectState) => state.models,
       projects: (state: ProjectState) => state.list,
@@ -186,7 +212,7 @@ import { AddressCandidate } from '../store/portlandmaps/types';
     ...mapGetters('projects', ['mapLayers'])
   },
   methods: {
-    ...mapActions('map', ['setLayerVisibility']),
+    ...mapActions('map', ['setLayerVisibility', 'resetExtent']),
     ...mapMutations('projects', ['setModels']),
     ...mapActions('projects', ['findProjects', 'highlightProject'])
   },
@@ -214,20 +240,17 @@ import { AddressCandidate } from '../store/portlandmaps/types';
           move: true
         });
       } else {
-        vm.$store.dispatch('map/resetExtent');
         vm.$store.dispatch('projects/findProjects');
       }
     });
   },
   beforeRouteUpdate(to: Route, from: Route, next: (to?: RawLocation | false | ((vm: Vue) => void)) => void) {
-    if (!to.params.id) {
-      this.$store.dispatch('map/resetExtent');
-    }
     next();
   }
 })
 export default class Projects extends Vue {
   view!: MapView;
+  extent!: Extent;
   models!: Array<ViewModel>;
   projects!: Array<Project>;
   index!: lunr.Index;
@@ -241,7 +264,8 @@ export default class Projects extends Vue {
   selectionIndex = 0;
   show = {};
   showProjects = true;
-  showFilters = false;
+  showFilters = true;
+  filterExtent = false;
   // this represents a list of projects that someone got to through clicking on the map
   //    it functions as a list of routes to traverse
   projectList = new Array<string>();
@@ -270,6 +294,20 @@ export default class Projects extends Vue {
           }) || { id: val.ref }
         );
       });
+    }
+
+    if (this.filterExtent) {
+      let { xmin, ymin, xmax, ymax } = this.extent;
+      [xmin, ymin] = proj4(this.extent.spatialReference.wkid.toString(), 'EPSG:4326', [xmin, ymin]);
+      [xmax, ymax] = proj4(this.extent.spatialReference.wkid.toString(), 'EPSG:4326', [xmax, ymax]);
+      const bbox: BBox = [xmin, ymin, xmax, ymax];
+      const polygon = bboxPolygon(bbox);
+      projects = projects.reduce((prev: Array<Project>, curr: Project) => {
+        if (intersects(polygon, feature(curr.geometry))) {
+          prev.push(curr);
+        }
+        return prev;
+      }, new Array<Project>());
     }
 
     return projects.reduce((prev: Array<Project>, curr: Project) => {

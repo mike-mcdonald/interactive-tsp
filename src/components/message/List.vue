@@ -1,7 +1,7 @@
 <template>
   <ul class="list-none">
     <transition-group name="pop" mode="out-in">
-      <message-item v-for="message in messages" :key="message.id" :item="message" />
+      <message-item class="my-2" v-for="message in messages" :key="message.id" :item="message" />
     </transition-group>
   </ul>
 </template>

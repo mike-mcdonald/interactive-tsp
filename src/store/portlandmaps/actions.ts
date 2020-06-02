@@ -9,7 +9,7 @@ export const actions: ActionTree<CandidateState, RootState> = {
     commit('setCandidates', undefined);
   },
   findCandidates({ commit, dispatch, rootState }, { search, searchType }) {
-    dispatch('clearMessage', { root: true });
+    dispatch('clearMessages', undefined, { root: true });
     axios
       .get(rootState.graphqlUrl, {
         params: {
@@ -52,11 +52,12 @@ export const actions: ActionTree<CandidateState, RootState> = {
             );
           } else {
             dispatch(
-              'addMessge',
+              'addMessage',
               {
                 id: 'address-not-found',
                 type: 'warning',
-                text: 'Could not find a match for that address.  Try entering a different or more specific address.'
+                text: 'Could not find a match for that address.  Try entering a different or more specific address.',
+                dismissible: true
               },
               { root: true }
             );
@@ -66,7 +67,7 @@ export const actions: ActionTree<CandidateState, RootState> = {
       .catch(() => {
         dispatch(
           'addMessage',
-          { id: 'portlandmaps-address-error', type: 'error', text: 'Error retrieving address!' },
+          { id: 'portlandmaps-address-error', type: 'error', text: 'Error retrieving address!', dismissible: true },
           { root: true }
         );
       });

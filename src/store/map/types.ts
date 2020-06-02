@@ -8,7 +8,6 @@ export interface MapState {
   map: Map;
   view?: MapView;
   extent: Extent;
-  basemaps: Basemap[];
   layers?: Layer[];
   zoom: {
     current?: number;

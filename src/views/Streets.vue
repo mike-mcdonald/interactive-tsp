@@ -1,8 +1,8 @@
 <template>
-  <main class="flex flex-col-reverse md:flex-row">
+  <main class="flex flex-col-reverse sm:flex-row md:flex-col-reverse lg:flex-row">
     <h1 class="sr-only">Street listings</h1>
     <section
-      class="w-full md:w-1/3 h-full md:h-(screen-16) overflow-y-auto border-t md:border-t-0 md:border-r border-black"
+      class="w-full sm:w-1/3 md:w-full lg:w-1/3 xl:w-1/4 h-full sm:h-screen md:h-full lg:h-(screen-16) overflow-y-auto border-t sm:border-t-0 md:border-t lg:border-t-0 sm:border-r md:border-r-0 lg:border-r border-black"
     >
       <section class="m-2">
         <message
@@ -13,18 +13,9 @@
           }"
         />
       </section>
-
       <section v-if="!$route.params.id" class="m-2">
         <address-suggest v-on:candidate-select="goToAddress" />
-        <section
-          id="filters"
-          class="my-2 border rounded shadow"
-          :class="[
-            enabledModels.size > 0 ? 'border-gray-500' : 'border-red-500',
-            enabledModels.size > 0 ? 'bg-gray-100' : 'bg-red-100',
-            enabledModels.size > 0 ? 'text-gray-900' : 'text-red-900'
-          ]"
-        >
+        <section id="filters" class="my-2 border border-gray-500 rounded shadow bg-gray-100 text-gray-900">
           <header
             class="border-gray-500"
             :class="{
@@ -35,7 +26,10 @@
               class="p-2 w-full flex items-center justify-between focus:outline-none focus:shadow-outline"
               @click="showFilters = !showFilters"
             >
-              <h2>Display settings</h2>
+              <h2 class="flex items-center">
+                <i v-html="feather.icons['settings'].toSvg({ class: 'w-5 h-5' })" />
+                <span class="px-2">Settings</span>
+              </h2>
               <i v-if="!showFilters" v-html="feather.icons['chevron-down'].toSvg({ class: 'w-5 h-5' })" />
               <i v-if="showFilters" v-html="feather.icons['chevron-up'].toSvg({ class: 'w-5 h-5' })" />
             </button>
@@ -113,7 +107,9 @@
         </div>
       </transition>
     </section>
-    <section class="w-full md:w-2/3 h-screen-50 md:h-(screen-16)">
+    <section
+      class="w-full sm:w-2/3 md:w-full lg:w-2/3 xl:w-3/4 h-screen-50 sm:h-screen md:h-screen-50 lg:h-(screen-16) overflow-y-auto"
+    >
       <app-map
         :layers="
           models.reduce((prev, curr) => {
@@ -154,7 +150,7 @@ export default {
       showInfo: {},
       feather,
       showStreets: true,
-      showFilters: false,
+      showFilters: true,
       selectionIndex: 0
     };
   },

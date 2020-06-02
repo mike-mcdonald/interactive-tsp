@@ -1,15 +1,16 @@
-import { ActionTree } from 'vuex';
-import { ProjectState, Project } from './types';
-import { RootState } from '../types';
-
 import bbox from '@turf/bbox';
 import bboxPolygon from '@turf/bbox-polygon';
 import axios from 'axios';
-import { Extent, Polygon } from 'esri/geometry';
+import { Polygon } from 'esri/geometry';
 import Graphic from 'esri/Graphic';
 import lunr from 'lunr';
 
-import { esriGraphics, customStemming, esriGeometry } from '../utils';
+import { ActionTree } from 'vuex';
+
+import { defaultExtent } from '../map';
+import { RootState } from '../types';
+import { customStemming, esriGeometry, esriGraphics } from '../utils';
+import { Project, ProjectState } from './types';
 
 export const actions: ActionTree<ProjectState, RootState> = {
   async findProjects({ state, commit, dispatch, rootState }) {
@@ -17,15 +18,9 @@ export const actions: ActionTree<ProjectState, RootState> = {
 
     dispatch('addMessage', { id: 'projects-retrieving', type: 'info', text: 'Retrieving projects...' }, { root: true });
 
-    const extent = new Extent({
-      spatialReference: { wkid: 102100 },
-      xmin: -13678470.214582363,
-      ymin: 5685553.212194719,
-      xmax: -13629932.70162134,
-      ymax: 5723122.011596833
-    });
-
     let projects = new Array<Project>();
+
+    const extent = defaultExtent;
 
     const { xmin, ymin, xmax, ymax } = extent;
 

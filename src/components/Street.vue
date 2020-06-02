@@ -4,16 +4,16 @@
     <p class="my-3 text-2xl text-gray-700" v-if="street.block">{{ street.block }} block</p>
     <section>
       <dl>
-        <div class="my-3 xl:grid xl:grid-cols-2 xl:gap-3">
-          <dt class="font-semibold">Transportation plan ID</dt>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 my-3">
+          <dt class="text-gray-700">Transportation plan ID</dt>
           <dd>{{ street.id }}</dd>
         </div>
         <div
           v-for="(classification, index) in classificationKeys()"
           :key="index"
-          class="my-3 xl:grid xl:grid-cols-2 xl:gap-3"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 my-3"
         >
-          <dt class="font-semibold">
+          <dt class="text-gray-700">
             {{ classification.charAt(0).toUpperCase() + classification.slice(1) }} classification
           </dt>
           <dd>
@@ -94,6 +94,23 @@
         </ul>
       </section>
     </transition>
+    <section v-if="plans && plans.length > 0">
+      <h2 class="mb-3 text-2xl lg:text-3xl">Plans near this street</h2>
+      <ul class>
+        <li v-for="plan in plans" :key="plan.id">
+          <router-link
+            :to="`/${plan.type === 'master' ? 'master_street_plans' : 'area_plans'}/${plan.id}`"
+            class="block my-2 px-2 py-3 shadow border rounded bg-white hover:bg-blue-100 focus:bg-blue-100"
+          >
+            <span class="px-2 py-1 mb-2 bg-fog-300 text-fog-900 text-sm rounded-md shadow inline-block"
+              >{{ plan.type === 'master' ? 'Master street' : 'Area' }} plan
+            </span>
+            <h3>{{ plan.name }}</h3>
+            <p class="my-2 text-sm">{{ plan.description }}</p>
+          </router-link>
+        </li>
+      </ul>
+    </section>
   </article>
 </template>
 <script lang="ts">
@@ -101,6 +118,8 @@ import Vue from 'vue';
 import { mapActions, mapState, mapGetters } from 'vuex';
 
 import { Street, StreetState } from '@/store/streets/types';
+import { AreaPlan } from '../store/area_plans/types';
+import { MasterStreetPlan } from '../store/master_street_plans/types';
 
 export default Vue.extend({
   name: 'Street',
@@ -111,7 +130,44 @@ export default Vue.extend({
     }
   },
   computed: {
-    ...mapGetters('streets', ['classificationLabel', 'classificationColor'])
+    ...mapGetters('streets', ['classificationLabel', 'classificationColor']),
+    plans() {
+      const plans: Array<any> = [
+        ...this.street.masterStreetPlans.map((plan: MasterStreetPlan) => {
+          const { label, id } = plan;
+          return {
+            id,
+            name: label,
+            type: 'master'
+          };
+        }),
+        ...this.street.areaPlans.map((plan: AreaPlan) => {
+          const { name, slug } = plan;
+          return {
+            id: slug,
+            name,
+            type: 'area'
+          };
+        })
+      ].sort((a, b) => {
+        var nameA = (a.label || a.name)?.toUpperCase(); // ignore upper and lowercase
+        var nameB = (b.label || b.name)?.toUpperCase(); // ignore upper and lowercase
+
+        if (!nameA || !nameB) {
+          return Number.MAX_SAFE_INTEGER;
+        }
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
+
+        // names must be equal
+        return 0;
+      });
+      return plans;
+    }
   },
   methods: {
     classificationKeys: function() {
