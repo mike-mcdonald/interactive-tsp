@@ -42,7 +42,12 @@
         </section>
         <ul class="list-none">
           <li v-for="plan in filteredPlans" :key="plan.id">
-            <plan-listing :plan="plan" />
+            <plan-listing :plan="plan">
+              <template v-slot>
+                <h3 class="text-lg">{{ plan.label }}</h3>
+                <span>{{ plan.features.length }} features</span>
+              </template>
+            </plan-listing>
           </li>
         </ul>
       </section>
