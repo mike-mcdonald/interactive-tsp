@@ -64,10 +64,10 @@
         </main>
       </section>
     </section>
-    <section class="w-full h-screen lg:h-(screen-16)">
-      <app-map :layers="layers" v-on:click="handleClick">
+    <section class="w-full h-screen-50 lg:h-(screen-16)">
+      <app-map :layers="layers" v-on:click="handleClick" @pointer-hit="handlePointerHit">
         <template v-slot:top-right>
-          <section v-if="selectedFeature" class="p-4 border-2 border-black rounded shadow bg-white">
+          <section v-if="selectedFeature" class="w-48 md:w-80 p-4 border-2 border-black rounded shadow bg-white">
             <span>{{ selectedFeature.label }}</span>
           </section>
         </template>
@@ -163,6 +163,23 @@ export default {
           return false;
         });
       });
+    },
+    handlePointerHit(results) {
+      if (this.selectedPlan) {
+        const features = results.reduce((acc, curr) => {
+          if (curr && curr.graphic && curr.graphic.attributes) {
+            const feature = this.selectedPlan.features.find(
+              feature => feature.name === curr.graphic.attributes.MasterStreetPlan
+            );
+            if (feature) {
+              acc.push(feature);
+            }
+          }
+          return acc;
+        }, new Array());
+
+        this.selectedFeature = features.shift();
+      }
     },
     goToAddress(address) {
       this.setLocation(address.location);
