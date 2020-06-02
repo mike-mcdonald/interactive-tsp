@@ -6,8 +6,10 @@
     @mouseover.native="highlightPlan({ plan })"
     @focus.native="highlightPlan({ plan })"
   >
-    <span class="px-2 py-1 mb-2 bg-fog-300 text-fog-900 text-sm rounded-md shadow inline-block">Area plan</span>
-    <h3 class="text-lg">{{ plan.name }}</h3>
+    <slot>
+      <span class="px-2 py-1 mb-2 bg-fog-300 text-fog-900 text-sm rounded-md shadow inline-block">Area plan</span>
+      <h3 class="text-lg">{{ plan.name }}</h3>
+    </slot>
   </router-link>
 </template>
 

@@ -1,6 +1,9 @@
 <template>
   <dl>
-    <field-item v-for="(field, index) in fields" :key="index" :name="field.name" :value="field.value" />
+    <slot>
+      <field-item v-for="(field, index) in fields" :key="index" :name="field.name" :value="field.value" />
+    </slot>
+    <slot name="extra-fields"></slot>
   </dl>
 </template>
 
