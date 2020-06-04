@@ -1,5 +1,5 @@
 <template>
-  <div class="p-1 flex items-center justify-between border-2 border-current rounded-md text-base">
+  <div class="p-1 flex items-center justify-between border-2 border-current rounded text-base">
     <button :id="id" role="switch" :aria-checked="String(value)" :aria-labelledby="`${id}-label`" @click="toggle">
       <span class="px-1 rounded">on</span>
       <span class="px-1 rounded">off</span>
