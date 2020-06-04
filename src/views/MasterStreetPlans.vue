@@ -67,7 +67,7 @@
     <section class="w-full h-screen-50 lg:h-(screen-16)">
       <app-map :layers="layers" v-on:click="handleClick" @pointer-hit="handlePointerHit">
         <template v-slot:top-right>
-          <section v-if="selectedFeature" class="w-48 md:w-80 p-4 border-2 border-black rounded shadow bg-white">
+          <section v-if="selectedFeature" class="p-4 border-2 border-black rounded shadow bg-white">
             <span>{{ selectedFeature.label }}</span>
           </section>
         </template>
@@ -144,7 +144,6 @@ export default {
     ...mapActions('masterStreetPlans', ['findPlans', 'selectPlan', 'highlightPlan']),
     handleClick(event) {
       this.view.hitTest(event).then(response => {
-        Array.from(response.results).som;
         response.results.some(result => {
           const graphic = result.graphic;
 

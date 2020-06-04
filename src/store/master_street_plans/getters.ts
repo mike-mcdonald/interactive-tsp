@@ -1,8 +1,6 @@
 import { GetterTree } from 'vuex';
 
-import Layer from 'esri/layers/Layer';
-
-import { MasterStreetPlanState, MasterStreetPlan } from './types';
+import { MasterStreetPlanState } from './types';
 import { RootState } from '../types';
 
 export const getters: GetterTree<MasterStreetPlanState, RootState> = {

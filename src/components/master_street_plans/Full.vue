@@ -13,10 +13,10 @@
     </dl>
     <h2 class="mb-3 text-2xl">Features of the plan</h2>
     <ul v-if="plan.features.length > 0" class="list-none">
-      <li v-for="feature in plan.features" :key="feature.name" class="my-2 px-2 flex items-center justify-between">
-        <toggle :id="feature.name" :value="feature.enabled" @input="toggleFeature(feature, $event)" class="mr-2" />
-        <span class="flex-1 pr-2">{{ feature.label }}</span>
-        <span class="px-2 py-1 bg-blue-500 text-white text-xs rounded-md">{{ feature.count }}</span>
+      <li v-for="feature in plan.features" :key="feature.name" class="my-2 flex items-center justify-between">
+        <toggle :id="feature.name" :value="feature.enabled" @changed="toggleFeature(feature, $event)" class="mr-2" />
+        <label :id="`${feature.name}-label`" class="flex-1 pr-2">{{ feature.label }}</label>
+        <span class="px-2 py-1 bg-blue-500 text-white text-sm rounded-md">{{ feature.count }}</span>
       </li>
     </ul>
     <span v-else class="italic">No features in this plan</span>
@@ -43,6 +43,7 @@ export default {
     ...mapActions('map', ['setLayerVisibility']),
     ...mapActions('masterStreetPlans', ['highlightFeatures']),
     toggleFeature(feature, enabled) {
+      feature.enabled = enabled;
       this.setLayerVisibility({ layerId: feature.layer.id, visible: enabled });
     }
   }

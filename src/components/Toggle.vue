@@ -1,60 +1,36 @@
 <template>
-  <div>
-    <div class="form-switch inline-block align-middle">
-      <input
-        v-bind:value="value"
-        v-model="isToggleOn"
-        v-on:change="$emit('input', $event.target.checked)"
-        type="checkbox"
-        :name="id"
-        :id="id"
-        class="form-switch-checkbox"
-      />
-      <label class="form-switch-label" :for="id"></label>
-    </div>
+  <div class="p-1 flex items-center justify-between border-2 border-current rounded text-base">
+    <button :id="id" role="switch" :aria-checked="String(value)" :aria-labelledby="`${id}-label`" @click="toggle">
+      <span class="px-1 rounded">on</span>
+      <span class="px-1 rounded">off</span>
+    </button>
   </div>
 </template>
 
 <script>
+// component inspired by https://inclusive-components.design/toggle-button/
 export default {
-  mounted() {
-    this.isToggleOn = this.value;
+  props: {
+    id: {
+      type: String,
+      required: true
+    },
+    value: {
+      type: Boolean,
+      required: true
+    }
   },
-  props: ['id', 'value'],
-  data() {
-    return {
-      isToggleOn: false
-    };
+  methods: {
+    toggle() {
+      this.$emit('changed', !this.value);
+    }
   }
 };
 </script>
 
-<style lang="scss">
-/* CHECKBOX TOGGLE SWITCH */
-.form-switch {
-  @apply relative select-none w-12 mr-2 leading-normal;
-}
-.form-switch-checkbox {
-  @apply hidden;
-}
-.form-switch-label {
-  @apply block overflow-hidden cursor-pointer bg-white border border-gray-500 rounded-full h-6;
-  transition: background-color 0.2s ease-in;
-}
-.form-switch-label:before {
-  @apply absolute block bg-white inset-y-0 w-6 border border-gray-500 rounded-full -ml-1;
-
-  right: 50%;
-  content: '';
-  transition: all 0.2s ease-in;
-}
-.form-switch-checkbox:checked + .form-switch-label,
-.form-switch-checkbox:checked + .form-switch-label:before {
-}
-.form-switch-checkbox:checked + .form-switch-label {
-  @apply bg-green-500 shadow-none;
-}
-.form-switch-checkbox:checked + .form-switch-label:before {
-  @apply right-0;
+<style lang="scss" scoped>
+[role='switch'][aria-checked='true'] :first-child,
+[role='switch'][aria-checked='false'] :last-child {
+  @apply bg-black text-white;
 }
 </style>

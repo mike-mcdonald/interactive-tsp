@@ -42,7 +42,11 @@
         </section>
         <ul class="list-none">
           <li v-for="plan in filteredPlans" :key="plan.slug">
-            <plan-listing :plan="plan" />
+            <plan-listing :plan="plan">
+              <template v-slot>
+                <h3 class="text-lg">{{ plan.name }}</h3>
+              </template>
+            </plan-listing>
           </li>
         </ul>
       </section>
@@ -67,7 +71,7 @@
         </main>
       </section>
     </section>
-    <section class="w-full h-screen lg:h-(screen-16)">
+    <section class="w-full h-screen-50 lg:h-(screen-16)">
       <app-map :layers="layers" v-on:click="handleClick" />
     </section>
   </main>

@@ -159,9 +159,7 @@
     <section
       class="w-full sm:w-2/3 md:w-full lg:w-2/3 xl:w-3/4 h-screen-50 sm:h-screen md:h-screen-50 lg:h-(screen-16) overflow-y-auto"
     >
-      <app-map :layers="mapLayers" v-on:click="handleClick">
-        <template v-slot:manual></template>
-      </app-map>
+      <app-map :layers="mapLayers" v-on:click="handleClick" />
     </section>
   </main>
 </template>
