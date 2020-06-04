@@ -118,64 +118,59 @@ export default Vue.extend({
     }
   },
   mounted: function() {
-    if (!this.view) {
-      const view = new MapView({
-        container: this.$refs.map as HTMLDivElement,
-        map: this.map,
-        extent: this.extent
-      });
+    const view = new MapView({
+      container: this.$refs.map as HTMLDivElement,
+      map: this.map,
+      extent: this.extent
+    });
 
-      view.ui.remove('zoom');
+    view.ui.remove('zoom');
 
-      view.ui.add(this.$refs['top-left'] as HTMLDivElement, {
-        position: 'top-left',
-        index: 2
-      });
-      view.ui.add(this.$refs['top-right'] as HTMLDivElement, {
-        position: 'top-right',
-        index: 2
-      });
-      view.ui.add(this.$refs['bottom-left'] as HTMLDivElement, {
-        position: 'bottom-left',
-        index: 2
-      });
-      view.ui.add(this.$refs['bottom-right'] as HTMLDivElement, {
-        position: 'bottom-right',
-        index: 2
-      });
-      view.ui.add(this.$refs['manual'] as HTMLDivElement, {
-        position: 'manual',
-        index: 2
-      });
+    view.ui.add(this.$refs['top-left'] as HTMLDivElement, {
+      position: 'top-left',
+      index: 2
+    });
+    view.ui.add(this.$refs['top-right'] as HTMLDivElement, {
+      position: 'top-right',
+      index: 2
+    });
+    view.ui.add(this.$refs['bottom-left'] as HTMLDivElement, {
+      position: 'bottom-left',
+      index: 2
+    });
+    view.ui.add(this.$refs['bottom-right'] as HTMLDivElement, {
+      position: 'bottom-right',
+      index: 2
+    });
+    view.ui.add(this.$refs['manual'] as HTMLDivElement, {
+      position: 'manual',
+      index: 2
+    });
 
-      if (this.legend) {
-        new Legend({
-          view,
-          container: this.$refs['legend'] as HTMLDivElement
-        });
-      }
-
-      view.watch(
-        'extent',
-        debounce((newValue: Extent) => {
-          this.setExtent(newValue);
-          this.$emit('extent-change', newValue);
-        }, 500)
-      );
-
-      whenTrue(view, 'stationary', () => {
-        if (view.zoom) {
-          this.setZoom({ value: view.zoom, move: false });
-        }
+    if (this.legend) {
+      new Legend({
+        view,
+        container: this.$refs['legend'] as HTMLDivElement
       });
-
-      this.setView(view);
-
-      this.initHandlers(view);
-    } else {
-      this.view.container = this.$refs.map as HTMLDivElement;
-      this.initHandlers(this.view);
     }
+
+    view.watch(
+      'extent',
+      debounce((newValue: Extent) => {
+        this.setExtent(newValue);
+        this.$emit('extent-change', newValue);
+      }, 500)
+    );
+
+    whenTrue(view, 'stationary', () => {
+      if (view.zoom) {
+        this.setZoom({ value: view.zoom, move: false });
+      }
+    });
+
+    this.setView(view);
+
+    this.initHandlers(view);
 
     this.setLayers(this.layers);
   }
