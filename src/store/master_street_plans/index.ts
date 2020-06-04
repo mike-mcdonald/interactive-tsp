@@ -1,7 +1,5 @@
 import { Module } from 'vuex';
 
-import { SimpleRenderer } from 'esri/renderers';
-import { SimpleMarkerSymbol, SimpleLineSymbol } from 'esri/symbols';
 import GraphicsLayer from 'esri/layers/GraphicsLayer';
 import FeatureLayer from 'esri/layers/FeatureLayer';
 
