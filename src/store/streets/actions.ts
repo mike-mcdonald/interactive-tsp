@@ -174,14 +174,13 @@ export const actions: ActionTree<StreetState, RootState> = {
               estimatedTimeframe
             }`
             }
-            ${street.masterStreetPlans ? '' : `masterStreetPlans { id label }`}
-            ${street.areaPlans ? '' : `areaPlans { id name }`}
+            ${street.masterStreetPlans ? '' : `masterStreetPlans { id name description adopted }`}
+            ${street.areaPlans ? '' : `areaPlans { id name adopted }`}
           }
         }`.replace(/\s+/g, ' ')
         }
       })
       .then(res => {
-        dispatch('clearMessages', undefined, { root: true });
         if (res.data.errors) {
           dispatch(
             'addMessage',
