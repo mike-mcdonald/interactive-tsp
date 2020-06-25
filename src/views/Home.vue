@@ -48,15 +48,6 @@
         </li>
       </ul>
     </section>
-    <section class="bg-cyan-500">
-      <iframe
-        class="w-full h-screen-66"
-        src="https://www.youtube.com/embed/qYlcbgRlYVE"
-        frameborder="0"
-        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen
-      ></iframe>
-    </section>
     <section class="container px-2 py-3 mx-auto">
       <h3>Using the TSP Digital Document</h3>
       <p>
