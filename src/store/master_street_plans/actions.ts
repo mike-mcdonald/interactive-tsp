@@ -14,13 +14,7 @@ import { defaultExtent } from '../map';
 import { RootState } from '../types';
 import { esriGeometry, esriGraphics } from '../utils';
 import { MasterStreetPlan, MasterStreetPlanFeature, MasterStreetPlanState } from './types';
-
-const LAYER_URLS = [
-  'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/29',
-  'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/30'
-];
-
-export const FEATURE_LAYER_REGEX = /msp-features-(?=points|lines)/;
+import FeatureFilter from 'esri/views/layers/support/FeatureFilter';
 
 export const actions: ActionTree<MasterStreetPlanState, RootState> = {
   async findPlans({ commit, dispatch, state, rootState }) {
@@ -129,7 +123,6 @@ export const actions: ActionTree<MasterStreetPlanState, RootState> = {
         }
       })
       .then(res => {
-        dispatch('clearMessages', undefined, { root: true });
         if (res.data.errors) {
           dispatch(
             'addMessage',
@@ -155,20 +148,7 @@ export const actions: ActionTree<MasterStreetPlanState, RootState> = {
                 type: curr.type,
                 alignment: curr.alignment,
                 count: 1,
-                enabled: true,
-                layer: new GroupLayer({
-                  id: `${curr.type}-${curr.alignment}-features`,
-                  title: `${curr.type}-${curr.alignment}`,
-                  visibilityMode: 'inherited',
-                  visible: true,
-                  layers: LAYER_URLS.map(url => {
-                    return new FeatureLayer({
-                      url,
-                      outFields: ['*'],
-                      definitionExpression: `PlanArea='${plan.name}' AND Type='${curr.type}' AND Alignment='${curr.alignment}'`
-                    });
-                  })
-                })
+                enabled: true
               });
             } else {
               feature.count = feature.count + 1;
@@ -176,6 +156,8 @@ export const actions: ActionTree<MasterStreetPlanState, RootState> = {
             return prev;
           }, new Array<MasterStreetPlanFeature>());
           commit('setSelected', plan);
+          dispatch('filterPlanFeatures');
+          dispatch('map/setLayerVisibility', { layerId: 'plan-features', visible: true }, { root: true });
         }
       })
       .catch(() => {
@@ -193,12 +175,8 @@ export const actions: ActionTree<MasterStreetPlanState, RootState> = {
 
     dispatch('removeMessage', 'master-street-plans-retrieving-street', { root: true });
   },
-  async unselectPlan({ state }) {
-    state.layers.forEach((layer: Layer, idx: number) => {
-      if (FEATURE_LAYER_REGEX.test(layer.id)) {
-        layer.visible = false;
-      }
-    });
+  async unselectPlan({ dispatch, state }) {
+    dispatch('map/setLayerVisibility', { layerId: 'plan-features', visible: false }, { root: true });
   },
   async highlightPlan({ commit, dispatch, state }, { plan, move }: { plan: MasterStreetPlan; move: boolean }) {
     let p = plan;
@@ -221,6 +199,53 @@ export const actions: ActionTree<MasterStreetPlanState, RootState> = {
         const extent = new Polygon(esriGeometry(bboxPolygon(bbox(p.geometry)).geometry));
         commit('map/goTo', extent, { root: true });
       }
+    }
+  },
+  toggleFeature({ commit, dispatch, state }, { feature, value }: { feature: MasterStreetPlanFeature; value: boolean }) {
+    if (state.selected && state.selected.features) {
+      const features = Array.from(
+        state.selected.features.map(f => {
+          if (f.id == feature.id) {
+            f.enabled = value;
+          }
+          return f;
+        })
+      );
+
+      commit('setFeatures', features);
+      dispatch('filterPlanFeatures');
+    }
+  },
+  filterPlanFeatures({ commit, state }) {
+    if (state.selected && state.selected.features) {
+      const enabledFeatures = state.selected.features.filter(val => val.enabled);
+
+      const typeRange = enabledFeatures.map(val => `'${val.type}'`).join(',');
+      const alignmentRange = enabledFeatures
+        .reduce((acc, curr) => {
+          if (curr.alignment) acc.push(`'${curr.alignment}'`);
+          return acc;
+        }, new Array<string>())
+        .join(',');
+
+      let filter = new FeatureFilter({
+        where: [
+          `PlanArea = '${state.selected.name}'`,
+          `Type IN (${typeRange})`,
+          alignmentRange.length > 0 ? `(Alignment IS NULL OR Alignment IN (${alignmentRange}))` : undefined
+        ].reduce((acc, curr, idx) => {
+          if (curr) {
+            acc = acc?.concat(idx > 0 ? ' AND ' : '', curr);
+          }
+          return acc;
+        }, '')
+      });
+
+      const featuresLayer: GroupLayer = state.layers.find(layer => layer.id === 'plan-features')! as GroupLayer;
+
+      featuresLayer.layers.forEach(layer => {
+        commit('map/setFilter', { layer, filter }, { root: true });
+      });
     }
   }
 };

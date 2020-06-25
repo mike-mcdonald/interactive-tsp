@@ -1,4 +1,3 @@
-import GroupLayer from 'esri/layers/GroupLayer';
 import Layer from 'esri/layers/Layer';
 import { Geometry } from 'geojson';
 
@@ -8,7 +7,6 @@ export interface MasterStreetPlanFeature {
   alignment: string;
   count: number;
   enabled: boolean;
-  layer: GroupLayer;
 }
 
 export interface MasterStreetPlan {

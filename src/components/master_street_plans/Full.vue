@@ -15,7 +15,7 @@
     <h2 class="mb-3 text-2xl">Features of the plan</h2>
     <ul v-if="plan.features.length > 0" class="list-none">
       <li v-for="feature in plan.features" :key="feature.id" class="my-2 flex items-center justify-between">
-        <toggle :id="feature.id" :value="feature.enabled" @changed="toggleFeature(feature, $event)" class="mr-2" />
+        <toggle :id="feature.id" :value="feature.enabled" @changed="handleToggle(feature, $event)" class="mr-2" />
         <label :id="`${feature.id}-label`" class="flex-1 pr-2">{{ feature.type }} {{ feature.alignment }}</label>
         <span class="px-2 py-1 bg-blue-500 text-white text-sm rounded-md">{{ feature.count }}</span>
       </li>
@@ -42,10 +42,9 @@ export default {
   },
   methods: {
     ...mapActions('map', ['setLayerVisibility']),
-    ...mapActions('masterStreetPlans', ['highlightFeatures']),
-    toggleFeature(feature, enabled) {
-      feature.enabled = enabled;
-      this.setLayerVisibility({ layerId: feature.layer.id, visible: enabled });
+    ...mapActions('masterStreetPlans', ['toggleFeature']),
+    handleToggle(feature, enabled) {
+      this.toggleFeature({ feature, value: enabled });
     }
   }
 };
