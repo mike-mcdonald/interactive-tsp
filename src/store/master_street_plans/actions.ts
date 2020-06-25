@@ -114,11 +114,11 @@ export const actions: ActionTree<MasterStreetPlanState, RootState> = {
           query: `{
           masterStreetPlan(id:"${plan ? plan.id : ''}") {
             id
-            ${plan.name ? '' : 'name'}
-            ${plan.description ? '' : 'description'}
+            name
+            description
             adopted
             document
-            ${plan.geometry ? '' : 'geometry { type coordinates }'}
+            geometry { type coordinates }
             features {
               id
               type
@@ -146,11 +146,12 @@ export const actions: ActionTree<MasterStreetPlanState, RootState> = {
 
         if (data.masterStreetPlan) {
           plan = data.masterStreetPlan[0];
+
           plan.features = plan.features?.reduce((prev, curr) => {
             let feature = prev.find(value => value.type == curr.type && value.alignment == curr.alignment);
             if (!feature) {
               prev.push({
-                id: `${curr.type.toLowerCase()}-${curr.alignment.toLowerCase()}`,
+                id: `${curr.type?.toLowerCase()}-${curr.alignment?.toLowerCase()}`,
                 type: curr.type,
                 alignment: curr.alignment,
                 count: 1,

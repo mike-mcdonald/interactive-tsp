@@ -63,7 +63,8 @@
       <app-map :layers="layers" v-on:click="handleClick" @pointer-hit="handlePointerHit">
         <template v-slot:top-right>
           <section v-if="selectedFeature" class="p-4 border-2 border-black rounded shadow bg-white">
-            <span>{{ selectedFeature.type }} ({{ selectedFeature.alignment }})</span>
+            <div>{{ selectedFeature.type }}</div>
+            <div v-if="selectedFeature.alignment" class="text-base text-gray-700">{{ selectedFeature.alignment }}</div>
           </section>
         </template>
       </app-map>
@@ -162,14 +163,10 @@ export default {
       if (this.selectedPlan) {
         const features = results.reduce((acc, curr) => {
           if (curr && curr.graphic && curr.graphic.attributes && curr.graphic.attributes.Type) {
-            const feature = this.selectedPlan.features.find(
-              feature =>
-                feature.id ===
-                `${curr.graphic.attributes.Type.toLowerCase()}-${curr.graphic.attributes.Alignment.toLowerCase()}`
-            );
-            if (feature) {
-              acc.push(feature);
-            }
+            acc.push({
+              type: curr.graphic.attributes.Type,
+              alignment: curr.graphic.attributes.Alignment
+            });
           }
           return acc;
         }, new Array());

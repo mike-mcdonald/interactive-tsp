@@ -16,17 +16,6 @@
           <dl>
             <div class="flex items-center my-1">
               <dt class="mr-2">
-                <i v-html="feather.icons['file-text'].toSvg({ class: 'w-4 h-4' })" />
-                <span class="sr-only">Documentation</span>
-              </dt>
-              <dd>
-                <a :href="plan.document" target="_blank" class="border-b-2 border-current">
-                  {{ plan.document }}
-                </a>
-              </dd>
-            </div>
-            <div class="flex items-center my-1">
-              <dt class="mr-2">
                 <i v-html="feather.icons['map-pin'].toSvg({ class: 'w-4 h-4' })" />
                 <span class="sr-only">Feature count</span>
               </dt>

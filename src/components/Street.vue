@@ -134,10 +134,10 @@ export default Vue.extend({
     plans() {
       const plans: Array<any> = [
         ...this.street.masterStreetPlans.map((plan: MasterStreetPlan) => {
-          const { label, id } = plan;
+          const { name, id } = plan;
           return {
             id,
-            name: label,
+            name,
             type: 'master'
           };
         }),
@@ -150,8 +150,8 @@ export default Vue.extend({
           };
         })
       ].sort((a, b) => {
-        var nameA = (a.label || a.name)?.toUpperCase(); // ignore upper and lowercase
-        var nameB = (b.label || b.name)?.toUpperCase(); // ignore upper and lowercase
+        var nameA = a.name?.toUpperCase(); // ignore upper and lowercase
+        var nameB = b.name?.toUpperCase(); // ignore upper and lowercase
 
         if (!nameA || !nameB) {
           return Number.MAX_SAFE_INTEGER;
