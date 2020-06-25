@@ -178,13 +178,13 @@ export const actions: ActionTree<MasterStreetPlanState, RootState> = {
           commit('setSelected', plan);
         }
       })
-      .catch((err: any) => {
+      .catch(() => {
         dispatch(
           'addMessage',
           {
             id: 'master-street-plans-error-retrieving',
             type: 'error',
-            text: JSON.stringify(err),
+            text: 'Error retrieving the selected master street plan!',
             dismissible: true
           },
           { root: true }

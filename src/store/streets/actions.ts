@@ -79,8 +79,6 @@ export const actions: ActionTree<StreetState, RootState> = {
         }
       })
       .then(res => {
-        dispatch('clearMessages', undefined, { root: true });
-
         if (res.data.errors) {
           dispatch(
             'addMessage',
@@ -129,6 +127,10 @@ export const actions: ActionTree<StreetState, RootState> = {
           { root: true }
         );
       });
+
+    dispatch('removeMessage', 'streets-retrieving', {
+      root: true
+    });
   },
   selectStreet({ commit, dispatch, rootState }, street: Street) {
     dispatch(
@@ -218,6 +220,8 @@ export const actions: ActionTree<StreetState, RootState> = {
           { root: true }
         );
       });
+
+    dispatch('removeMessage', 'streets-retrieving-street', { root: true });
   },
   highlightStreet({ commit, rootGetters }, { street, move }: { street: Street; move: boolean }) {
     if (street.geometry) {
