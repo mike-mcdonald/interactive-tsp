@@ -17,8 +17,8 @@ const state: MasterStreetPlanState = {
   layers: [
     new FeatureLayer({
       id: 'plan-areas',
-      url: 'https://services.arcgis.com/quVN97tn06YNGj9s/ArcGIS/rest/services/Master_Street_Plans/FeatureServer/3',
-      outFields: ['*']
+      url: 'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/31',
+      outFields: ['TranPlanID']
     }),
     new GraphicsLayer({
       id: 'plan-selection'

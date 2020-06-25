@@ -16,8 +16,8 @@ import { esriGeometry, esriGraphics } from '../utils';
 import { MasterStreetPlan, MasterStreetPlanFeature, MasterStreetPlanState } from './types';
 
 const LAYER_URLS = [
-  'https://services.arcgis.com/quVN97tn06YNGj9s/ArcGIS/rest/services/Master_Street_Plans/FeatureServer/1',
-  'https://services.arcgis.com/quVN97tn06YNGj9s/ArcGIS/rest/services/Master_Street_Plans/FeatureServer/2'
+  'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/29',
+  'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/30'
 ];
 
 export const FEATURE_LAYER_REGEX = /msp-features-(?=points|lines)/;
@@ -47,10 +47,11 @@ export const actions: ActionTree<MasterStreetPlanState, RootState> = {
           masterStreetPlans(bbox:[${xmin},${ymin},${xmax},${ymax}], spatialReference:${extent.spatialReference.wkid}){
             id
             name
-            label
+            description
+            adopted
+            document
             features {
-              name
-              label
+              id
             }
             geometry {
               type
@@ -111,16 +112,17 @@ export const actions: ActionTree<MasterStreetPlanState, RootState> = {
       .get<{ errors?: any[]; data: { masterStreetPlan?: Array<MasterStreetPlan> } }>(rootState.graphqlUrl, {
         params: {
           query: `{
-          masterStreetPlan(id:${plan ? plan.id : ''}) {
+          masterStreetPlan(id:"${plan ? plan.id : ''}") {
             id
             ${plan.name ? '' : 'name'}
-            ${plan.label ? '' : 'label'}
+            ${plan.description ? '' : 'description'}
+            adopted
             document
             ${plan.geometry ? '' : 'geometry { type coordinates }'}
             features {
               id
-              name
-              label
+              type
+              alignment
             }
           }
         }`.replace(/\s+/g, ' ')
@@ -145,23 +147,24 @@ export const actions: ActionTree<MasterStreetPlanState, RootState> = {
         if (data.masterStreetPlan) {
           plan = data.masterStreetPlan[0];
           plan.features = plan.features?.reduce((prev, curr) => {
-            let feature = prev.find(value => value.name == curr.name);
+            let feature = prev.find(value => value.type == curr.type && value.alignment == curr.alignment);
             if (!feature) {
               prev.push({
-                name: curr.name,
-                label: curr.label,
+                id: `${curr.type.toLowerCase()}-${curr.alignment.toLowerCase()}`,
+                type: curr.type,
+                alignment: curr.alignment,
                 count: 1,
                 enabled: true,
                 layer: new GroupLayer({
-                  id: `${curr.name}-features`,
-                  title: curr.label,
+                  id: `${curr.type}-${curr.alignment}-features`,
+                  title: `${curr.type}-${curr.alignment}`,
                   visibilityMode: 'inherited',
                   visible: true,
                   layers: LAYER_URLS.map(url => {
                     return new FeatureLayer({
                       url,
                       outFields: ['*'],
-                      definitionExpression: `MSP_Area='${plan.name}' AND MasterStreetPlan='${curr.name}'`
+                      definitionExpression: `PlanArea='${plan.name}' AND Type='${curr.type}' AND Alignment='${curr.alignment}'`
                     });
                   })
                 })
@@ -174,18 +177,20 @@ export const actions: ActionTree<MasterStreetPlanState, RootState> = {
           commit('setSelected', plan);
         }
       })
-      .catch(() => {
+      .catch((err: any) => {
         dispatch(
           'addMessage',
           {
             id: 'master-street-plans-error-retrieving',
             type: 'error',
-            text: 'Error retrieving the selected master street plan!',
+            text: JSON.stringify(err),
             dismissible: true
           },
           { root: true }
         );
       });
+
+    dispatch('removeMessage', 'master-street-plans-retrieving-street', { root: true });
   },
   async unselectPlan({ state }) {
     state.layers.forEach((layer: Layer, idx: number) => {
