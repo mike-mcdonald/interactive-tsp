@@ -42,12 +42,7 @@
         </section>
         <ul class="list-none">
           <li v-for="plan in filteredPlans" :key="plan.id">
-            <plan-listing :plan="plan">
-              <template v-slot>
-                <h3 class="text-lg">{{ plan.label }}</h3>
-                <span>{{ plan.features.length }} features</span>
-              </template>
-            </plan-listing>
+            <plan-listing :plan="plan" :show-type="false" />
           </li>
         </ul>
       </section>
@@ -68,7 +63,7 @@
       <app-map :layers="layers" v-on:click="handleClick" @pointer-hit="handlePointerHit">
         <template v-slot:top-right>
           <section v-if="selectedFeature" class="p-4 border-2 border-black rounded shadow bg-white">
-            <span>{{ selectedFeature.label }}</span>
+            <span>{{ selectedFeature.type }} ({{ selectedFeature.alignment }})</span>
           </section>
         </template>
       </app-map>
@@ -150,11 +145,11 @@ export default {
           if (
             graphic.layer.id == 'plan-areas' &&
             graphic.attributes &&
-            graphic.attributes.OBJECTID != this.$route.params.id
+            graphic.attributes.TranPlanID != this.$route.params.id
           ) {
             this.$router.push({
               name: 'master-street-plans',
-              params: { id: graphic.attributes.OBJECTID }
+              params: { id: graphic.attributes.TranPlanID }
             });
             return true;
           }
@@ -166,9 +161,11 @@ export default {
     handlePointerHit(results) {
       if (this.selectedPlan) {
         const features = results.reduce((acc, curr) => {
-          if (curr && curr.graphic && curr.graphic.attributes) {
+          if (curr && curr.graphic && curr.graphic.attributes && curr.graphic.attributes.Type) {
             const feature = this.selectedPlan.features.find(
-              feature => feature.name === curr.graphic.attributes.MasterStreetPlan
+              feature =>
+                feature.id ===
+                `${curr.graphic.attributes.Type.toLowerCase()}-${curr.graphic.attributes.Alignment.toLowerCase()}`
             );
             if (feature) {
               acc.push(feature);
