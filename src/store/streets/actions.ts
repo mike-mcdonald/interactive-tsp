@@ -173,7 +173,7 @@ export const actions: ActionTree<StreetState, RootState> = {
             }`
             }
             ${street.masterStreetPlans ? '' : `masterStreetPlans { id label }`}
-            ${street.areaPlans ? '' : `areaPlans { id name }`}
+            ${street.areaPlans ? '' : `areaPlans { id name description }`}
           }
         }`.replace(/\s+/g, ' ')
         }
@@ -193,9 +193,11 @@ export const actions: ActionTree<StreetState, RootState> = {
           );
         }
 
-        if (street) {
-          dispatch('highlightStreet', { street: street[0], move: true });
-          commit('setSelectedStreet', street);
+        let streets = res.data.data.street;
+
+        if (streets) {
+          dispatch('highlightStreet', { street: streets[0], move: true });
+          commit('setSelectedStreet', streets);
         }
       })
       .catch(() => {
@@ -219,6 +221,7 @@ export const actions: ActionTree<StreetState, RootState> = {
         const target: any = {
           target: graphics
         };
+        // for small features, don't zoom in too close
         const l = length(feature(street.geometry), { units: 'meters' });
         if (l < 200) {
           target.zoom = rootGetters['map/focusLevel'];
