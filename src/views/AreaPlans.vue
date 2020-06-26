@@ -4,7 +4,7 @@
     <section
       class="w-full sm:w-1/3 md:w-full lg:w-1/3 xl:w-1/4 h-full sm:h-screen md:h-full lg:h-(screen-16) overflow-y-auto border-t sm:border-t-0 md:border-t lg:border-t-0 sm:border-r md:border-r-0 lg:border-r border-black"
     >
-      <section v-if="!$route.params.slug" class="m-2">
+      <section v-if="!$route.params.id" class="m-2">
         <header>
           <address-suggest v-on:candidate-select="goToAddress" />
         </header>
@@ -41,7 +41,7 @@
           </main>
         </section>
         <ul class="list-none">
-          <li v-for="plan in filteredPlans" :key="plan.slug">
+          <li v-for="plan in filteredPlans" :key="plan.id">
             <plan-listing :plan="plan">
               <template v-slot>
                 <h3 class="text-lg">{{ plan.name }}</h3>
@@ -53,7 +53,7 @@
       <section v-else class="m-2">
         <div>
           <router-link
-            to="/area_plans"
+            to="/area-plans"
             class="border-current border-b-2 transition ease-in-out duration-150 hover:text-blue-600 focus:text-blue-600"
             >Back to results</router-link
           >
@@ -151,7 +151,7 @@ export default {
 
       this.$router.push({
         name: 'area-plans',
-        params: { slug: this.plansList[this.selectionIndex] }
+        params: { id: this.plansList[this.selectionIndex] }
       });
     },
     handleClick(event) {
@@ -162,7 +162,7 @@ export default {
 
           if (!graphic.attributes) return prev;
 
-          prev.add(`${graphic.attributes.OBJECTID}-${hash(graphic.attributes.Project_Name)}`);
+          prev.add(graphic.attributes.TranPlanID);
 
           return prev;
         }, new Set());
@@ -173,7 +173,7 @@ export default {
 
         this.$router.push({
           name: 'area-plans',
-          params: { slug: this.plansList[0] }
+          params: { id: this.plansList[0] }
         });
       });
     },
@@ -185,18 +185,18 @@ export default {
     next(vm => {
       vm.$store.dispatch('areaPlans/findPlans');
 
-      if (to.params.slug) {
-        vm.$store.dispatch('areaPlans/selectPlan', { slug: to.params.slug });
-        vm.$store.dispatch('areaPlans/highlightPlan', { plan: { slug: to.params.slug }, move: true });
+      if (to.params.id) {
+        vm.$store.dispatch('areaPlans/selectPlan', { id: to.params.id });
+        vm.$store.dispatch('areaPlans/highlightPlan', { plan: { id: to.params.id }, move: true });
       } else {
         vm.$store.dispatch('areaPlans/unselectPlan');
       }
     });
   },
   beforeRouteUpdate(to, from, next) {
-    if (to.params.slug) {
-      this.$store.dispatch('areaPlans/selectPlan', { slug: to.params.slug });
-      this.$store.dispatch('areaPlans/highlightPlan', { plan: { slug: to.params.slug }, move: true });
+    if (to.params.id) {
+      this.$store.dispatch('areaPlans/selectPlan', { id: to.params.id });
+      this.$store.dispatch('areaPlans/highlightPlan', { plan: { id: to.params.id }, move: true });
     } else {
       this.$store.dispatch('areaPlans/unselectPlan');
     }

@@ -5,22 +5,12 @@ import bboxPolygon from '@turf/bbox-polygon';
 import axios from 'axios';
 import Polygon from 'esri/geometry/Polygon';
 import Graphic from 'esri/Graphic';
-import FeatureLayer from 'esri/layers/FeatureLayer';
 import GraphicsLayer from 'esri/layers/GraphicsLayer';
-import GroupLayer from 'esri/layers/GroupLayer';
-import Layer from 'esri/layers/Layer';
 
 import { defaultExtent } from '../map';
 import { RootState } from '../types';
-import { esriGeometry, esriGraphics, hash } from '../utils';
+import { esriGeometry, esriGraphics } from '../utils';
 import { AreaPlan, AreaPlanState } from './types';
-
-const LAYER_URLS = [
-  'https://services.arcgis.com/quVN97tn06YNGj9s/ArcGIS/rest/services/Master_Street_Plans/FeatureServer/1',
-  'https://services.arcgis.com/quVN97tn06YNGj9s/ArcGIS/rest/services/Master_Street_Plans/FeatureServer/2'
-];
-
-export const FEATURE_LAYER_REGEX = /msp-features-(?=points|lines)/;
 
 export const actions: ActionTree<AreaPlanState, RootState> = {
   async findPlans({ commit, dispatch, state, rootState }) {
@@ -47,6 +37,7 @@ export const actions: ActionTree<AreaPlanState, RootState> = {
           areaPlans(bbox:[${xmin},${ymin},${xmax},${ymax}], spatialReference:${extent.spatialReference.wkid}){
             id
             name
+            description
             geometry {
               type
               coordinates
@@ -61,7 +52,7 @@ export const actions: ActionTree<AreaPlanState, RootState> = {
           {
             id: 'area-plans-error-retrieving',
             type: 'error',
-            text: 'Error retrieving master street plans!',
+            text: 'Error retrieving area plans!',
             dismissible: true
           },
           { root: true }
@@ -86,21 +77,17 @@ export const actions: ActionTree<AreaPlanState, RootState> = {
       );
     }
 
-    const plans = res.data.data.areaPlans?.map(plan => {
-      return Object.assign({ slug: `${plan.id}-${hash(plan.name)}` }, plan);
-    });
+    const plans = res.data.data.areaPlans;
 
     if (plans) commit('setList', plans);
   },
   selectPlan({ commit, dispatch, state, rootState }, plan: AreaPlan) {
-    plan.id = Number.parseInt(plan.slug.split('-').shift()!);
-
     dispatch(
       'addMessage',
       {
         id: 'area-plans-retrieving',
         type: 'info',
-        text: `Retrieving area plan ${plan.slug}...`
+        text: `Retrieving area plan ${plan.id}...`
       },
       { root: true }
     );
@@ -111,14 +98,15 @@ export const actions: ActionTree<AreaPlanState, RootState> = {
       .get<{ errors?: any[]; data: { areaPlan?: Array<AreaPlan> } }>(rootState.graphqlUrl, {
         params: {
           query: `{
-          areaPlan(id:${plan ? plan.id : ''}) {
+          areaPlan(id:"${plan ? plan.id : ''}") {
             id
-            ${plan.name ? '' : 'name'}
+            name
+            description
             manager
             adopted
             requirements
             document
-            ${plan.geometry ? '' : 'geometry { type coordinates }'}
+            geometry { type coordinates }
           }
         }`.replace(/\s+/g, ' ')
         }
@@ -139,7 +127,7 @@ export const actions: ActionTree<AreaPlanState, RootState> = {
         let data = res.data.data;
 
         if (data.areaPlan) {
-          plan = data.areaPlan.find(value => plan.slug == `${value.id}-${hash(value.name)}`)!;
+          plan = data.areaPlan.find(value => plan.id == value.id)!;
           commit('setSelected', plan);
         }
       })
@@ -149,7 +137,7 @@ export const actions: ActionTree<AreaPlanState, RootState> = {
           {
             id: 'area-plans-error-retrieving',
             type: 'error',
-            text: 'Error retrieving the selected master street plan!',
+            text: 'Error retrieving the selected plan!',
             dismissible: true
           },
           { root: true }
@@ -168,7 +156,7 @@ export const actions: ActionTree<AreaPlanState, RootState> = {
 
     if (!plan.geometry) {
       if (state.list.length == 0) await dispatch('findPlans');
-      p = state.list.find(value => plan.slug == `${value.id}-${hash(value.name)}`)!;
+      p = state.list.find(value => plan.id == value.id)!;
     }
 
     if (p.geometry) {

@@ -38,7 +38,7 @@ export default new Router({
       component: MasterStreetPlans
     },
     {
-      path: '/area_plans/:slug?',
+      path: '/area-plans/:id?',
       name: 'area-plans',
       component: AreaPlans
     }
