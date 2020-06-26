@@ -162,7 +162,7 @@ export default {
 
           if (!graphic.attributes) return prev;
 
-          prev.add(`${graphic.attributes.OBJECTID}-${hash(graphic.attributes.Project_Name)}`);
+          prev.add(graphic.attributes.TranPlanID);
 
           return prev;
         }, new Set());
