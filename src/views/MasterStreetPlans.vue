@@ -42,19 +42,14 @@
         </section>
         <ul class="list-none">
           <li v-for="plan in filteredPlans" :key="plan.id">
-            <plan-listing :plan="plan">
-              <template v-slot>
-                <h3 class="text-lg">{{ plan.label }}</h3>
-                <span>{{ plan.features.length }} features</span>
-              </template>
-            </plan-listing>
+            <plan-listing :plan="plan" :show-type="false" />
           </li>
         </ul>
       </section>
       <section v-else class="m-2">
         <div>
           <router-link
-            to="/master_street_plans"
+            to="/master-street-plans"
             class="border-current border-b-2 transition ease-in-out duration-150 hover:text-blue-600 focus:text-blue-600"
             >Back to results</router-link
           >
@@ -68,7 +63,8 @@
       <app-map :layers="layers" v-on:click="handleClick" @pointer-hit="handlePointerHit">
         <template v-slot:top-right>
           <section v-if="selectedFeature" class="p-4 border-2 border-black rounded shadow bg-white">
-            <span>{{ selectedFeature.label }}</span>
+            <div>{{ selectedFeature.type }}</div>
+            <div v-if="selectedFeature.alignment" class="text-base text-gray-700">{{ selectedFeature.alignment }}</div>
           </section>
         </template>
       </app-map>
@@ -150,11 +146,11 @@ export default {
           if (
             graphic.layer.id == 'plan-areas' &&
             graphic.attributes &&
-            graphic.attributes.OBJECTID != this.$route.params.id
+            graphic.attributes.TranPlanID != this.$route.params.id
           ) {
             this.$router.push({
               name: 'master-street-plans',
-              params: { id: graphic.attributes.OBJECTID }
+              params: { id: graphic.attributes.TranPlanID }
             });
             return true;
           }
@@ -166,13 +162,11 @@ export default {
     handlePointerHit(results) {
       if (this.selectedPlan) {
         const features = results.reduce((acc, curr) => {
-          if (curr && curr.graphic && curr.graphic.attributes) {
-            const feature = this.selectedPlan.features.find(
-              feature => feature.name === curr.graphic.attributes.MasterStreetPlan
-            );
-            if (feature) {
-              acc.push(feature);
-            }
+          if (curr && curr.graphic && curr.graphic.attributes && curr.graphic.attributes.Type) {
+            acc.push({
+              type: curr.graphic.attributes.Type,
+              alignment: curr.graphic.attributes.Alignment
+            });
           }
           return acc;
         }, new Array());

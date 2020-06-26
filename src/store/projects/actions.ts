@@ -93,7 +93,7 @@ export const actions: ActionTree<ProjectState, RootState> = {
 
       dispatch('analyzeProjects');
 
-      dispatch('clearMessages', undefined, { root: true });
+      dispatch('removeMessage', 'projects-retrieving', { root: true });
     }
 
     const idx = lunr(function() {

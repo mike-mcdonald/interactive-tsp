@@ -1,21 +1,21 @@
 <template>
   <article>
-    <h1 class="mb-3 text-3xl">{{ plan.label }}</h1>
-    <dl>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 my-3">
-        <dt class="text-gray-700">Documentation</dt>
-        <dd>
-          <a :href="plan.document" target="_blank" class="border-b-2 border-current">
-            {{ plan.document }}
-          </a>
-        </dd>
-      </div>
-    </dl>
+    <h1 class="mb-3 text-3xl">{{ plan.name }}</h1>
+    <p class="text-xl text-gray-800">{{ plan.description }}</p>
+    <field-list :fields="fields">
+      <template v-slot:extra-fields>
+        <field-item v-if="plan.document" name="Document" :value="plan.document">
+          <template v-slot:value>
+            <a :href="plan.document" class="border-b-2 border-current">{{ plan.document }}</a>
+          </template>
+        </field-item>
+      </template>
+    </field-list>
     <h2 class="mb-3 text-2xl">Features of the plan</h2>
     <ul v-if="plan.features.length > 0" class="list-none">
-      <li v-for="feature in plan.features" :key="feature.name" class="my-2 flex items-center justify-between">
-        <toggle :id="feature.name" :value="feature.enabled" @changed="toggleFeature(feature, $event)" class="mr-2" />
-        <label :id="`${feature.name}-label`" class="flex-1 pr-2">{{ feature.label }}</label>
+      <li v-for="feature in plan.features" :key="feature.id" class="my-2 flex items-center justify-between">
+        <toggle :id="feature.id" :value="feature.enabled" @changed="handleToggle(feature, $event)" class="mr-2" />
+        <label :id="`${feature.id}-label`" class="flex-1 pr-2">{{ feature.type }} {{ feature.alignment }}</label>
         <span class="px-2 py-1 bg-blue-500 text-white text-sm rounded-md">{{ feature.count }}</span>
       </li>
     </ul>
@@ -27,10 +27,14 @@
 import { mapActions } from 'vuex';
 
 import Toggle from '@/components/Toggle.vue';
+import FieldItem from '@/components/fields/Item.vue';
+import FieldList from '@/components/fields/List.vue';
 
 export default {
   name: 'MasterStreetPlan',
   components: {
+    FieldItem,
+    FieldList,
     Toggle
   },
   props: {
@@ -39,12 +43,21 @@ export default {
       required: true
     }
   },
+  computed: {
+    fields() {
+      return ['adopted', 'manager'].map(key => {
+        return {
+          name: key.charAt(0).toUpperCase() + key.slice(1),
+          value: this.plan[key]
+        };
+      });
+    }
+  },
   methods: {
     ...mapActions('map', ['setLayerVisibility']),
-    ...mapActions('masterStreetPlans', ['highlightFeatures']),
-    toggleFeature(feature, enabled) {
-      feature.enabled = enabled;
-      this.setLayerVisibility({ layerId: feature.layer.id, visible: enabled });
+    ...mapActions('masterStreetPlans', ['toggleFeature']),
+    handleToggle(feature, enabled) {
+      this.toggleFeature({ feature, value: enabled });
     }
   }
 };

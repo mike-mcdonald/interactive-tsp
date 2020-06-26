@@ -9,7 +9,6 @@ export const actions: ActionTree<CandidateState, RootState> = {
     commit('setCandidates', undefined);
   },
   findCandidates({ commit, dispatch, rootState }, { search, searchType }) {
-    dispatch('clearMessages', undefined, { root: true });
     axios
       .get(rootState.graphqlUrl, {
         params: {
