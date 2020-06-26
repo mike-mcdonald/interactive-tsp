@@ -24,7 +24,7 @@ export const actions: ActionTree<AreaPlanState, RootState> = {
 
     dispatch(
       'addMessage',
-      { id: 'area-plans-retrieving', type: 'info', text: 'Retrieving area street plans...' },
+      { id: 'area-plans-retrieving', type: 'info', text: 'Retrieving area plans...' },
       {
         root: true
       }
