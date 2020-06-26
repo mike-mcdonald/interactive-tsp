@@ -192,14 +192,6 @@ export const actions: ActionTree<StreetState, RootState> = {
             { root: true }
           );
         }
-        let street = res.data.data.street?.map(street => {
-          if (street.areaPlans) {
-            street.areaPlans = street.areaPlans.map(plan => {
-              return Object.assign({ slug: `${plan.id}-${hash(plan.name)}` }, plan);
-            });
-          }
-          return street;
-        });
 
         if (street) {
           dispatch('highlightStreet', { street: street[0], move: true });

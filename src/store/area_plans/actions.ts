@@ -86,21 +86,17 @@ export const actions: ActionTree<AreaPlanState, RootState> = {
       );
     }
 
-    const plans = res.data.data.areaPlans?.map(plan => {
-      return Object.assign({ slug: `${plan.id}-${hash(plan.name)}` }, plan);
-    });
+    const plans = res.data.data.areaPlans;
 
     if (plans) commit('setList', plans);
   },
   selectPlan({ commit, dispatch, state, rootState }, plan: AreaPlan) {
-    plan.id = Number.parseInt(plan.slug.split('-').shift()!);
-
     dispatch(
       'addMessage',
       {
         id: 'area-plans-retrieving',
         type: 'info',
-        text: `Retrieving area plan ${plan.slug}...`
+        text: `Retrieving area plan ${plan.id}...`
       },
       { root: true }
     );
@@ -113,12 +109,12 @@ export const actions: ActionTree<AreaPlanState, RootState> = {
           query: `{
           areaPlan(id:${plan ? plan.id : ''}) {
             id
-            ${plan.name ? '' : 'name'}
+            name
             manager
             adopted
             requirements
             document
-            ${plan.geometry ? '' : 'geometry { type coordinates }'}
+            geometry { type coordinates }
           }
         }`.replace(/\s+/g, ' ')
         }
@@ -140,7 +136,7 @@ export const actions: ActionTree<AreaPlanState, RootState> = {
         let data = res.data.data;
 
         if (data.areaPlan) {
-          plan = data.areaPlan.find(value => plan.slug == `${value.id}-${hash(value.name)}`)!;
+          plan = data.areaPlan.find(value => plan.id == value.id)!;
           commit('setSelected', plan);
         }
       })
@@ -168,7 +164,7 @@ export const actions: ActionTree<AreaPlanState, RootState> = {
 
     if (!plan.geometry) {
       if (state.list.length == 0) await dispatch('findPlans');
-      p = state.list.find(value => plan.slug == `${value.id}-${hash(value.name)}`)!;
+      p = state.list.find(value => plan.id == value.id)!;
     }
 
     if (p.geometry) {

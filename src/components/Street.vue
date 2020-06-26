@@ -142,9 +142,9 @@ export default Vue.extend({
           };
         }),
         ...this.street.areaPlans.map((plan: AreaPlan) => {
-          const { name, slug } = plan;
+          const { name, id } = plan;
           return {
-            id: slug,
+            id,
             name,
             type: 'area'
           };
