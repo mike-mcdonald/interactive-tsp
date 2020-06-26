@@ -5,22 +5,12 @@ import bboxPolygon from '@turf/bbox-polygon';
 import axios from 'axios';
 import Polygon from 'esri/geometry/Polygon';
 import Graphic from 'esri/Graphic';
-import FeatureLayer from 'esri/layers/FeatureLayer';
 import GraphicsLayer from 'esri/layers/GraphicsLayer';
-import GroupLayer from 'esri/layers/GroupLayer';
-import Layer from 'esri/layers/Layer';
 
 import { defaultExtent } from '../map';
 import { RootState } from '../types';
-import { esriGeometry, esriGraphics, hash } from '../utils';
+import { esriGeometry, esriGraphics } from '../utils';
 import { AreaPlan, AreaPlanState } from './types';
-
-const LAYER_URLS = [
-  'https://services.arcgis.com/quVN97tn06YNGj9s/ArcGIS/rest/services/Master_Street_Plans/FeatureServer/1',
-  'https://services.arcgis.com/quVN97tn06YNGj9s/ArcGIS/rest/services/Master_Street_Plans/FeatureServer/2'
-];
-
-export const FEATURE_LAYER_REGEX = /msp-features-(?=points|lines)/;
 
 export const actions: ActionTree<AreaPlanState, RootState> = {
   async findPlans({ commit, dispatch, state, rootState }) {
@@ -62,7 +52,7 @@ export const actions: ActionTree<AreaPlanState, RootState> = {
           {
             id: 'area-plans-error-retrieving',
             type: 'error',
-            text: 'Error retrieving master street plans!',
+            text: 'Error retrieving area plans!',
             dismissible: true
           },
           { root: true }
@@ -148,7 +138,7 @@ export const actions: ActionTree<AreaPlanState, RootState> = {
           {
             id: 'area-plans-error-retrieving',
             type: 'error',
-            text: 'Error retrieving the selected master street plan!',
+            text: 'Error retrieving the selected plan!',
             dismissible: true
           },
           { root: true }
