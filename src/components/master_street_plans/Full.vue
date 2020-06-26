@@ -1,17 +1,16 @@
 <template>
   <article>
     <h1 class="mb-3 text-3xl">{{ plan.name }}</h1>
-    <section class="text-xl text-gray-800">{{ plan.description }}</section>
-    <dl>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 my-3">
-        <dt class="text-gray-700">Documentation</dt>
-        <dd>
-          <a :href="plan.document" target="_blank" class="border-b-2 border-current">
-            {{ plan.document }}
-          </a>
-        </dd>
-      </div>
-    </dl>
+    <p class="text-xl text-gray-800">{{ plan.description }}</p>
+    <field-list :fields="fields">
+      <template v-slot:extra-fields>
+        <field-item v-if="plan.document" name="Document" :value="plan.document">
+          <template v-slot:value>
+            <a :href="plan.document" class="border-b-2 border-current">{{ plan.document }}</a>
+          </template>
+        </field-item>
+      </template>
+    </field-list>
     <h2 class="mb-3 text-2xl">Features of the plan</h2>
     <ul v-if="plan.features.length > 0" class="list-none">
       <li v-for="feature in plan.features" :key="feature.id" class="my-2 flex items-center justify-between">
@@ -28,16 +27,30 @@
 import { mapActions } from 'vuex';
 
 import Toggle from '@/components/Toggle.vue';
+import FieldItem from '@/components/fields/Item.vue';
+import FieldList from '@/components/fields/List.vue';
 
 export default {
   name: 'MasterStreetPlan',
   components: {
+    FieldItem,
+    FieldList,
     Toggle
   },
   props: {
     plan: {
       type: Object,
       required: true
+    }
+  },
+  computed: {
+    fields() {
+      return ['adopted', 'manager'].map(key => {
+        return {
+          name: key.charAt(0).toUpperCase() + key.slice(1),
+          value: this.plan[key]
+        };
+      });
     }
   },
   methods: {
