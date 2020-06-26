@@ -2,10 +2,10 @@
   <main class="container mx-auto flex flex-col md:flex-row justify-between">
     <back-to-top class="fixed" bottom="1rem" right="1rem">
       <a
-        type="button"
-        class="px-2 py-1 border border-blue-900 rounded-md shadow bg-blue-500 text-blue-100 flex items-center"
+        class="px-3 py-2 border border-black rounded-md shadow bg-black text-white flex items-center focus:outline-none focus:shadow-outline"
       >
-        <span>Back to top</span>
+        <i v-html="feather.icons['chevrons-up'].toSvg({ class: 'w-4 h-4' })" />
+        <span class="ml-2">Back to top</span>
       </a>
     </back-to-top>
     <aside class="md:w-1/3 px-2">
@@ -81,6 +81,7 @@
 import Vue from 'vue';
 import { mapState, mapActions, mapGetters } from 'vuex';
 
+import feather from 'feather-icons';
 import BackToTop from 'vue-backtotop';
 import debounce from 'lodash-es/debounce';
 
@@ -107,7 +108,8 @@ export default Vue.extend({
   },
   data() {
     return {
-      searchQuery: ''
+      searchQuery: '',
+      feather
     };
   },
   computed: {
