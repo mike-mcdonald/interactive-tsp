@@ -174,6 +174,34 @@ module.exports = merge(base, {
             }
           }
         ]
+      },
+      {
+        test: /\.css$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: true,
+              url: false
+            }
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              sourceMap: true,
+              config: {
+                path: './postcss.config.js',
+                ctx: {
+                  mode: 'production'
+                }
+              }
+            }
+          },
+          {
+            loader: 'resolve-url-loader'
+          }
+        ]
       }
     ]
   }

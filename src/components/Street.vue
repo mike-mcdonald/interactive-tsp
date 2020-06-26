@@ -99,7 +99,7 @@
       <ul class>
         <li v-for="plan in plans" :key="plan.id">
           <router-link
-            :to="`/${plan.type === 'master' ? 'master_street_plans' : 'area_plans'}/${plan.id}`"
+            :to="`/${plan.type === 'master' ? 'master-street-plans' : 'area_plans'}/${plan.id}`"
             class="block my-2 px-2 py-3 shadow border rounded bg-white hover:bg-blue-100 focus:bg-blue-100"
           >
             <span class="px-2 py-1 mb-2 bg-fog-300 text-fog-900 text-sm rounded-md shadow inline-block"
@@ -134,10 +134,10 @@ export default Vue.extend({
     plans() {
       const plans: Array<any> = [
         ...this.street.masterStreetPlans.map((plan: MasterStreetPlan) => {
-          const { label, id } = plan;
+          const { name, id } = plan;
           return {
             id,
-            name: label,
+            name,
             type: 'master'
           };
         }),
@@ -150,8 +150,8 @@ export default Vue.extend({
           };
         })
       ].sort((a, b) => {
-        var nameA = (a.label || a.name)?.toUpperCase(); // ignore upper and lowercase
-        var nameB = (b.label || b.name)?.toUpperCase(); // ignore upper and lowercase
+        var nameA = a.name?.toUpperCase(); // ignore upper and lowercase
+        var nameB = b.name?.toUpperCase(); // ignore upper and lowercase
 
         if (!nameA || !nameB) {
           return Number.MAX_SAFE_INTEGER;

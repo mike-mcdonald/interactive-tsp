@@ -4,15 +4,6 @@
     <section
       class="w-full sm:w-1/3 md:w-full lg:w-1/3 xl:w-1/4 h-full sm:h-screen md:h-full lg:h-(screen-16) overflow-y-auto border-t sm:border-t-0 md:border-t lg:border-t-0 sm:border-r md:border-r-0 lg:border-r border-black"
     >
-      <section class="m-2">
-        <message
-          v-if="streets.length > 0 && enabledModels.size == 0"
-          :item="{
-            type: 'warning',
-            text: 'Enable one or more classifications below to display streets...'
-          }"
-        />
-      </section>
       <section v-if="!$route.params.id" class="m-2">
         <address-suggest v-on:candidate-select="goToAddress" />
         <section id="filters" class="my-2 border border-gray-500 rounded shadow bg-gray-100 text-gray-900">
@@ -48,6 +39,15 @@
               ></classification>
             </div>
           </main>
+        </section>
+        <section class="my-2">
+          <message
+            v-if="streets.length > 0 && enabledModels.size == 0"
+            :item="{
+              type: 'warning',
+              text: 'Enable one or more classifications in the settings to display streets...'
+            }"
+          />
         </section>
         <div v-if="filteredStreets.length > 0">
           <ul class="list-none">

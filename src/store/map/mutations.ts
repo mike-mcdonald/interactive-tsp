@@ -1,11 +1,12 @@
 import debounce from 'lodash-es/debounce';
 import Layer from 'esri/layers/Layer';
+import FeatureLayer from 'esri/layers/FeatureLayer';
+import TileLayer from 'esri/layers/TileLayer';
 import MapView from 'esri/views/MapView';
+import FeatureFilter from 'esri/views/layers/support/FeatureFilter';
 
 import { MutationTree } from 'vuex';
 import { MapState } from './types';
-import TileLayer from 'esri/layers/TileLayer';
-
 export const mutations: MutationTree<MapState> = {
   setView(state, view: MapView) {
     state.view = view;
@@ -54,5 +55,10 @@ export const mutations: MutationTree<MapState> = {
     if (state.view) {
       state.view.graphics.add(graphic);
     }
+  },
+  setFilter(state, { layer, filter }: { layer: FeatureLayer; filter: FeatureFilter }) {
+    state.view?.whenLayerView(layer).then(layerView => {
+      layerView.filter = filter;
+    });
   }
 };

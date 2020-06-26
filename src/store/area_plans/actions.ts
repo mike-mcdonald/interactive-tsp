@@ -112,7 +112,6 @@ export const actions: ActionTree<AreaPlanState, RootState> = {
         }
       })
       .then(res => {
-        dispatch('clearMessages', undefined, { root: true });
         if (res.data.errors) {
           dispatch(
             'addMessage',
@@ -144,6 +143,7 @@ export const actions: ActionTree<AreaPlanState, RootState> = {
           { root: true }
         );
       });
+    dispatch('removeMessage', 'area-plans-retrieving', { root: true });
   },
   async unselectPlan({ state }) {
     const graphicsLayer: GraphicsLayer | undefined = state.layers.find(

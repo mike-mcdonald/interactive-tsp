@@ -33,7 +33,7 @@ export default new Router({
       component: Text
     },
     {
-      path: '/master_street_plans/:id?',
+      path: '/master-street-plans/:id?',
       name: 'master-street-plans',
       component: MasterStreetPlans
     },
