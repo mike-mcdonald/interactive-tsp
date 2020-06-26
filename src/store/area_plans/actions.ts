@@ -47,6 +47,7 @@ export const actions: ActionTree<AreaPlanState, RootState> = {
           areaPlans(bbox:[${xmin},${ymin},${xmax},${ymax}], spatialReference:${extent.spatialReference.wkid}){
             id
             name
+            description
             geometry {
               type
               coordinates
@@ -107,9 +108,10 @@ export const actions: ActionTree<AreaPlanState, RootState> = {
       .get<{ errors?: any[]; data: { areaPlan?: Array<AreaPlan> } }>(rootState.graphqlUrl, {
         params: {
           query: `{
-          areaPlan(id:${plan ? plan.id : ''}) {
+          areaPlan(id:"${plan ? plan.id : ''}") {
             id
             name
+            description
             manager
             adopted
             requirements
