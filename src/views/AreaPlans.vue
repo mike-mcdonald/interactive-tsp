@@ -53,7 +53,7 @@
       <section v-else class="m-2">
         <div>
           <router-link
-            to="/area_plans"
+            to="/area-plans"
             class="border-current border-b-2 transition ease-in-out duration-150 hover:text-blue-600 focus:text-blue-600"
             >Back to results</router-link
           >
