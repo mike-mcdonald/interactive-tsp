@@ -6,15 +6,13 @@ import FeatureLayer from 'esri/layers/FeatureLayer';
 import { RootState } from '../types';
 import { AreaPlanState, AreaPlan } from './types';
 import { actions } from './actions';
-import { getters } from './getters';
 import { mutations } from './mutations';
 
 const namespaced: boolean = true;
 
 const LAYER_URLS = [
-  'https://services.arcgis.com/quVN97tn06YNGj9s/ArcGIS/rest/services/TSP_Area_Plans_Map5_WFL1/FeatureServer/2',
-  'https://services.arcgis.com/quVN97tn06YNGj9s/ArcGIS/rest/services/TSP_Area_Plans_Map5_WFL1/FeatureServer/0',
-  'https://services.arcgis.com/quVN97tn06YNGj9s/ArcGIS/rest/services/TSP_Area_Plans_Map5_WFL1/FeatureServer/1'
+  'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/26',
+  'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/27'
 ];
 
 const state: AreaPlanState = {
@@ -25,6 +23,7 @@ const state: AreaPlanState = {
       url =>
         new FeatureLayer({
           url,
+          outFields: ['TranPlanID'],
           opacity: 0.5
         })
     ),
@@ -38,6 +37,5 @@ export default {
   namespaced,
   state,
   actions,
-  getters,
   mutations
 } as Module<AreaPlanState, RootState>;

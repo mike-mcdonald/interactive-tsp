@@ -60,13 +60,13 @@ export const actions: ActionTree<TextState, RootState> = {
           });
 
           commit('setIndex', idx);
-
-          dispatch('clearMessages', undefined, { root: true });
         }
       })
       .catch(() => {
         commit('setMessages', [{ type: 'error', text: 'Error retrieving text!' }], { root: true });
       });
+
+    dispatch('removeMessage', 'text-retrieving', { root: true });
   },
   searchIndex({ state, commit }, query) {
     let candidates = state.index?.search(query).map(val => {

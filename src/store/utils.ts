@@ -10,8 +10,8 @@ export function esriGeometry(geometry: Geometry): ArcGISParser.Geometry {
   return ArcGISParser.convert(geometry);
 }
 
-export const fillColor = [191, 231, 235];
-export const outlineColor = [69, 92, 92];
+export const lightColor = [76, 69, 79];
+export const darkColor = [26, 19, 29];
 
 export function esriGraphics(geometry: Geometry): Graphic[] {
   switch (geometry.type) {
@@ -20,9 +20,9 @@ export function esriGraphics(geometry: Geometry): Graphic[] {
         new Graphic({
           geometry: new Point(esriGeometry(geometry)),
           symbol: new SimpleMarkerSymbol({
-            color: [...fillColor, 0.5],
+            color: [...lightColor, 0.5],
             outline: {
-              color: outlineColor,
+              color: darkColor,
               width: 2
             }
           })
@@ -33,9 +33,9 @@ export function esriGraphics(geometry: Geometry): Graphic[] {
         new Graphic({
           geometry: new Multipoint(esriGeometry(geometry)),
           symbol: new SimpleMarkerSymbol({
-            color: [...fillColor, 0.5],
+            color: [...lightColor, 0.5],
             outline: {
-              color: outlineColor,
+              color: darkColor,
               width: 2
             }
           })
@@ -47,15 +47,8 @@ export function esriGraphics(geometry: Geometry): Graphic[] {
         new Graphic({
           geometry: new Polyline(esriGeometry(geometry)),
           symbol: new SimpleLineSymbol({
-            color: [...outlineColor, 0.5],
+            color: [...darkColor, 0.3],
             width: 10
-          })
-        }),
-        new Graphic({
-          geometry: new Polyline(esriGeometry(geometry)),
-          symbol: new SimpleLineSymbol({
-            color: [...fillColor, 0.5],
-            width: 8
           })
         })
       ];
@@ -65,10 +58,10 @@ export function esriGraphics(geometry: Geometry): Graphic[] {
         new Graphic({
           geometry: new Polygon(esriGeometry(geometry)),
           symbol: new SimpleFillSymbol({
-            color: [...fillColor, 0.5],
+            color: [...lightColor, 0.3],
             outline: {
-              color: outlineColor,
-              width: 2
+              color: darkColor,
+              width: 4
             }
           })
         })

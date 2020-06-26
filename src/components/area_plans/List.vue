@@ -1,7 +1,7 @@
 <template>
   <router-link
-    :to="`${plan.slug}`"
-    :append="$route.params.slug ? false : true"
+    :to="`${plan.id}`"
+    :append="$route.params.id ? false : true"
     class="block my-2 px-2 py-3 shadow border rounded bg-white hover:bg-blue-100 focus:bg-blue-100"
     @mouseover.native="highlightPlan({ plan })"
     @focus.native="highlightPlan({ plan })"

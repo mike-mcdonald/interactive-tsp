@@ -79,8 +79,6 @@ export const actions: ActionTree<StreetState, RootState> = {
         }
       })
       .then(res => {
-        dispatch('clearMessages', undefined, { root: true });
-
         if (res.data.errors) {
           dispatch(
             'addMessage',
@@ -129,6 +127,10 @@ export const actions: ActionTree<StreetState, RootState> = {
           { root: true }
         );
       });
+
+    dispatch('removeMessage', 'streets-retrieving', {
+      root: true
+    });
   },
   selectStreet({ commit, dispatch, rootState }, street: Street) {
     dispatch(
@@ -172,14 +174,13 @@ export const actions: ActionTree<StreetState, RootState> = {
               estimatedTimeframe
             }`
             }
-            ${street.masterStreetPlans ? '' : `masterStreetPlans { id label }`}
-            ${street.areaPlans ? '' : `areaPlans { id name }`}
+            ${street.masterStreetPlans ? '' : `masterStreetPlans { id name description adopted }`}
+            ${street.areaPlans ? '' : `areaPlans { id name description adopted }`}
           }
         }`.replace(/\s+/g, ' ')
         }
       })
       .then(res => {
-        dispatch('clearMessages', undefined, { root: true });
         if (res.data.errors) {
           dispatch(
             'addMessage',
@@ -192,18 +193,12 @@ export const actions: ActionTree<StreetState, RootState> = {
             { root: true }
           );
         }
-        let street = res.data.data.street?.map(street => {
-          if (street.areaPlans) {
-            street.areaPlans = street.areaPlans.map(plan => {
-              return Object.assign({ slug: `${plan.id}-${hash(plan.name)}` }, plan);
-            });
-          }
-          return street;
-        });
 
-        if (street) {
-          dispatch('highlightStreet', { street: street[0], move: true });
-          commit('setSelectedStreet', street);
+        let streets = res.data.data.street;
+
+        if (streets) {
+          dispatch('highlightStreet', { street: streets[0], move: true });
+          commit('setSelectedStreet', streets);
         }
       })
       .catch(() => {
@@ -218,6 +213,8 @@ export const actions: ActionTree<StreetState, RootState> = {
           { root: true }
         );
       });
+
+    dispatch('removeMessage', 'streets-retrieving-street', { root: true });
   },
   highlightStreet({ commit, rootGetters }, { street, move }: { street: Street; move: boolean }) {
     if (street.geometry) {
@@ -227,6 +224,7 @@ export const actions: ActionTree<StreetState, RootState> = {
         const target: any = {
           target: graphics
         };
+        // for small features, don't zoom in too close
         const l = length(feature(street.geometry), { units: 'meters' });
         if (l < 200) {
           target.zoom = rootGetters['map/focusLevel'];

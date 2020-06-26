@@ -4,7 +4,6 @@ import { Geometry } from 'geojson';
 export interface AreaPlan {
   id: number;
   name: string;
-  slug: string;
   manager: string;
   requirements: string;
   adopted: string;
