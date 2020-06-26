@@ -7,6 +7,10 @@ import './worker-config';
 
 Vue.config.productionTip = false;
 
+router.afterEach((to, from) => {
+  store.dispatch('clearMessages');
+});
+
 new Vue({
   router,
   store,
