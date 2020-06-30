@@ -103,8 +103,8 @@
             class="block my-2 px-2 py-3 shadow border rounded bg-white hover:bg-blue-100 focus:bg-blue-100"
           >
             <span class="px-2 py-1 mb-2 bg-fog-300 text-fog-900 text-sm rounded-md shadow inline-block"
-              >{{ plan.type === 'master' ? 'Master street plan' : 'Area plan' }} plan
-            </span>
+              >{{ plan.type === 'master' ? 'Master street' : 'Area' }} plan</span
+            >
             <h3>{{ plan.name }}</h3>
             <p class="my-2 text-sm">{{ plan.description }}</p>
           </router-link>
