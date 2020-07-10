@@ -108,7 +108,31 @@
     </section>
     <Messages role="notifications" class="z-100 max-w-6xl mx-auto px-2 pb-4 fixed inset-x-0 bottom-0" />
     <router-view />
-    <Footer />
+    <Footer>
+      <template>
+        <nav>
+          <ul class="list-none flex flex-col lg:flex-row items-center">
+            <li class="m-2">
+              <a
+                href="https://portland.gov/transportation/planning"
+                class="border-b-2 border-current"
+                rel="noopener noreferrer"
+                >Transportation planning</a
+              >
+            </li>
+            <li class="m-2">
+              <a
+                href="mailto:transportation.planning@portlandoregon.gov?subject=Interactive TSP Help Request"
+                class="border-b-2 border-current"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Request help</a
+              >
+            </li>
+          </ul>
+        </nav>
+      </template>
+    </Footer>
   </div>
 </template>
 <script>
