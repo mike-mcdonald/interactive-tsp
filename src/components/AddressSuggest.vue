@@ -65,7 +65,6 @@
   </section>
 </template>
 <script>
-import Vue from 'vue';
 import { mapState, mapActions } from 'vuex';
 
 import feather from 'feather-icons';

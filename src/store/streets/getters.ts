@@ -2,7 +2,7 @@ import { GetterTree } from 'vuex';
 
 import { rgb } from 'd3-color';
 
-import { StreetState, Street } from './types';
+import { StreetState } from './types';
 import { RootState } from '../types';
 
 export const getters: GetterTree<StreetState, RootState> = {
@@ -18,16 +18,5 @@ export const getters: GetterTree<StreetState, RootState> = {
       return val.group === type && val.value === value;
     });
     return info?.symbol?.value || rgb(255, 255, 255, 0);
-  },
-  filteredStreets: state => {
-    let streets = state.list;
-
-    if (streets) {
-      streets = streets.reduce((acc, curr) => {
-        return acc;
-      }, new Array<Street>());
-    }
-
-    return streets;
   }
 };

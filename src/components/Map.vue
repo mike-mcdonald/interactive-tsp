@@ -42,17 +42,11 @@
 import Vue from 'vue';
 import { mapState, mapActions, mapMutations } from 'vuex';
 
-import * as turf from '@turf/helpers';
 import feather from 'feather-icons';
 import debounce from 'lodash-es/debounce';
 
 import { whenTrue } from 'esri/core/watchUtils';
-import Map from 'esri/Map';
-import { Extent, Point, Polyline } from 'esri/geometry';
-import Graphic from 'esri/Graphic';
-import GraphicsLayer from 'esri/layers/GraphicsLayer';
-import Layer from 'esri/layers/Layer';
-import SimpleLineSymbol from 'esri/symbols/SimpleLineSymbol';
+import { Extent } from 'esri/geometry';
 import MapView from 'esri/views/MapView';
 import Legend from 'esri/widgets/Legend';
 
@@ -107,7 +101,7 @@ export default Vue.extend({
         });
       });
     },
-    toggleLayerVisibility(id: string, value: Boolean) {
+    toggleLayerVisibility(id: string, value: boolean) {
       this.setLayerVisibility({ layerId: id, visible: value });
     },
     incrementZoom() {

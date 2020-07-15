@@ -1,4 +1,7 @@
 import { GetterTree } from 'vuex';
+
+import Layer from 'esri/layers/Layer';
+
 import { ProjectState, Project, ViewModel } from './types';
 import { RootState } from '../types';
 
@@ -7,7 +10,7 @@ export const getters: GetterTree<ProjectState, RootState> = {
     return state.models.reduce((prev, curr) => {
       prev.push(curr.mapLayer);
       return prev;
-    }, new Array<any>());
+    }, new Array<Layer>());
   },
   filteredProjects: state => (text: string) => {
     let projects = state.list;
