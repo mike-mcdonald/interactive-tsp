@@ -118,7 +118,7 @@ import feather from 'feather-icons';
 
 import Footer from '@/components/Footer.vue';
 import Logo from '@/components/icons/Logo.vue';
-import Message from '@/components/message/Item.vue';
+import Message from '@/components/message/Full.vue';
 import Messages from '@/components/message/List.vue';
 
 export default {

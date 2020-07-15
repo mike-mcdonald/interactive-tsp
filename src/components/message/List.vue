@@ -9,7 +9,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapState } from 'vuex';
-import MessageItem from '@/components/message/Item.vue';
+import MessageItem from '@/components/message/Full.vue';
 export default Vue.extend({
   name: 'MessageList',
   components: {
