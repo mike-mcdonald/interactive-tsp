@@ -74,7 +74,6 @@
 <script>
 import { mapState, mapActions, mapMutations, mapGetters } from 'vuex';
 
-import bbox from '@turf/bbox';
 import bboxPolygon from '@turf/bbox-polygon';
 import intersects from '@turf/boolean-intersects';
 import { feature } from '@turf/helpers';
@@ -85,7 +84,6 @@ import AddressSuggest from '@/components/AddressSuggest.vue';
 import AppMap from '@/components/Map.vue';
 import PlanFull from '@/components/master_street_plans/Full.vue';
 import PlanListing from '@/components/master_street_plans/List.vue';
-import { FEATURE_LAYER_REGEX } from '@/store/master_street_plans/actions';
 
 export default {
   name: 'MasterStreetPlans',
@@ -128,7 +126,7 @@ export default {
             prev.push(curr);
           }
           return prev;
-        }, new Array());
+        }, []);
       }
 
       return plans;
@@ -169,7 +167,7 @@ export default {
             });
           }
           return acc;
-        }, new Array());
+        }, []);
 
         this.selectedFeature = features.shift();
       }

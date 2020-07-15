@@ -170,7 +170,7 @@ import { RawLocation, Route } from 'vue-router';
 import { mapState, mapActions, mapGetters, mapMutations } from 'vuex';
 
 import intersects from '@turf/boolean-intersects';
-import { BBox, Feature, Polygon, feature } from '@turf/helpers';
+import { BBox, feature } from '@turf/helpers';
 import feather from 'feather-icons';
 
 import { Extent } from 'esri/geometry';
@@ -183,7 +183,6 @@ import Pager from '@/components/Pager.vue';
 import Search from '@/components/icons/Search.vue';
 
 import { ProjectState, Project, ViewModel } from '../store/projects/types';
-import { AddressCandidate } from '../store/portlandmaps/types';
 import bboxPolygon from '@turf/bbox-polygon';
 import proj4 from 'proj4';
 
@@ -285,7 +284,7 @@ export default class Projects extends Vue {
     let projects = this.projects;
 
     if (this.searchText && this.searchText.length > 0) {
-      projects = this.index.search(this.searchText).map((val: any) => {
+      projects = this.index.search(this.searchText).map((val: lunr.Index.Result) => {
         return (
           this.projects.find((proj: Project) => {
             return proj.id == val.ref;
@@ -394,7 +393,7 @@ export default class Projects extends Vue {
           }
 
           return prev;
-        }, new Set<any>());
+        }, new Set<string>());
         this.projectList = Array.from(projects);
         this.$router.push({
           name: 'projects',

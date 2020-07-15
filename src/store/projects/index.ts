@@ -6,12 +6,13 @@ import axios from 'axios';
 import { rgb } from 'd3-color';
 import GroupLayer from 'esri/layers/GroupLayer';
 import FeatureLayer from 'esri/layers/FeatureLayer';
+import UniqueValueInfo from 'esri/renderers/support/UniqueValueInfo';
 
 import { actions } from './actions';
 import { getters } from './getters';
 import { mutations } from './mutations';
 
-const namespaced: boolean = true;
+const namespaced = true;
 
 const LAYER_URLS = new Array<string>(
   ...[
@@ -38,8 +39,8 @@ LAYER_URLS.some(async url => {
 
   if (res.data) {
     models.push(
-      ...res.data.drawingInfo.renderer.uniqueValueInfos.map((info: any) => {
-        const [r, g, b, a] = info.symbol.color;
+      ...res.data.drawingInfo.renderer.uniqueValueInfos.map((info: UniqueValueInfo) => {
+        const { r, g, b, a } = info.symbol.color;
 
         const key = map.get(info.value.toString());
 

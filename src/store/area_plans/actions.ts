@@ -13,7 +13,7 @@ import { esriGeometry, esriGraphics } from '../utils';
 import { AreaPlan, AreaPlanState } from './types';
 
 export const actions: ActionTree<AreaPlanState, RootState> = {
-  async findPlans({ commit, dispatch, state, rootState }) {
+  async findPlans({ commit, dispatch, rootState }) {
     const extent = defaultExtent;
 
     const { xmin, ymin, xmax, ymax } = extent;
@@ -31,7 +31,7 @@ export const actions: ActionTree<AreaPlanState, RootState> = {
     );
 
     const res = await axios
-      .get<{ errors?: any[]; data: { areaPlans?: AreaPlan[] } }>(rootState.graphqlUrl, {
+      .get<{ errors?: []; data: { areaPlans?: AreaPlan[] } }>(rootState.graphqlUrl, {
         params: {
           query: `{
           areaPlans(bbox:[${xmin},${ymin},${xmax},${ymax}], spatialReference:${extent.spatialReference.wkid}){
@@ -81,13 +81,13 @@ export const actions: ActionTree<AreaPlanState, RootState> = {
 
     if (plans) commit('setList', plans);
   },
-  selectPlan({ commit, dispatch, state, rootState }, plan: AreaPlan) {
+  selectPlan({ commit, dispatch, rootState }, plan: AreaPlan | undefined) {
     dispatch(
       'addMessage',
       {
         id: 'area-plans-retrieving',
         type: 'info',
-        text: `Retrieving area plan ${plan.id}...`
+        text: `Retrieving area plan ${plan?.id}...`
       },
       { root: true }
     );
@@ -95,7 +95,7 @@ export const actions: ActionTree<AreaPlanState, RootState> = {
     commit('setSelected', undefined);
 
     axios
-      .get<{ errors?: any[]; data: { areaPlan?: Array<AreaPlan> } }>(rootState.graphqlUrl, {
+      .get<{ errors?: []; data: { areaPlan?: Array<AreaPlan> } }>(rootState.graphqlUrl, {
         params: {
           query: `{
           areaPlan(id:"${plan ? plan.id : ''}") {
@@ -124,10 +124,10 @@ export const actions: ActionTree<AreaPlanState, RootState> = {
             { root: true }
           );
         }
-        let data = res.data.data;
+        const data = res.data.data;
 
         if (data.areaPlan) {
-          plan = data.areaPlan.find(value => plan.id == value.id)!;
+          plan = data.areaPlan.find(value => plan?.id == value.id);
           commit('setSelected', plan);
         }
       })
@@ -152,14 +152,14 @@ export const actions: ActionTree<AreaPlanState, RootState> = {
     graphicsLayer.removeAll();
   },
   async highlightPlan({ commit, dispatch, state }, { plan, move }: { plan: AreaPlan; move: boolean }) {
-    let p = plan;
+    let p: AreaPlan | undefined = plan;
 
     if (!plan.geometry) {
       if (state.list.length == 0) await dispatch('findPlans');
-      p = state.list.find(value => plan.id == value.id)!;
+      p = state.list.find(value => plan.id == value.id);
     }
 
-    if (p.geometry) {
+    if (p?.geometry) {
       const graphics = new Array<Graphic>();
       graphics.push(...esriGraphics(p.geometry));
       const graphicsLayer: GraphicsLayer | undefined = state.layers.find(

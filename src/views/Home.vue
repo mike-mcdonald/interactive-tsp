@@ -66,15 +66,8 @@
 </template>
 
 <script>
-import Vue from 'vue';
-
 export default {
-  name: 'home',
-  beforeRouteEnter(to, from, next) {
-    next(vm => {
-      vm.$store.dispatch('clearMessages');
-    });
-  }
+  name: 'home'
 };
 </script>
 

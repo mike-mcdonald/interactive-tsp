@@ -25,7 +25,7 @@ export const actions: ActionTree<ProjectState, RootState> = {
     const { xmin, ymin, xmax, ymax } = extent;
 
     const res = await axios
-      .get<{ errors?: any[]; data: { projects?: Project[] } }>(rootState.graphqlUrl, {
+      .get<{ errors?: []; data: { projects?: Project[] } }>(rootState.graphqlUrl, {
         params: {
           query: `{
           projects(bbox:[${xmin},${ymin},${xmax},${ymax}], spatialReference:${extent.spatialReference.wkid}){
@@ -72,8 +72,8 @@ export const actions: ActionTree<ProjectState, RootState> = {
       commit('setProjects', []);
       // sort by name then block number
       projects = Array.from(res.data.data.projects).sort(function(a, b) {
-        var nameA = a.name?.toUpperCase(); // ignore upper and lowercase
-        var nameB = b.name?.toUpperCase(); // ignore upper and lowercase
+        const nameA = a.name?.toUpperCase(); // ignore upper and lowercase
+        const nameB = b.name?.toUpperCase(); // ignore upper and lowercase
 
         if (!nameA || !nameB) {
           return Number.MAX_SAFE_INTEGER;
@@ -125,14 +125,14 @@ export const actions: ActionTree<ProjectState, RootState> = {
     );
   },
   async highlightProject({ commit, dispatch, state }, { project, move }: { project: Project; move: boolean }) {
-    let p = project;
+    let p: Project | undefined = project;
 
     if (!project.geometry) {
       await dispatch('findProjects');
-      p = state.list.find(value => value.id === project.id)!;
+      p = state.list.find(value => value.id === project.id);
     }
 
-    if (p.geometry) {
+    if (p?.geometry) {
       const graphics = new Array<Graphic>();
       graphics.push(...esriGraphics(p.geometry));
       commit('map/setGraphics', graphics, { root: true });

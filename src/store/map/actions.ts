@@ -15,7 +15,7 @@ export const actions: ActionTree<MapState, RootState> = {
     });
     commit('setExtent', defaultExtent);
   },
-  setExtent({ commit, dispatch }, extent: __esri.Extent): any {
+  setExtent({ commit }, extent: __esri.Extent) {
     commit('setExtent', extent);
   },
   setLayerVisibility({ commit }, { layerId, visible }) {

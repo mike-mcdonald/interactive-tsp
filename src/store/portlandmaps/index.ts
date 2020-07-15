@@ -5,7 +5,7 @@ import { CandidateState } from './types';
 import { actions } from './actions';
 import { mutations } from './mutations';
 
-const namespaced: boolean = true;
+const namespaced = true;
 
 const state: CandidateState = {
   candidates: undefined

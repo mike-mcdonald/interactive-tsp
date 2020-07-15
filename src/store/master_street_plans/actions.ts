@@ -5,10 +5,8 @@ import bboxPolygon from '@turf/bbox-polygon';
 import axios from 'axios';
 import Polygon from 'esri/geometry/Polygon';
 import Graphic from 'esri/Graphic';
-import FeatureLayer from 'esri/layers/FeatureLayer';
 import GraphicsLayer from 'esri/layers/GraphicsLayer';
 import GroupLayer from 'esri/layers/GroupLayer';
-import Layer from 'esri/layers/Layer';
 
 import { defaultExtent } from '../map';
 import { RootState } from '../types';
@@ -17,7 +15,7 @@ import { MasterStreetPlan, MasterStreetPlanFeature, MasterStreetPlanState } from
 import FeatureFilter from 'esri/views/layers/support/FeatureFilter';
 
 export const actions: ActionTree<MasterStreetPlanState, RootState> = {
-  async findPlans({ commit, dispatch, state, rootState }) {
+  async findPlans({ commit, dispatch, rootState }) {
     const extent = defaultExtent;
 
     const { xmin, ymin, xmax, ymax } = extent;
@@ -35,7 +33,7 @@ export const actions: ActionTree<MasterStreetPlanState, RootState> = {
     );
 
     const res = await axios
-      .get<{ errors?: any[]; data: { masterStreetPlans?: MasterStreetPlan[] } }>(rootState.graphqlUrl, {
+      .get<{ errors?: []; data: { masterStreetPlans?: MasterStreetPlan[] } }>(rootState.graphqlUrl, {
         params: {
           query: `{
           masterStreetPlans(bbox:[${xmin},${ymin},${xmax},${ymax}], spatialReference:${extent.spatialReference.wkid}){
@@ -90,7 +88,7 @@ export const actions: ActionTree<MasterStreetPlanState, RootState> = {
 
     if (plans) commit('setList', plans);
   },
-  selectPlan({ commit, dispatch, state, rootState }, plan: MasterStreetPlan) {
+  selectPlan({ commit, dispatch, rootState }, plan: MasterStreetPlan) {
     dispatch(
       'addMessage',
       {
@@ -103,7 +101,7 @@ export const actions: ActionTree<MasterStreetPlanState, RootState> = {
     commit('setSelected', undefined);
 
     axios
-      .get<{ errors?: any[]; data: { masterStreetPlan?: Array<MasterStreetPlan> } }>(rootState.graphqlUrl, {
+      .get<{ errors?: []; data: { masterStreetPlan?: Array<MasterStreetPlan> } }>(rootState.graphqlUrl, {
         params: {
           query: `{
           masterStreetPlan(id:"${plan ? plan.id : ''}") {
@@ -135,13 +133,13 @@ export const actions: ActionTree<MasterStreetPlanState, RootState> = {
             { root: true }
           );
         }
-        let data = res.data.data;
+        const data = res.data.data;
 
         if (data.masterStreetPlan) {
           plan = data.masterStreetPlan[0];
 
           plan.features = plan.features?.reduce((prev, curr) => {
-            let feature = prev.find(value => value.type == curr.type && value.alignment == curr.alignment);
+            const feature = prev.find(value => value.type == curr.type && value.alignment == curr.alignment);
             if (!feature) {
               prev.push({
                 id: `${curr.type?.toLowerCase()}-${curr.alignment?.toLowerCase()}`,
@@ -175,18 +173,18 @@ export const actions: ActionTree<MasterStreetPlanState, RootState> = {
 
     dispatch('removeMessage', 'master-street-plans-retrieving-street', { root: true });
   },
-  async unselectPlan({ dispatch, state }) {
+  async unselectPlan({ dispatch }) {
     dispatch('map/setLayerVisibility', { layerId: 'plan-features', visible: false }, { root: true });
   },
   async highlightPlan({ commit, dispatch, state }, { plan, move }: { plan: MasterStreetPlan; move: boolean }) {
-    let p = plan;
+    let p: MasterStreetPlan | undefined = plan;
 
     if (!plan.geometry) {
       if (state.list.length == 0) await dispatch('findPlans');
-      p = state.list.find(value => value.id == plan.id)!;
+      p = state.list.find(value => value.id == plan.id);
     }
 
-    if (p.geometry) {
+    if (p?.geometry) {
       const graphics = new Array<Graphic>();
       graphics.push(...esriGraphics(p.geometry));
       const graphicsLayer: GraphicsLayer | undefined = state.layers.find(
@@ -228,7 +226,7 @@ export const actions: ActionTree<MasterStreetPlanState, RootState> = {
         }, new Array<string>())
         .join(',');
 
-      let filter = new FeatureFilter({
+      const filter = new FeatureFilter({
         where: [
           `PlanArea = '${state.selected.name}'`,
           `Type IN (${typeRange})`,
@@ -241,9 +239,9 @@ export const actions: ActionTree<MasterStreetPlanState, RootState> = {
         }, '')
       });
 
-      const featuresLayer: GroupLayer = state.layers.find(layer => layer.id === 'plan-features')! as GroupLayer;
+      const featuresLayer: GroupLayer = state.layers.find(layer => layer.id === 'plan-features') as GroupLayer;
 
-      featuresLayer.layers.forEach(layer => {
+      featuresLayer?.layers.forEach(layer => {
         commit('map/setFilter', { layer, filter }, { root: true });
       });
     }
