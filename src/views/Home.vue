@@ -57,8 +57,10 @@
           Master Street Plans, and Area Plans. This is by no means a full version of the document, so visit this site to
           view the document in its entirety:
         </span>
-        <a href="https://www.portlandoregon.gov/transportation/67263" class="border-b-2 border-black"
-          >https://www.portlandoregon.gov/transportation/67263</a
+        <a
+          href="https://www.portland.gov/transportation/planning/transportation-system-plan-tsp"
+          class="border-b-2 border-black"
+          >https://www.portland.gov/transportation/planning/transportation-system-plan-tsp</a
         >
       </p>
     </section>
