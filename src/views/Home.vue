@@ -58,9 +58,9 @@
           view the document in its entirety:
         </span>
         <a
-          href="https://www.portland.gov/transportation/planning/transportation-system-plan-tsp"
+          href="https://www.portland.gov/transportation/planning/tsp-document-downloads"
           class="border-b-2 border-black"
-          >https://www.portland.gov/transportation/planning/transportation-system-plan-tsp</a
+          >https://www.portland.gov/transportation/planning/tsp-document-downloads</a
         >
       </p>
     </section>
