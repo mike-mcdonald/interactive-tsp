@@ -122,7 +122,7 @@
             </li>
             <li class="m-2">
               <a
-                href="mailto:transportation.planning@portlandoregon.gov?subject=Interactive TSP Help Request"
+                href="mailto:pbotppppirc@portlandoregon.gov?subject=Interactive TSP Help Request"
                 class="border-b-2 border-current"
                 target="_blank"
                 rel="noopener noreferrer"
