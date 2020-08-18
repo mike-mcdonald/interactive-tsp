@@ -13,7 +13,10 @@
     </slot>
     <slot></slot>
     <slot name="copyright">
-      <p class="m-0">© City of Portland, Oregon {{ new Date().getFullYear() }}</p>
+      <div class="flex flex-col md:flex-row items-center">
+        <img class="w-20 md:w-24 m-2" src="https://www.portland.gov/themes/custom/cloudy/images/city-seal.png" />
+        <p class="m-0">© City of Portland, Oregon {{ new Date().getFullYear() }}</p>
+      </div>
     </slot>
   </footer>
 </template>
