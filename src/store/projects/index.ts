@@ -40,6 +40,8 @@ LAYER_URLS.some(async url => {
   if (res.data) {
     models.push(
       ...res.data.drawingInfo.renderer.uniqueValueInfos.map((info: UniqueValueInfo) => {
+        info = UniqueValueInfo.fromJSON(info);
+
         const { r, g, b, a } = info.symbol.color;
 
         const key = map.get(info.value.toString());
