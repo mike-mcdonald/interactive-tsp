@@ -15,9 +15,9 @@ import { Message, RootState } from './types';
 Vue.use(Vuex);
 
 // following variable comes from webpack DefinePlugin
-declare var GRAPHQL_URL: string;
+declare const GRAPHQL_URL: string;
 
-var ua = window.navigator.userAgent;
+const ua = window.navigator.userAgent;
 
 const alerts = new Array<Message>();
 

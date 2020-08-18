@@ -77,9 +77,8 @@
   </main>
 </template>
 <script>
-import { mapState, mapActions, mapMutations, mapGetters } from 'vuex';
+import { mapState, mapActions, mapMutations } from 'vuex';
 
-import bbox from '@turf/bbox';
 import bboxPolygon from '@turf/bbox-polygon';
 import intersects from '@turf/boolean-intersects';
 import { feature } from '@turf/helpers';
@@ -91,7 +90,6 @@ import AppMap from '@/components/Map.vue';
 import Pager from '@/components/Pager.vue';
 import PlanFull from '@/components/area_plans/Full.vue';
 import PlanListing from '@/components/area_plans/List.vue';
-import { hash } from '@/store/utils';
 
 export default {
   name: 'AreaPlans',
@@ -136,7 +134,7 @@ export default {
             prev.push(curr);
           }
           return prev;
-        }, new Array());
+        }, []);
       }
 
       return plans;

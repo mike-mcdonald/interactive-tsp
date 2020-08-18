@@ -7,7 +7,7 @@ import lunr from 'lunr';
 import { customStemming } from '../utils';
 
 function strip(html: string) {
-  var doc = new DOMParser().parseFromString(html, 'text/html');
+  const doc = new DOMParser().parseFromString(html, 'text/html');
   return doc.body.textContent || '';
 }
 
@@ -53,9 +53,12 @@ export const actions: ActionTree<TextState, RootState> = {
             this.use(customStemming);
 
             res.data.data.document.forEach((doc: TextSection) => {
-              let { content, ...d } = doc;
-              content = strip(content);
-              this.add(Object.assign(d, { content }));
+              const { id, name, content } = doc;
+              this.add({
+                id,
+                name,
+                content: strip(content)
+              });
             });
           });
 
@@ -69,20 +72,26 @@ export const actions: ActionTree<TextState, RootState> = {
     dispatch('removeMessage', 'text-retrieving', { root: true });
   },
   searchIndex({ state, commit }, query) {
-    let candidates = state.index?.search(query).map(val => {
+    const candidates = state.index?.search(query).map(val => {
       const s = state.sections?.find(sec => {
         return sec.id == val.ref;
       });
+
       if (s) {
-        const { number, tree, depth, sections, ...c } = s;
-        c.content = strip(c.content)
-          .replace(c.name, ' ')
-          .split(' ')
-          .slice(0, 30)
-          .join(' ')
-          .concat('...');
-        return c;
+        const { id, name, content } = s;
+
+        return {
+          id,
+          name,
+          content: strip(content)
+            .replace(name, ' ')
+            .split(' ')
+            .slice(0, 30)
+            .join(' ')
+            .concat('...')
+        };
       }
+
       return undefined;
     });
 

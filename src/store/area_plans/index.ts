@@ -8,7 +8,7 @@ import { AreaPlanState, AreaPlan } from './types';
 import { actions } from './actions';
 import { mutations } from './mutations';
 
-const namespaced: boolean = true;
+const namespaced = true;
 
 const LAYER_URLS = [
   'https://www.portlandmaps.com/arcgis/rest/services/Public/Transportation_System_Plan/MapServer/26',

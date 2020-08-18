@@ -124,14 +124,14 @@
   </main>
 </template>
 <script>
-import { mapState, mapActions, mapMutations, mapGetters } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 
 import feather from 'feather-icons';
 
 import AddressSuggest from '@/components/AddressSuggest.vue';
 import AppMap from '@/components/Map.vue';
 import Classification from '@/components/streets/Classification.vue';
-import Message from '@/components/message/Item.vue';
+import Message from '@/components/message/Full.vue';
 import Pager from '@/components/Pager.vue';
 import StreetComponent from '@/components/Street.vue';
 
@@ -187,7 +187,7 @@ export default {
           prev.push(curr);
         }
         return prev;
-      }, new Array());
+      }, []);
     },
     selectedStreet() {
       return this.selectedStreets[this.selectionIndex];

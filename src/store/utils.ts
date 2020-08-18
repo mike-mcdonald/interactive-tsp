@@ -79,7 +79,7 @@ const customWordMap = new Map<string, string>([
 
 export function customStemming(builder: Builder) {
   // Define a pipeline function that converts 'gray' to 'grey'
-  var pipelineFunction = function(token: Token) {
+  const pipelineFunction = function(token: Token) {
     if (customWordMap.has(token.toString())) {
       return token.update(function() {
         return customWordMap.get(token.toString());

@@ -1,11 +1,12 @@
-var path = require('path');
-var VueLoaderPlugin = require('vue-loader/lib/plugin');
-var ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+/* eslint-disable @typescript-eslint/no-var-requires */
+const path = require('path');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const { DefinePlugin } = require('webpack');
-var ArcGISPlugin = require('@arcgis/webpack-plugin');
-var FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
-var { CleanWebpackPlugin } = require('clean-webpack-plugin');
-var CopyPlugin = require('copy-webpack-plugin');
+const ArcGISPlugin = require('@arcgis/webpack-plugin');
+const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: {

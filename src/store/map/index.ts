@@ -40,7 +40,7 @@ const state: MapState = {
   }
 };
 
-const namespaced: boolean = true;
+const namespaced = true;
 
 export const map: Module<MapState, RootState> = {
   namespaced,

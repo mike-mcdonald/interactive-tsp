@@ -1,7 +1,6 @@
 import * as turf from '@turf/helpers';
-import { RGBColor, HSLColor } from 'd3-color';
+import { HSLColor, RGBColor } from 'd3-color';
 import Layer from 'esri/layers/Layer';
-
 import { AreaPlan } from '../area_plans/types';
 import { MasterStreetPlan } from '../master_street_plans/types';
 import { Project } from '../projects/types';
@@ -22,12 +21,12 @@ export interface Street {
   maxY?: number;
 }
 
-export interface Symbol {
+export interface BaseSymbol {
   type: 'color' | 'image';
   value: RGBColor | HSLColor | string | null;
 }
 
-export interface ImageSymbol extends Symbol {
+export interface ImageSymbol extends BaseSymbol {
   mime: string;
   value: string;
 }
@@ -37,7 +36,7 @@ export interface ViewModel {
   group: string;
   enabled: boolean;
   label: string;
-  symbol?: Symbol | ImageSymbol;
+  symbol?: BaseSymbol | ImageSymbol;
   layer?: Layer;
 }
 

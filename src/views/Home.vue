@@ -57,8 +57,10 @@
           Master Street Plans, and Area Plans. This is by no means a full version of the document, so visit this site to
           view the document in its entirety:
         </span>
-        <a href="https://www.portlandoregon.gov/transportation/67263" class="border-b-2 border-black"
-          >https://www.portlandoregon.gov/transportation/67263</a
+        <a
+          href="https://www.portland.gov/transportation/planning/tsp-document-downloads"
+          class="border-b-2 border-black"
+          >https://www.portland.gov/transportation/planning/tsp-document-downloads</a
         >
       </p>
     </section>
@@ -66,15 +68,8 @@
 </template>
 
 <script>
-import Vue from 'vue';
-
 export default {
-  name: 'home',
-  beforeRouteEnter(to, from, next) {
-    next(vm => {
-      vm.$store.dispatch('clearMessages');
-    });
-  }
+  name: 'home'
 };
 </script>
 

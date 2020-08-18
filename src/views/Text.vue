@@ -87,7 +87,6 @@ import debounce from 'lodash-es/debounce';
 
 import TextSection from '@/components/text/Section.vue';
 import TextListing from '@/components/text/Listing.vue';
-import { CombinedVueInstance } from 'vue/types/vue';
 
 function waitForScroll(check: Function, callback: Function) {
   if (check()) {
@@ -131,7 +130,7 @@ export default Vue.extend({
               if (el) {
                 el.scrollIntoView();
                 // now account for fixed header
-                var scrolledY = window.scrollY;
+                const scrolledY = window.scrollY;
 
                 if (scrolledY) {
                   window.scroll(0, scrolledY - 64);
@@ -151,7 +150,7 @@ export default Vue.extend({
       if (el) {
         el.scrollIntoView();
         // now account for fixed header
-        var scrolledY = window.scrollY;
+        const scrolledY = window.scrollY;
 
         if (scrolledY) {
           window.scroll(0, scrolledY - 64);
@@ -161,10 +160,11 @@ export default Vue.extend({
   },
   methods: {
     ...mapActions('text', ['searchIndex']),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     handleSearchChange: debounce(function(this: any, text: string) {
       if (text) this.searchIndex(text);
     }, 500),
-    handleClick(candidate: any) {
+    handleClick() {
       this.searchQuery = '';
     }
   }

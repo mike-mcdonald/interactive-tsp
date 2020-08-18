@@ -8,9 +8,10 @@ import length from '@turf/length';
 import axios from 'axios';
 import proj4 from 'proj4';
 import { Extent } from 'esri/geometry';
+import Graphic from 'esri/Graphic';
 import { v4 as uuidv4 } from 'uuid';
 
-import { esriGraphics, hash } from '../utils';
+import { esriGraphics } from '../utils';
 import { feature } from '@turf/helpers';
 
 // ESRI maps use this wkid
@@ -53,7 +54,7 @@ export const actions: ActionTree<StreetState, RootState> = {
     );
 
     axios
-      .get<{ errors?: any[]; data: { streets?: Street[] } }>(rootState.graphqlUrl, {
+      .get<{ errors?: []; data: { streets?: Street[] } }>(rootState.graphqlUrl, {
         params: {
           query: `{
           streets(bbox:[${xmin},${ymin},${xmax},${ymax}], spatialReference:4326){
@@ -95,9 +96,9 @@ export const actions: ActionTree<StreetState, RootState> = {
         if (res.data.data.streets) {
           commit('setList', []);
           // sort by name then block number
-          let streets = res.data.data.streets.sort(function(a, b) {
-            var nameA = a.name?.toUpperCase(); // ignore upper and lowercase
-            var nameB = b.name?.toUpperCase(); // ignore upper and lowercase
+          const streets = res.data.data.streets.sort(function(a, b) {
+            const nameA = a.name?.toUpperCase(); // ignore upper and lowercase
+            const nameB = b.name?.toUpperCase(); // ignore upper and lowercase
 
             if (!nameA || !nameB) {
               return Number.MAX_SAFE_INTEGER;
@@ -140,7 +141,7 @@ export const actions: ActionTree<StreetState, RootState> = {
     );
     commit('setSelectedStreet', undefined);
     axios
-      .get<{ errors?: any[]; data: { street?: Array<Street> } }>(rootState.graphqlUrl, {
+      .get<{ errors?: []; data: { street?: Array<Street> } }>(rootState.graphqlUrl, {
         params: {
           query: `{
           street(id:"${street ? street.id : ''}"){
@@ -194,7 +195,7 @@ export const actions: ActionTree<StreetState, RootState> = {
           );
         }
 
-        let streets = res.data.data.street;
+        const streets = res.data.data.street;
 
         if (streets) {
           dispatch('highlightStreet', { street: streets[0], move: true });
@@ -218,10 +219,10 @@ export const actions: ActionTree<StreetState, RootState> = {
   },
   highlightStreet({ commit, rootGetters }, { street, move }: { street: Street; move: boolean }) {
     if (street.geometry) {
-      let graphics = esriGraphics(street.geometry);
+      const graphics = esriGraphics(street.geometry);
       commit('map/setGraphics', graphics, { root: true });
       if (move) {
-        const target: any = {
+        const target: { target: Graphic[]; zoom?: number } = {
           target: graphics
         };
         // for small features, don't zoom in too close

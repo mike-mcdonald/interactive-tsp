@@ -115,9 +115,8 @@
 </template>
 <script lang="ts">
 import Vue from 'vue';
-import { mapActions, mapState, mapGetters } from 'vuex';
+import { mapGetters } from 'vuex';
 
-import { Street, StreetState } from '@/store/streets/types';
 import { AreaPlan } from '../store/area_plans/types';
 import { MasterStreetPlan } from '../store/master_street_plans/types';
 
@@ -132,7 +131,7 @@ export default Vue.extend({
   computed: {
     ...mapGetters('streets', ['classificationLabel', 'classificationColor']),
     plans() {
-      const plans: Array<any> = [
+      const plans: Array<{ id: string; name: string; type: string }> = [
         ...this.street.masterStreetPlans.map((plan: MasterStreetPlan) => {
           const { name, id } = plan;
           return {
@@ -150,8 +149,8 @@ export default Vue.extend({
           };
         })
       ].sort((a, b) => {
-        var nameA = a.name?.toUpperCase(); // ignore upper and lowercase
-        var nameB = b.name?.toUpperCase(); // ignore upper and lowercase
+        const nameA = a.name?.toUpperCase(); // ignore upper and lowercase
+        const nameB = b.name?.toUpperCase(); // ignore upper and lowercase
 
         if (!nameA || !nameB) {
           return Number.MAX_SAFE_INTEGER;

@@ -11,7 +11,7 @@ import { getters } from './getters';
 import { actions } from './actions';
 import { mutations } from './mutations';
 
-const namespaced: boolean = true;
+const namespaced = true;
 
 const models = new Array<ViewModel>();
 
@@ -69,7 +69,7 @@ Promise.all(
     if (res.data) {
       models.push(
         ...res.data.drawingInfo.renderer.uniqueValueInfos.map(
-          (json: any): ViewModel => {
+          (json: UniqueValueInfo): ViewModel => {
             const info = UniqueValueInfo.fromJSON(json);
             const { r, g, b, a } = info.symbol.color;
             return {

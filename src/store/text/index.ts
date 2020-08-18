@@ -6,7 +6,7 @@ import { actions } from './actions';
 import { getters } from './getters';
 import { mutations } from './mutations';
 
-const namespaced: boolean = true;
+const namespaced = true;
 
 const state: TextState = {
   sections: undefined,
