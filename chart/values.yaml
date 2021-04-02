@@ -38,17 +38,15 @@ ingress:
   enabled: true
   annotations:
     kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-
-  # match any host asking for the root path
+    cert-manager.io/issuer: letsencrypt-production
   hosts:
-    - host:
+    - host: portland-tsp.com
       paths:
-        -
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+        - /
+  tls:
+   - secretName: portland-tsp-tls
+     hosts:
+       - portland-tsp.com
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
