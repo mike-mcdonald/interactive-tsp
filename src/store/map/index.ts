@@ -34,8 +34,8 @@ const state: MapState = {
   extent: defaultExtent,
   zoom: {
     current: 6,
-    focus: 13,
-    max: 14,
+    focus: 18,
+    max: 20,
     min: 4
   }
 };
