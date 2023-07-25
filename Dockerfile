@@ -1,4 +1,4 @@
-FROM node:13
+FROM node:16
 RUN apt-get update && \
   apt-get install -yq \
   gconf-service \
@@ -48,16 +48,16 @@ RUN npm run build
 FROM nginx
 COPY --from=0 /dist /usr/share/nginx/html
 RUN echo "\
-server {\n\
-    listen       80;\n\
-    server_name  localhost;\n\
-    gzip on;\n\
-    gzip_types      text/plain text/css application/xml application/javascript;\n\
-    gzip_proxied    no-cache no-store private expired auth;\n\
-    gzip_min_length 1000;\n\
-    location / {\n\
-        root   /usr/share/nginx/html;\n\
-        index  index.html index.htm;\n\
-    }\n\
-}\n\
-" > /etc/nginx/conf.d/default.conf
+  server {\n\
+  listen       80;\n\
+  server_name  localhost;\n\
+  gzip on;\n\
+  gzip_types      text/plain text/css application/xml application/javascript;\n\
+  gzip_proxied    no-cache no-store private expired auth;\n\
+  gzip_min_length 1000;\n\
+  location / {\n\
+  root   /usr/share/nginx/html;\n\
+  index  index.html index.htm;\n\
+  }\n\
+  }\n\
+  " > /etc/nginx/conf.d/default.conf
