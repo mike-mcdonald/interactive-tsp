@@ -9,7 +9,7 @@ jobs:
   build-image:
     runs-on: ubuntu-latest
     env:
-      REPOSITORY: ${{ secrets.ACR_NAME }}.azurecr.io
+      REPOSITORY: ${{ vars.REGISTRY_NAME }}.azurecr.io
       IMAGE: interactive-tsp
     steps:
       - uses: actions/checkout@v2
@@ -19,7 +19,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Log in to Azure Container Registry
         env:
-          ACR_NAME: ${{ secrets.ACR_NAME }}
+          ACR_NAME: ${{ vars.REGISTRY_NAME }}
         run: az acr login --name $ACR_NAME
       - name: Run Docker build
         run: docker build -t $REPOSITORY/$IMAGE:main .
