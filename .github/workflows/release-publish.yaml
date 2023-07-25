@@ -66,5 +66,5 @@ jobs:
           --namespace $K8S_NAMESPACE \
           --create-namespace \
           --install \
-          $HELM_RELEASE_NAME \
+          $RELEASE_NAME \
           chart/
