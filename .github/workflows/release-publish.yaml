@@ -48,7 +48,7 @@ jobs:
       RELEASE_NAME: ${{ secrets.HELM_RELEASE_NAME }}
     steps:
       - uses: actions/checkout@v2
-      - uses: azure/setup-kubectl@v1
+      - uses: azure/setup-kubectl@v3
       - uses: azure/setup-helm@v1
       - name: Login via Az module
         uses: azure/login@v1
